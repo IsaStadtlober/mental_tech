@@ -24,6 +24,7 @@ src/
 ├── components/         # Componentes reutilizáveis
 ├── constants/          # Constantes globais
 ├── hooks/              # Lógicas da aplicação
+├── service/            # Serviços da aplicação
 ├── styles/             # Estilos globais
 ├── types/              # Tipos para o TypeScript
 └── utils/              # Funções auxiliares

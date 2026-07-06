@@ -30,10 +30,10 @@ src/
 └── utils/              # Funções auxiliares
 ```
 
-## Dependências já presentes
+## Dependências Principais
 
-### Principais
-
+- **@expo-google-fonts/quicksand -** Fonte Quicksand para Headline
+- **@expo-google-fonts/atkinson-hyperlegible -** Fonte Atkinson Hyperlegible para Body
 - **react-native-gesture-handler -** Para gestos e toques na tela
 - **react-native-reanimated -** Para animações
 - **lucide-react-native -** Biblioteca de icones

@@ -15,12 +15,19 @@ O Mental Tech é uma plataforma de tecnologia educacional voltada para promover 
 ```text
 src/
 ├── app/
-│   ├── (auth)/         # Autenticação
-│   ├── (aluno)/        
-│   ├── (professor)/    
-│   ├── (instituição)/  
-│   ├── _layout.tsx     
-│   └── index.tsx       # Tela de entrada/redirecionamento
+├── (auth)/                  # Grupo de Autenticação
+│   ├── aluno/
+│   │   └── login.tsx        # Login exclusivo do Aluno (sem cadastro/recuperação)
+│   ├── profissional/        # Nome genérico para Professor + Escola
+│   │   ├── login.tsx        # Login unificado (Professor + Escola)
+│   │   ├── cadastro_escola.tsx     # Cadastro exclusivo da Escola
+│   │   └── recuperar.tsx    # Recuperação de senha unificada (Professor + Escola)
+│   └── _layout.tsx          
+├── (aluno)/
+├── (professor)/
+├── (instituição)/
+├── _layout.tsx              
+└── index.tsx           # Tela inicial de escolha ("Sou Aluno" ou "Sou Professor/Escola")
 ├── components/         # Componentes reutilizáveis
 ├── constants/          # Constantes globais
 ├── hooks/              # Lógicas da aplicação

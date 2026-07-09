@@ -1,6 +1,6 @@
 // src/app/(auth)/profissional/cadastro-escola.tsx
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Sparkles, GraduationCap, Users, Upload, Plus, Trash2 } from 'lucide-react-native';
 
@@ -260,7 +260,7 @@ const styles = StyleSheet.create({
         width: 60,
         height: 3,
         borderRadius: 2,
-        mx: 4,
+        marginHorizontal: 4,
     },
     stepLineActive: {
         backgroundColor: theme.primary,

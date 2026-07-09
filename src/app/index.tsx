@@ -1,15 +1,15 @@
 ﻿// src/app/index.tsx
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { useRouter } from 'expo-router';
-import Animated, { useSharedValue, useAnimatedStyle, withTiming, withDelay } from 'react-native-reanimated';
-import { Compass, ChevronRight } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
+import { ChevronRight, Compass } from 'lucide-react-native';
+import { useEffect, useState } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import Animated, { useAnimatedStyle, useSharedValue, withDelay, withTiming } from 'react-native-reanimated';
 
-import { theme, fonts } from '@/constants/theme';
-import { EASE_POP, EASE_STANDARD } from '@/hooks/useAnimations';
-import { BackgroundScene } from '@/components/BackgroundScene';
 import { CompassPlay, GraduationCapPlay } from '@/components/AnimatedIcons';
+import { BackgroundScene } from '@/components/BackgroundScene';
+import { fonts, theme } from '@/constants/theme';
+import { EASE_POP, EASE_STANDARD } from '@/hooks/useAnimations';
 
 // --- Subcomponentes Locais (RoleChoiceCard e OptionButton) ---
 function RoleMiniIcon({ type, active }: { type: 'student' | 'educator'; active: boolean }) {

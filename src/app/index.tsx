@@ -136,7 +136,7 @@ export default function IndexScreen() {
                     <Animated.View style={[styles.educatorOptions, educatorStyle]}>
                         <OptionButton onPress={() => router.push('/(auth)/profissional/login')}>Entrar com convite</OptionButton>
                         <View style={styles.optionDivider} />
-                        <OptionButton onPress={() => router.push('/(auth)/profissional/cadastro-escola')}>Quero cadastrar minha escola</OptionButton>
+                        <OptionButton onPress={() => router.push('/(auth)/profissional/cadastro_escola')}>Quero cadastrar minha escola</OptionButton>
                     </Animated.View>
                 )}
             </View>

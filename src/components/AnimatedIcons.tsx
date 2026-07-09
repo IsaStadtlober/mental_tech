@@ -1,14 +1,15 @@
 // src/components/AnimatedIcons.tsx
 import React, { useEffect } from 'react';
+import { Platform } from 'react-native';
 import Animated, {
-    useSharedValue,
+    Easing,
     useAnimatedProps,
+    useSharedValue,
     withRepeat,
     withSequence,
     withTiming,
-    Easing,
 } from 'react-native-reanimated';
-import Svg, { Path, Circle, Rect, G } from 'react-native-svg';
+import Svg, { Circle, G, Path, Rect } from 'react-native-svg';
 import { useLoopValue, useLoopValueOnce } from '../hooks/useAnimations';
 
 const AnimatedG = Animated.createAnimatedComponent(G as React.ComponentType<any>);
@@ -45,7 +46,9 @@ export function CompassPlay({ size = 42, color }: AnimatedIconProps) {
         const seg = Math.min(3, Math.floor(t.value));
         const frac = t.value - seg;
         const angle = stops[seg] + (stops[seg + 1] - stops[seg]) * frac;
-        return { rotation: angle, origin: '12,12' };
+        const base: any = { rotation: angle, transformOrigin: '12 12' };
+        if (Platform.OS !== 'web') base.origin = '12,12';
+        return base;
     });
 
     return (
@@ -53,7 +56,7 @@ export function CompassPlay({ size = 42, color }: AnimatedIconProps) {
             <Circle cx="12" cy="12" r="8.5" stroke={color} strokeWidth="1.7" opacity={0.75} />
             <Circle cx="12" cy="12" r="3.1" stroke={color} strokeWidth="1.2" opacity={0.35} />
             <Path d="M12 4.7v1.7M12 17.6v1.7M4.7 12h1.7M17.6 12h1.7" stroke={color} strokeWidth="1.3" strokeLinecap="round" opacity={0.6} />
-            <AnimatedG animatedProps={animatedProps}>
+            <AnimatedG animatedProps={animatedProps} {...(Platform.OS !== 'web' ? { origin: '12,12' } : { transformOrigin: '12 12' })}>
                 <Path d="M16.2 7.8L13.3 13.3L7.8 16.2L10.7 10.7L16.2 7.8Z" fill={color} />
             </AnimatedG>
             <Circle cx="12" cy="12" r="1.25" fill={color} />
@@ -96,16 +99,21 @@ function ConfettiDot({ cx, cy, color, delay }: ConfettiDotProps) {
 
 export function TrophyPlay({ size = 42, color }: AnimatedIconProps) {
     const t = useLoopValue(0, 1, 1800, 0);
-    const groupProps = useAnimatedProps(() => ({
-        transform: [
-            { translateY: -2 * t.value },
-            { rotate: `${1 * t.value}deg` },
-        ],
-    }));
+    const groupProps = useAnimatedProps(() => {
+        const base: any = {
+            transform: [
+                { translateY: -2 * t.value },
+                { rotate: `${1 * t.value}deg` },
+            ],
+            transformOrigin: '12 13',
+        };
+        if (Platform.OS !== 'web') base.origin = '12,13';
+        return base;
+    });
 
     return (
         <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-            <AnimatedG animatedProps={groupProps} origin="12,13">
+            <AnimatedG animatedProps={groupProps} {...(Platform.OS !== 'web' ? { origin: '12,13' } : { transformOrigin: '12 13' })}>
                 <Path d="M8 4h8v5a4 4 0 0 1-8 0V4Z" stroke={color} strokeWidth="1.6" strokeLinejoin="round" />
                 <Path d="M8 5H5.5a1 1 0 0 0-1 1.2c.35 1.7 1.5 2.8 3.5 3" stroke={color} strokeWidth="1.6" strokeLinecap="round" />
                 <Path d="M16 5h2.5a1 1 0 0 1 1 1.2c-.35 1.7-1.5 2.8-3.5 3" stroke={color} strokeWidth="1.6" strokeLinecap="round" />
@@ -159,7 +167,7 @@ export function GraduationCapPlay({ size = 42, color }: AnimatedIconProps) {
 
     return (
         <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-            <AnimatedG animatedProps={capProps} origin="12,11">
+            <AnimatedG animatedProps={capProps} {...(Platform.OS !== 'web' ? { origin: '12,11' } : { transformOrigin: '12 11' })}>
                 <Path d="M3 8.5l9-4 9 4-9 4-9-4Z" stroke={color} strokeWidth="1.6" strokeLinejoin="round" />
                 <Path d="M7 10.9v3.5c0 1.4 2.2 2.7 5 2.7s5-1.3 5-2.7v-3.5" stroke={color} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
                 <Path d="M19 9.5v4" stroke={color} strokeWidth="1.6" strokeLinecap="round" />
@@ -167,8 +175,8 @@ export function GraduationCapPlay({ size = 42, color }: AnimatedIconProps) {
             <DashboardCard x={4.5} y={20.2} w={3.5} h={2.2} color={color} delay={0} />
             <DashboardCard x={10.2} y={19.5} w={3.5} h={2.7} color={color} delay={250} />
             <DashboardCard x={15.8} y={18.8} w={3.5} h={3.3} color={color} delay={500} />
-            <AnimatedCircle cx={5.5} cy={5} r={1} fill={color} animatedProps={spark1Props} origin="5.5,5" />
-            <AnimatedCircle cx={19} cy={18} r={1} fill={color} animatedProps={spark2Props} origin="19,18" />
+            <AnimatedCircle cx={5.5} cy={5} r={1} fill={color} animatedProps={spark1Props} {...(Platform.OS !== 'web' ? { origin: '5.5,5' } : { transformOrigin: '5.5 5' })} />
+            <AnimatedCircle cx={19} cy={18} r={1} fill={color} animatedProps={spark2Props} {...(Platform.OS !== 'web' ? { origin: '19,18' } : { transformOrigin: '19 18' })} />
         </Svg>
     );
 }
@@ -191,7 +199,8 @@ function SparkleShape({ cx, cy, r, color, delay }: SparkleShapeProps) {
         transform: [{ scale: 0.8 + 0.3 * t.value }],
     }));
     const d = `M${cx} ${cy - r} L${cx + r * 0.28} ${cy - r * 0.28} L${cx + r} ${cy} L${cx + r * 0.28} ${cy + r * 0.28} L${cx} ${cy + r} L${cx - r * 0.28} ${cy + r * 0.28} L${cx - r} ${cy} L${cx - r * 0.28} ${cy - r * 0.28} Z`;
-    return <AnimatedPath d={d} fill={color} animatedProps={animatedProps} origin={`${cx}, ${cy}`} />;
+    const originProp = Platform.OS !== 'web' ? { origin: `${cx}, ${cy}` } : { transformOrigin: `${cx} ${cy}` };
+    return <AnimatedPath d={d} fill={color} animatedProps={animatedProps} {...originProp} />;
 }
 
 export function SparklesPlay({ size = 42, color }: AnimatedIconProps) {

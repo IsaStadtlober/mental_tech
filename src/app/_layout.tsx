@@ -1,20 +1,20 @@
 ﻿// src/app/_layout.tsx
-import React, { useEffect } from 'react';
-import { StyleSheet } from 'react-native';
-import { Stack } from 'expo-router';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import * as SplashScreen from 'expo-splash-screen';
 import {
-    useFonts as useQuicksandFonts,
+    AtkinsonHyperlegible_400Regular,
+    AtkinsonHyperlegible_700Bold,
+    useFonts as useAtkinsonFonts,
+} from '@expo-google-fonts/atkinson-hyperlegible';
+import {
     Quicksand_500Medium,
     Quicksand_600SemiBold,
     Quicksand_700Bold,
+    useFonts as useQuicksandFonts,
 } from '@expo-google-fonts/quicksand';
-import {
-    useFonts as useAtkinsonFonts,
-    AtkinsonHyperlegible_400Regular,
-    AtkinsonHyperlegible_700Bold,
-} from '@expo-google-fonts/atkinson-hyperlegible';
+import { Stack } from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
+import { useEffect } from 'react';
+import { StyleSheet } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 SplashScreen.preventAutoHideAsync().catch(() => { });
 

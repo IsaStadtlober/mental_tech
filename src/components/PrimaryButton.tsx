@@ -1,0 +1,127 @@
+import React, { useEffect } from 'react';
+import {
+    Text,
+    StyleSheet,
+    TouchableOpacity,
+    View,
+    ViewStyle,
+} from 'react-native';
+import Animated, {
+    useSharedValue,
+    useAnimatedStyle,
+    withTiming,
+    withRepeat,
+    withDelay,
+    Easing,
+} from 'react-native-reanimated';
+import { ChevronRight } from 'lucide-react-native';
+import { theme, fonts } from '@/constants/theme';
+
+interface PrimaryButtonProps {
+    onPress: () => void;
+    disabled?: boolean;
+    children: React.ReactNode;
+    icon?: boolean;
+    style?: ViewStyle;
+    pulse?: boolean;
+}
+
+export function PrimaryButton({
+    onPress,
+    disabled,
+    children,
+    icon = true,
+    style,
+    pulse = false,
+}: PrimaryButtonProps) {
+    const t = useSharedValue(0);
+
+    useEffect(() => {
+        if (pulse) {
+            t.value = withDelay(
+                600,
+                withRepeat(
+                    withTiming(1, {
+                        duration: 800,
+                        easing: Easing.inOut(Easing.ease),
+                    }),
+                    4,
+                    true
+                )
+            );
+        }
+    }, [pulse, t]);
+
+    const pulseStyle = useAnimatedStyle(() => ({
+        shadowOpacity: disabled ? 0 : 0.35 + 0.3 * t.value,
+        shadowRadius: disabled ? 0 : 16 + 8 * t.value,
+    }));
+
+    return (
+        <Animated.View style={[pulse ? pulseStyle : null, styles.container]}>
+            <TouchableOpacity
+                onPress={onPress}
+                disabled={disabled}
+                activeOpacity={0.85}
+                style={[
+                    styles.primaryBtn,
+                    {
+                        backgroundColor: disabled ? theme.disabled : theme.primary,
+                        ...(disabled ? {} : theme.shadowBtn),
+                    },
+                    style,
+                ]}
+            >
+                <View style={styles.btnShine} pointerEvents="none" />
+
+                {typeof children === 'string' ? (
+                    <Text style={styles.primaryBtnText}>{children}</Text>
+                ) : (
+                    children
+                )}
+
+                {icon && (
+                    <ChevronRight
+                        size={20}
+                        color="#fff"
+                        style={styles.chevron}
+                    />
+                )}
+            </TouchableOpacity>
+        </Animated.View>
+    );
+}
+
+const styles = StyleSheet.create({
+    container: {
+        width: '100%',
+        borderRadius: 18,
+    },
+    primaryBtn: {
+        width: '100%',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 8,
+        paddingVertical: 16,
+        paddingHorizontal: 24,
+        borderRadius: 18,
+    },
+    btnShine: {
+        position: 'absolute',
+        top: 10,
+        right: 18,
+        width: 10,
+        height: 10,
+        borderRadius: 45,
+        backgroundColor: 'rgba(255,255,255,0.12)',
+    },
+    primaryBtnText: {
+        color: '#fff',
+        fontFamily: fonts.headlineSemibold,
+        fontSize: 16,
+    },
+    chevron: {
+        opacity: 0.85,
+    },
+});

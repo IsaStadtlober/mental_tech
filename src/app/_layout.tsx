@@ -1,38 +1,54 @@
-﻿import {
+﻿// src/app/_layout.tsx
+import React, { useEffect } from 'react';
+import { StyleSheet } from 'react-native';
+import { Stack } from 'expo-router';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import * as SplashScreen from 'expo-splash-screen';
+import {
+    useFonts as useQuicksandFonts,
+    Quicksand_500Medium,
+    Quicksand_600SemiBold,
+    Quicksand_700Bold,
+} from '@expo-google-fonts/quicksand';
+import {
+    useFonts as useAtkinsonFonts,
     AtkinsonHyperlegible_400Regular,
     AtkinsonHyperlegible_700Bold,
 } from '@expo-google-fonts/atkinson-hyperlegible';
-import {
-    Quicksand_400Regular,
-    Quicksand_500Medium,
-    Quicksand_700Bold,
-} from '@expo-google-fonts/quicksand';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
-import { Typography } from '../constants/theme';
 
-SplashScreen.preventAutoHideAsync();
+SplashScreen.preventAutoHideAsync().catch(() => { });
 
-export default function AppLayout() {
-    const [fontsLoaded, fontError] = useFonts({
-        [Typography.headline.regular]: Quicksand_400Regular,
-        [Typography.headline.medium]: Quicksand_500Medium,
-        [Typography.headline.bold]: Quicksand_700Bold,
-        [Typography.body.regular]: AtkinsonHyperlegible_400Regular,
-        [Typography.body.bold]: AtkinsonHyperlegible_700Bold,
+export default function RootLayout() {
+    const [quicksandLoaded] = useQuicksandFonts({
+        Quicksand_500Medium,
+        Quicksand_600SemiBold,
+        Quicksand_700Bold,
+    });
+    const [atkinsonLoaded] = useAtkinsonFonts({
+        AtkinsonHyperlegible_400Regular,
+        AtkinsonHyperlegible_700Bold,
     });
 
+    const fontsLoaded = quicksandLoaded && atkinsonLoaded;
+
     useEffect(() => {
-        if (fontsLoaded || fontError) {
-            SplashScreen.hideAsync();
+        if (fontsLoaded) {
+            SplashScreen.hideAsync().catch(() => { });
         }
-    }, [fontsLoaded, fontError]);
+    }, [fontsLoaded]);
 
-    if (!fontsLoaded && !fontError) {
-        return null;
-    }
+    if (!fontsLoaded) return null;
 
-    return <Stack screenOptions={{ headerShown: false }} />;
+    return (
+        <GestureHandlerRootView style={styles.gestureRoot}>
+            <Stack screenOptions={{ headerShown: false, animation: 'fade' }} />
+        </GestureHandlerRootView>
+    );
 }
+
+const styles = StyleSheet.create({
+    gestureRoot: {
+        flex: 1,
+        backgroundColor: '#FCF6F0',
+    },
+});

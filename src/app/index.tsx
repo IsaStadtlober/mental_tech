@@ -1,170 +1,501 @@
-﻿// src/app/index.tsx
+import React, { useState, useCallback, useEffect } from 'react';
+import { View, Text, TouchableOpacity } from 'react-native';
+
+
+import { useRouter, useIsFocused } from 'expo-router'; 
+
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withSequence,
+  withDelay,
+  runOnJS,
+  Easing,
+} from 'react-native-reanimated';
+
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { ChevronRight } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useRouter } from 'expo-router';
-import { ChevronRight, Compass } from 'lucide-react-native';
-import { useEffect, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withDelay, withTiming } from 'react-native-reanimated';
 
-import { CompassPlay, GraduationCapPlay } from '@/components/AnimatedIcons';
-import { BackgroundScene } from '@/components/BackgroundScene';
-import { fonts, theme } from '@/constants/theme';
-import { EASE_POP, EASE_STANDARD } from '@/hooks/useAnimations';
+import { theme } from '../constants/theme'; // ⬅️ Caminho atualizado conforme sugerido pela IA
+import { styles } from '../styles/styles';
+import {
+  EASE_POP,
+  EASE_STANDARD,
+  useLoopValue,
+} from '../animations/animations';
 
-// --- Subcomponentes Locais (RoleChoiceCard e OptionButton) ---
-function RoleMiniIcon({ type, active }: { type: 'student' | 'educator'; active: boolean }) {
-    const color = active ? theme.bg : theme.primary;
-    if (type === 'student') return <CompassPlay size={26} color={color} />;
-    return <GraduationCapPlay size={26} color={color} />;
+import { BackgroundScene } from '../components/BackgroundScene';
+import { PrimaryButton } from '../components/PrimaryButton';
+
+import {
+  CompassPlay,
+  TrophyPlay,
+  GraduationCapPlay,
+  SparklesPlay,
+} from '../icons/CarouselIcons';
+
+// --- TIPAGENS (TYPESCRIPT) ---
+interface SlideData {
+  Icon: any;
+  eyebrow: string;
+  title: string;
+  text: string;
+  bg: 'mixedHigh' | 'clouds' | 'trees' | 'mixed'; // ⬅️ Tipagem exata corrigida
+  accent: readonly [string, string];
 }
 
-function RoleChoiceCard({ type, active, title, description, onPress, delay = 0 }: any) {
-    const fade = useSharedValue(0);
-    useEffect(() => {
-        fade.value = withDelay(delay, withTiming(1, { duration: 450, easing: EASE_STANDARD }));
-    }, [delay, fade]);
+interface CarouselIconCardProps {
+  children: React.ReactNode;
+  accent: readonly [string, string];
+}
 
-    const fadeStyle = useAnimatedStyle(() => ({
-        opacity: fade.value,
-        transform: [{ translateY: 10 * (1 - fade.value) }],
-    }));
+interface DotProps {
+  isActive: boolean;
+  accentColor: string;
+}
 
-    return (
-        <Animated.View style={fadeStyle}>
-            <TouchableOpacity
-                onPress={onPress}
-                activeOpacity={0.9}
-                style={[
-                    styles.roleCard,
-                    { backgroundColor: active ? theme.primary : theme.card },
-                    active ? styles.roleCardActiveShadow : theme.shadowCard,
-                ]}
-            >
-                <View style={[styles.roleCardGlow, { backgroundColor: active ? 'rgba(255,255,255,0.08)' : 'rgba(47,143,118,0.06)' }]} />
-                <View style={styles.roleCardContent}>
-                    <View style={[styles.roleIconBox, { backgroundColor: active ? theme.primaryFaint : theme.bgSoft }]}>
-                        <RoleMiniIcon type={type} active={active} />
-                    </View>
-                    <View style={{ flex: 1 }}>
-                        <Text style={[styles.roleTitle, { color: active ? '#FFFFFF' : theme.textDark }]}>{title}</Text>
-                        <Text style={[styles.roleDescription, { color: active ? '#D9EAE5' : '#6B7A75' }]}>{description}</Text>
-                    </View>
-                    <View style={[styles.roleArrow, { backgroundColor: active ? theme.primaryFaint : theme.bgSoft }]}>
-                        <ChevronRight size={17} color={active ? theme.bg : theme.primary} />
-                    </View>
-                </View>
-            </TouchableOpacity>
-        </Animated.View>
+interface DotsProps {
+  count: number;
+  active: number;
+  accentColor: string;
+}
+
+interface SlideContentProps {
+  slide: SlideData;
+  direction: 'next' | 'prev';
+}
+// ------------------------------
+
+function CarouselIconCard({ children, accent }: CarouselIconCardProps) {
+  const pop = useSharedValue(0);
+
+  useEffect(() => {
+    pop.value = withDelay(
+      40,
+      withTiming(1, {
+        duration: 340,
+        easing: EASE_POP,
+      })
     );
+  }, [pop]);
+
+  const popStyle = useAnimatedStyle(() => ({
+    opacity: pop.value,
+    transform: [{ scale: pop.value }],
+  }));
+
+  const halo = useLoopValue(0, 1, 1800, 0);
+
+  const haloStyle = useAnimatedStyle(() => ({
+    opacity: 0.25 + 0.4 * halo.value,
+  }));
+
+  const spark1 = useLoopValue(0, 1, 1200, 0);
+
+  const spark1Style = useAnimatedStyle(() => ({
+    opacity: 0.25 + 0.6 * spark1.value,
+    transform: [{ scale: 0.8 + 0.3 * spark1.value }],
+  }));
+
+  const spark2 = useLoopValue(0, 1, 1200, 450);
+
+  const spark2Style = useAnimatedStyle(() => ({
+    opacity: 0.25 + 0.6 * spark2.value,
+    transform: [{ scale: 0.8 + 0.3 * spark2.value }],
+  }));
+
+  return (
+    <Animated.View style={[styles.iconCardWrap, popStyle]}>
+      <LinearGradient
+        colors={accent}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.iconCard}
+      >
+        <Animated.View style={[styles.iconCardHaloBorder, haloStyle]} />
+
+        <Animated.View
+          style={[
+            styles.iconCardSparkle,
+            {
+              top: 18,
+              right: 20,
+              width: 8,
+              height: 8,
+              borderRadius: 4,
+            },
+            spark1Style,
+          ]}
+        />
+
+        <Animated.View
+          style={[
+            styles.iconCardSparkle,
+            {
+              bottom: 20,
+              left: 22,
+              width: 6,
+              height: 6,
+              borderRadius: 3,
+            },
+            spark2Style,
+          ]}
+        />
+
+        {children}
+      </LinearGradient>
+    </Animated.View>
+  );
 }
 
-function OptionButton({ children, onPress }: any) {
-    return (
-        <TouchableOpacity onPress={onPress} style={styles.optionButton} activeOpacity={0.75}>
-            <Text style={styles.optionText}>{children}</Text>
-            <Text style={styles.optionArrow}>→</Text>
-        </TouchableOpacity>
+const SLIDES: SlideData[] = [
+  {
+    Icon: CompassPlay,
+    eyebrow: 'Bem-vindo à jornada',
+    title: 'Aprender virou uma aventura',
+    text: 'Cada aluno entra como explorador, cumpre missões e vê seu progresso ganhar vida.',
+    bg: 'mixedHigh',
+    accent: ['#2F8F76', '#1E6B5C'],
+  },
+  {
+    Icon: TrophyPlay,
+    eyebrow: 'Engajamento todos os dias',
+    title: 'Missões que dão vontade de continuar',
+    text: 'Atividades viram conquistas, moedas e itens para personalizar a jornada.',
+    bg: 'clouds',
+    accent: ['#3D9B72', '#1B7A5C'],
+  },
+  {
+    Icon: GraduationCapPlay,
+    eyebrow: 'Clareza para ensinar melhor',
+    title: 'Acompanhe cada aluno de perto',
+    text: 'Veja quem participou, quem precisa de apoio e como a turma está evoluindo.',
+    bg: 'trees',
+    accent: ['#589B8B', '#1E6B5C'],
+  },
+  {
+    Icon: SparklesPlay,
+    eyebrow: 'Pronto para começar?',
+    title: 'Uma turma mais motivada começa aqui',
+    text: 'Crie jornadas, acompanhe conquistas e transforme cada atividade em descoberta.',
+    bg: 'mixedHigh',
+    accent: ['#2F8F5A', '#14574A'],
+  },
+];
+
+const SWIPE_THRESHOLD = 90;
+const DRAG_RESISTANCE = 0.18;
+const MAX_DRAG = 28;
+
+function Dot({ isActive, accentColor }: DotProps) {
+  const scaleX = useSharedValue(1);
+
+  useEffect(() => {
+    if (isActive) {
+      scaleX.value = withSequence(
+        withTiming(1.25, {
+          duration: 150,
+          easing: Easing.out(Easing.cubic),
+        }),
+        withTiming(1, {
+          duration: 150,
+          easing: Easing.out(Easing.cubic),
+        })
+      );
+    }
+  }, [isActive, scaleX]);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    width: withTiming(isActive ? 22 : 6, {
+      duration: 300,
+      easing: Easing.out(Easing.cubic),
+    }),
+    backgroundColor: isActive ? accentColor : '#D9CFC3',
+    transform: [{ scaleX: scaleX.value }],
+  }));
+
+  return <Animated.View style={[styles.dot, animatedStyle]} />;
+}
+
+function Dots({ count, active, accentColor }: DotsProps) {
+  return (
+    <View style={styles.dotsRow}>
+      {Array.from({ length: count }).map((_, i) => (
+        <Dot
+          key={i}
+          isActive={i === active}
+          accentColor={accentColor}
+        />
+      ))}
+    </View>
+  );
+}
+
+function SlideContent({ slide, direction }: SlideContentProps) {
+  const Icon = slide.Icon;
+
+  const enter = useSharedValue(direction === 'next' ? 6 : -6);
+  const opacity = useSharedValue(0);
+  const scale = useSharedValue(0.99);
+
+  const t1 = useSharedValue(0);
+  const t2 = useSharedValue(0);
+  const t3 = useSharedValue(0);
+
+  useEffect(() => {
+    enter.value = direction === 'next' ? 6 : -6;
+    opacity.value = 0;
+    scale.value = 0.99;
+
+    t1.value = 0;
+    t2.value = 0;
+    t3.value = 0;
+
+    enter.value = withTiming(0, {
+      duration: 360,
+      easing: Easing.out(Easing.cubic),
+    });
+
+    opacity.value = withTiming(1, {
+      duration: 420,
+      easing: Easing.out(Easing.cubic),
+    });
+
+    scale.value = withTiming(1, {
+      duration: 360,
+      easing: Easing.out(Easing.cubic),
+    });
+
+    t1.value = withDelay(
+      200,
+      withTiming(1, {
+        duration: 640,
+        easing: EASE_STANDARD,
+      })
     );
+
+    t2.value = withDelay(
+      360,
+      withTiming(1, {
+        duration: 700,
+        easing: EASE_STANDARD,
+      })
+    );
+
+    t3.value = withDelay(
+      540,
+      withTiming(1, {
+        duration: 760,
+        easing: EASE_STANDARD,
+      })
+    );
+  }, [slide, direction, enter, opacity, scale, t1, t2, t3]);
+
+  const animatedContainer = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+    transform: [
+      { translateX: enter.value },
+      { scale: scale.value },
+    ],
+  }));
+
+  const eyebrowStyle = useAnimatedStyle(() => ({
+    opacity: t1.value,
+    transform: [{ translateY: 6 * (1 - t1.value) }],
+  }));
+
+  const titleStyle = useAnimatedStyle(() => ({
+    opacity: t2.value,
+    transform: [{ translateY: 6 * (1 - t2.value) }],
+  }));
+
+  const textStyle = useAnimatedStyle(() => ({
+    opacity: t3.value,
+    transform: [{ translateY: 6 * (1 - t3.value) }],
+  }));
+
+  return (
+    <Animated.View style={[styles.carouselContent, animatedContainer]}>
+      <CarouselIconCard accent={slide.accent}>
+        <Icon size={44} color={theme.bg} />
+      </CarouselIconCard>
+
+      <Animated.Text style={[styles.eyebrow, eyebrowStyle]}>
+        {slide.eyebrow}
+      </Animated.Text>
+
+      <Animated.Text style={[styles.carouselTitle, titleStyle]}>
+        {slide.title}
+      </Animated.Text>
+
+      <Animated.Text style={[styles.carouselText, textStyle]}>
+        {slide.text}
+      </Animated.Text>
+    </Animated.View>
+  );
 }
 
-// --- Ecrã Principal ---
-export default function IndexScreen() {
-    const router = useRouter();
-    const [chosen, setChosen] = useState<'aluno' | 'educador' | null>(null);
+// ⬅️ Alterado de "export function CarouselScreen" para "export default function CarouselRoute"
+export default function CarouselRoute() {
+  const router = useRouter(); // ⬅️ Inicialização do router
+  const isFocused = useIsFocused();
 
-    const pop = useSharedValue(0);
-    const educatorProgress = useSharedValue(0);
+  const [index, setIndex] = useState(0);
+  const [direction, setDirection] = useState<'next' | 'prev'>('next');
 
-    useEffect(() => {
-        pop.value = withTiming(1, { duration: 300, easing: EASE_POP });
-    }, [pop]);
+  const translateX = useSharedValue(0);
+  const hasInteracted = useSharedValue(false);
 
-    useEffect(() => {
-        if (chosen === 'educador') {
-            educatorProgress.value = withTiming(1, { duration: 300 });
-        }
-    }, [chosen, educatorProgress]);
+  const slide = SLIDES[index];
+  const isLast = index === SLIDES.length - 1;
 
-    const popStyle = useAnimatedStyle(() => ({
-        opacity: pop.value,
-        transform: [{ scale: pop.value }],
-    }));
+  // ⬅️ Nova função handleFinish usando o router do Expo
+  const handleFinish = useCallback(() => {
+    router.push('/roles');
+  }, [router]);
 
-    const educatorStyle = useAnimatedStyle(() => ({
-        opacity: educatorProgress.value,
-    }));
+  useEffect(() => {
+    const HINT_REPEATS = 3;
+    const HINT_INTERVAL = 4200;
+    const FIRST_DELAY = 1100;
 
-    return (
-        <View style={styles.roleRoot}>
-            <BackgroundScene variant="mixed" />
+    const playHint = () => {
+      'worklet';
 
-            <View style={styles.roleInner}>
-                <Animated.View style={[styles.roleHeroIconWrap, popStyle]}>
-                    <LinearGradient colors={theme.gradPrimary} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.roleHeroIcon}>
-                        <Compass size={31} color={theme.bg} strokeWidth={1.8} />
-                    </LinearGradient>
-                </Animated.View>
+      if (hasInteracted.value) return;
 
-                <Text style={styles.roleEyebrow}>Escolha seu caminho</Text>
-                <Text style={styles.roleHeading}>Como você vai explorar?</Text>
-                <Text style={styles.roleSubheading}>Comece como aluno aventureiro ou entre para guiar sua turma.</Text>
+      translateX.value = withSequence(
+        withTiming(-14, {
+          duration: 420,
+          easing: Easing.out(Easing.cubic),
+        }),
+        withTiming(0, {
+          duration: 520,
+          easing: Easing.out(Easing.cubic),
+        })
+      );
+    };
 
-                <View style={styles.roleCards}>
-                    <RoleChoiceCard
-                        type="student"
-                        active={chosen === 'aluno'}
-                        title="Sou Explorador"
-                        description="Tenho código da turma e PIN"
-                        delay={320}
-                        onPress={() => {
-                            setChosen('aluno');
-                            setTimeout(() => router.push('/(auth)/aluno/login'), 180);
-                        }}
-                    />
+    // ⬅️ Erro de NodeJS.Timeout corrigido aqui
+    const timeouts: ReturnType<typeof setTimeout>[] = [];
 
-                    <RoleChoiceCard
-                        type="educator"
-                        active={chosen === 'educador'}
-                        title="Sou Educador"
-                        description="Vou acessar ou cadastrar uma escola"
-                        delay={420}
-                        onPress={() => setChosen('educador')}
-                    />
-                </View>
+    for (let i = 0; i < HINT_REPEATS; i++) {
+      const t = setTimeout(() => {
+        if (!hasInteracted.value) playHint();
+      }, FIRST_DELAY + i * HINT_INTERVAL);
 
-                {chosen === 'educador' && (
-                    <Animated.View style={[styles.educatorOptions, educatorStyle]}>
-                        <OptionButton onPress={() => router.push('/(auth)/profissional/login')}>Entrar com convite</OptionButton>
-                        <View style={styles.optionDivider} />
-                        <OptionButton onPress={() => router.push('/(auth)/profissional/cadastro_escola')}>Quero cadastrar minha escola</OptionButton>
-                    </Animated.View>
-                )}
-            </View>
+      timeouts.push(t);
+    }
+
+    return () => timeouts.forEach(clearTimeout);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const goTo = useCallback((newIndex: number, dir: 'next' | 'prev') => {
+    setDirection(dir);
+    setIndex(newIndex);
+  }, []);
+
+  const next = useCallback(() => {
+    if (isLast) {
+      handleFinish(); // ⬅️ Chama handleFinish em vez da propriedade onFinish
+    } else {
+      goTo(index + 1, 'next');
+    }
+  }, [isLast, index, goTo, handleFinish]);
+
+  const prev = useCallback(() => {
+    if (index > 0) {
+      goTo(index - 1, 'prev');
+    }
+  }, [index, goTo]);
+
+  const panGesture = Gesture.Pan()
+    .onStart(() => {
+      hasInteracted.value = true;
+    })
+    .onUpdate((e) => {
+      const resisted = e.translationX * DRAG_RESISTANCE;
+
+      translateX.value = Math.max(
+        -MAX_DRAG,
+        Math.min(MAX_DRAG, resisted)
+      );
+    })
+    .onEnd((e) => {
+      const shouldGoNext = e.translationX < -SWIPE_THRESHOLD;
+      const shouldGoPrev = e.translationX > SWIPE_THRESHOLD && index > 0;
+
+      if (shouldGoNext) {
+        translateX.value = 0;
+        runOnJS(next)();
+        return;
+      }
+
+      if (shouldGoPrev) {
+        translateX.value = 0;
+        runOnJS(prev)();
+        return;
+      }
+
+      translateX.value = withTiming(0, {
+        duration: 220,
+        easing: Easing.out(Easing.cubic),
+      });
+    });
+
+  const dragStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: translateX.value }],
+  }));
+
+  return (
+    <GestureDetector gesture={panGesture}>
+      <View style={styles.carouselRoot}>
+        <BackgroundScene
+          variant={slide.bg}
+          tintColor={slide.accent[1]}
+          isActive={isFocused}
+        />
+
+        <View style={styles.carouselTopRow}>
+          {/* ⬅️ "onFinish" substituído por "handleFinish" */}
+          <TouchableOpacity onPress={handleFinish} hitSlop={10}>
+            <Text style={styles.skipText}>Pular</Text>
+          </TouchableOpacity>
         </View>
-    );
-}
 
-const styles = StyleSheet.create({
-    // Adicione aqui os estilos extraídos do App.js para a RoleScreen
-    roleRoot: { flex: 1, backgroundColor: theme.bg, justifyContent: 'center', paddingHorizontal: 32 },
-    roleInner: { zIndex: 2 },
-    roleHeroIconWrap: { width: 76, height: 76, borderRadius: 24, alignSelf: 'center', marginBottom: 24, shadowColor: 'rgba(30,107,92,1)', shadowOffset: { width: 0, height: 16 }, shadowOpacity: 0.35, shadowRadius: 18, elevation: 10 },
-    roleHeroIcon: { flex: 1, borderRadius: 24, alignItems: 'center', justifyContent: 'center' },
-    roleEyebrow: { fontFamily: fonts.bodyBold, fontSize: 12, letterSpacing: 1.6, textTransform: 'uppercase', color: theme.primaryLight, textAlign: 'center', marginBottom: 12 },
-    roleHeading: { fontFamily: fonts.headlineBold, fontSize: 24, lineHeight: 30, color: theme.textDark, textAlign: 'center', marginBottom: 8 },
-    roleSubheading: { fontFamily: fonts.bodyRegular, fontSize: 15, lineHeight: 22, color: theme.textMuted, textAlign: 'center', marginBottom: 40 },
-    roleCards: { gap: 16 },
-    roleCard: { position: 'relative', overflow: 'hidden', borderRadius: 24, padding: 16 },
-    roleCardActiveShadow: { shadowColor: 'rgba(30,107,92,1)', shadowOffset: { width: 0, height: 16 }, shadowOpacity: 0.24, shadowRadius: 18, elevation: 8 },
-    roleCardGlow: { position: 'absolute', top: -20, right: -20, width: 130, height: 130, borderRadius: 80 },
-    roleCardContent: { flexDirection: 'row', alignItems: 'center', gap: 16 },
-    roleIconBox: { width: 56, height: 56, borderRadius: 18, alignItems: 'center', justifyContent: 'center' },
-    roleTitle: { fontFamily: fonts.headlineBold, fontSize: 16, marginBottom: 2 },
-    roleDescription: { fontFamily: fonts.bodyRegular, fontSize: 13, lineHeight: 18 },
-    roleArrow: { width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center' },
-    educatorOptions: { marginTop: 16, borderRadius: 18, backgroundColor: theme.card, overflow: 'hidden', ...theme.shadowCard },
-    optionButton: { paddingHorizontal: 24, paddingVertical: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-    optionText: { fontFamily: fonts.bodyBold, fontSize: 15, color: theme.textDark },
-    optionArrow: { fontSize: 18, color: theme.textFaint },
-    optionDivider: { height: 1, marginHorizontal: 24, backgroundColor: theme.border },
-});
+        <Animated.View style={[styles.carouselBody, dragStyle]}>
+          <SlideContent
+            key={index}
+            slide={slide}
+            direction={direction}
+          />
+        </Animated.View>
+
+        <View style={styles.carouselFooter}>
+          <Dots
+            count={SLIDES.length}
+            active={index}
+            accentColor={slide.accent[0]}
+          />
+
+          {isLast ? (
+            <PrimaryButton onPress={next} icon={false}>
+              <View style={styles.ctaRow}>
+                <Text style={styles.primaryBtnText}>
+                  Começar jornada
+                </Text>
+
+                <ChevronRight size={18} color="#fff" />
+              </View>
+            </PrimaryButton>
+          ) : (
+            <View style={{ height: 56 }} />
+          )}
+        </View>
+      </View>
+    </GestureDetector>
+  );
+}

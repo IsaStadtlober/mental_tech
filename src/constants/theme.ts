@@ -1,6 +1,42 @@
-// src/constants/theme.ts
-import { Dimensions } from 'react-native';
+import { useFonts } from 'expo-font';
 
+import {
+  Quicksand_500Medium,
+  Quicksand_600SemiBold,
+  Quicksand_700Bold,
+} from '@expo-google-fonts/quicksand';
+
+import {
+  AtkinsonHyperlegible_400Regular,
+  AtkinsonHyperlegible_700Bold,
+} from '@expo-google-fonts/atkinson-hyperlegible';
+
+/* ============================================================
+   FONTES
+   ============================================================ */
+export function useAppFonts(): boolean {
+  const [fontsLoaded] = useFonts({
+    Quicksand_500Medium,
+    Quicksand_600SemiBold,
+    Quicksand_700Bold,
+    AtkinsonHyperlegible_400Regular,
+    AtkinsonHyperlegible_700Bold,
+  });
+
+  return fontsLoaded;
+}
+
+export const fonts = {
+  headlineBold: 'Quicksand_700Bold',
+  headlineSemibold: 'Quicksand_600SemiBold',
+  headlineMedium: 'Quicksand_500Medium',
+  bodyRegular: 'AtkinsonHyperlegible_400Regular',
+  bodyBold: 'AtkinsonHyperlegible_700Bold',
+} as const;
+
+/* ============================================================
+   THEME (CORES E SOMBRAS)
+   ============================================================ */
 export const theme = {
   bg: '#FCF6F0',
   bgSoft: '#EAF3F0',
@@ -39,40 +75,5 @@ export const theme = {
     elevation: 12,
   },
 
-  gradPrimary: ['#2F8F76', '#1E6B5C'] as [string, string],
-};
-
-const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get('window');
-// Criação de containers responsivos baseados no protótipo original
-export const FRAME_W = Math.min(SCREEN_W, 390);
-export const FRAME_H = Math.min(SCREEN_H, 780);
-export const BANNER_H = 100;
-
-export const inputPresets = {
-  student: {
-    py: 14,
-    px: 20,
-    fontSize: 15,
-    radius: 14,
-    labelSize: 13,
-    bg: theme.bg,
-    activeBorder: theme.primaryLight,
-  },
-  educator: {
-    py: 12,
-    px: 20,
-    fontSize: 14,
-    radius: 14,
-    labelSize: 13,
-    bg: theme.bg,
-    activeBorder: theme.primaryLight,
-  },
-};
-
-export const fonts = {
-  headlineBold: 'Quicksand_700Bold',
-  headlineSemibold: 'Quicksand_600SemiBold',
-  headlineMedium: 'Quicksand_500Medium',
-  bodyRegular: 'AtkinsonHyperlegible_400Regular',
-  bodyBold: 'AtkinsonHyperlegible_700Bold',
-};
+  gradPrimary: ['#2F8F76', '#1E6B5C'],
+} as const;

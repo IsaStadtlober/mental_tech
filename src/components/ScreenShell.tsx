@@ -1,16 +1,14 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { ArrowLeft } from 'lucide-react-native';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
-import { theme } from '../constants/theme';
-import { styles } from '../styles/styles';
-import { FRAME_H } from '../constants/layout';
-import { BackgroundScene } from './background/BackgroundScene';
+import { FRAME_H, theme } from '../constants/theme';
+import { styles } from '../styles';
 import {
   FloatingBackButtonProps,
   FormBannerProps,
   ScreenShellProps,
 } from '../types/components';
+import { BackgroundScene } from './background/BackgroundScene';
 
 // Botão flutuante de voltar compartilhado pelas telas de formulário
 export function FloatingBackButton({ onPress }: FloatingBackButtonProps) {

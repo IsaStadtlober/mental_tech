@@ -1,17 +1,17 @@
-import React, { useEffect } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { ChevronRight } from 'lucide-react-native';
+import { useEffect } from 'react';
+import { Text, TouchableOpacity, View } from 'react-native';
 import Animated, {
-  useSharedValue,
+  Easing,
   useAnimatedStyle,
+  useSharedValue,
   withDelay,
   withRepeat,
   withTiming,
-  Easing,
 } from 'react-native-reanimated';
-import { ChevronRight } from 'lucide-react-native';
 
 import { theme } from '../constants/theme';
-import { styles } from '../styles/styles';
+import { styles } from '../styles';
 import { PrimaryButtonProps } from '../types/components';
 
 export function PrimaryButton({

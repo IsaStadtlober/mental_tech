@@ -1,7 +1,6 @@
-import React from 'react';
 import { Text, TouchableOpacity } from 'react-native';
-import { styles } from '../../styles/styles';
-import { OptionButtonProps } from '../../types/roles';
+import { styles } from '../../styles';
+import { OptionButtonProps } from '../../types/components';
 
 export function OptionButton({ children, onPress }: OptionButtonProps) {
     return (

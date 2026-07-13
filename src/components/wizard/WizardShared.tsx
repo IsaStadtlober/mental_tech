@@ -3,7 +3,7 @@ import { Text, TouchableOpacity, View } from 'react-native';
 
 import { theme } from '../../constants/theme';
 import { WIZARD_PERIOD_OPTIONS } from '../../constants/wizard';
-import { styles } from '../../styles/styles';
+import { styles } from '../../styles';
 
 interface WizardProgressProps {
   step: number;

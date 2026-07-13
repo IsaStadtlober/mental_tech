@@ -1,0 +1,153 @@
+import { StyleSheet } from 'react-native';
+import { borderRadius, fonts, spacing, theme } from '../../constants/theme';
+
+export const wizardStyles = StyleSheet.create({
+    wizardProgress: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        gap: spacing.sm,
+        marginTop: spacing.sm,
+        marginBottom: spacing.sm,
+    },
+    progressItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: spacing.sm,
+    },
+    progressDot: {
+        width: 18,
+        height: 18,
+        borderRadius: 9,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    progressNumber: {
+        fontFamily: fonts.bodyBold,
+        fontSize: 12,
+    },
+    progressLine: {
+        width: 24,
+        height: 2,
+        borderRadius: borderRadius.pill,
+    },
+    wizardCaption: {
+        fontFamily: fonts.bodyRegular,
+        fontSize: 14,
+        color: theme.textMuted,
+        textAlign: 'center',
+        marginBottom: spacing.lg,
+    },
+    periodSelectWrap: {
+        gap: spacing.sm,
+    },
+    periodOptionsRow: {
+        flexDirection: 'row',
+        gap: spacing.sm,
+    },
+    periodOption: {
+        flex: 1,
+        minHeight: 48,
+        borderRadius: borderRadius.xl + 2,
+        borderWidth: 2,
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingHorizontal: 10,
+    },
+    periodOptionText: {
+        fontFamily: fonts.bodyBold,
+        fontSize: 13,
+    },
+    uploadBox: {
+        position: 'relative',
+        overflow: 'hidden',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: spacing.lg,
+        borderRadius: borderRadius.panel,
+        borderWidth: 2,
+        borderStyle: 'dashed',
+        borderColor: theme.teal,
+        backgroundColor: theme.bgSubtle,
+        marginBottom: spacing.lg,
+    },
+    uploadIconBox: {
+        width: 42,
+        height: 42,
+        borderRadius: borderRadius.xl + 2,
+        backgroundColor: theme.card,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: spacing.sm,
+        shadowColor: theme.shadowCard.shadowColor,
+        shadowOffset: { width: 0, height: 10 },
+        shadowOpacity: 0.12,
+        shadowRadius: 14,
+        elevation: 4,
+    },
+    uploadTitle: {
+        fontFamily: fonts.bodyBold,
+        fontSize: 13,
+        color: theme.tealDeep,
+        marginBottom: 4,
+        textAlign: 'center',
+    },
+    uploadSubtitle: {
+        fontFamily: fonts.bodyRegular,
+        fontSize: 12,
+        color: theme.textFaint,
+        textAlign: 'center',
+    },
+    orRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: spacing.md,
+        marginBottom: spacing.lg,
+    },
+    orLine: {
+        flex: 1,
+        height: 1,
+        backgroundColor: theme.border,
+    },
+    orText: {
+        fontFamily: fonts.bodyBold,
+        fontSize: 11,
+        letterSpacing: 1.1,
+        textTransform: 'uppercase',
+        color: theme.textFaint,
+    },
+    studentManualBlock: {
+        gap: spacing.md,
+    },
+    addStudent: {
+        alignItems: 'center',
+        marginTop: 22,
+        marginBottom: spacing.xl,
+    },
+    addStudentText: {
+        fontFamily: fonts.bodyBold,
+        fontSize: 15,
+        color: theme.primary,
+    },
+    studentBlockHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginBottom: -4,
+    },
+    studentBlockTitle: {
+        fontFamily: fonts.bodyBold,
+        fontSize: 13,
+        color: theme.textDark,
+    },
+    removeStudentButton: {
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        borderRadius: borderRadius.pill,
+        backgroundColor: theme.dangerSoft,
+    },
+    removeStudentText: {
+        fontFamily: fonts.bodyBold,
+        fontSize: 12,
+        color: theme.danger,
+    },
+});

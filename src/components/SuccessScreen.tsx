@@ -1,12 +1,10 @@
-import React from 'react';
-import { View, Text, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { ScrollView, Text, View } from 'react-native';
 
-import { theme } from '../constants/theme';
-import { styles } from '../styles/styles';
-import { FRAME_H } from '../constants/layout';
-import { FloatingBackButton, FormBanner } from './ScreenShell';
+import { FRAME_H, theme } from '../constants/theme';
+import { styles } from '../styles';
 import { SuccessScreenProps } from '../types/components';
+import { FloatingBackButton, FormBanner } from './ScreenShell';
 
 export function SuccessScreen({
   eyebrow,

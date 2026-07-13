@@ -1,19 +1,19 @@
-import { useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
-import { Compass } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
+import { Compass } from 'lucide-react-native';
+import { useEffect, useState } from 'react';
+import { Text, TouchableOpacity, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
-import { theme } from '../constants/theme';
-import { styles } from '../styles/styles';
-import { EASE_POP } from '../hooks/useAnimations';
 import { ROLES_CONSTANTS } from '../constants/roles';
-import { ChosenRole } from '../types/roles';
+import { theme } from '../constants/theme';
+import { EASE_POP } from '../hooks/useAnimations';
+import { styles } from '../styles';
+import { ChosenRole } from '../types/components';
 
 import { BackgroundScene } from '../components/background/BackgroundScene';
-import { RoleChoiceCard } from '../components/roles/RoleChoiceCard';
 import { OptionButton } from '../components/roles/OptionButton';
+import { RoleChoiceCard } from '../components/roles/RoleChoiceCard';
 
 export default function RolesRoute() {
   const router = useRouter();

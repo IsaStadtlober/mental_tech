@@ -1,13 +1,13 @@
-import React, { useEffect } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
 import { ChevronRight } from 'lucide-react-native';
+import { useEffect } from 'react';
+import { Text, TouchableOpacity, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withDelay, withTiming } from 'react-native-reanimated';
 
-import { theme } from '../../constants/theme';
-import { styles } from '../../styles/styles';
-import { EASE_STANDARD } from '../../hooks/useAnimations';
 import { ROLES_CONSTANTS } from '../../constants/roles';
-import { RoleChoiceCardProps } from '../../types/roles';
+import { theme } from '../../constants/theme';
+import { EASE_STANDARD } from '../../hooks/useAnimations';
+import { styles } from '../../styles';
+import { RoleChoiceCardProps } from '../../types/components';
 import { RoleMiniIcon } from './RoleMiniIcon';
 
 export function RoleChoiceCard({

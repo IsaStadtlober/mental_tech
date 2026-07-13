@@ -1,9 +1,8 @@
-import React from 'react';
 import Animated, { FadeIn, useAnimatedStyle } from 'react-native-reanimated';
 
-import { theme } from '../../constants/theme';
-import { styles } from '../../styles/styles';
 import { ASPECT } from '../../constants/backgroundScene';
+import { theme } from '../../constants/theme';
+import { styles } from '../../styles';
 import { BackgroundItemProps } from '../../types/backgroundScene';
 import { Cloud } from './Cloud';
 import { Tree } from './Tree';

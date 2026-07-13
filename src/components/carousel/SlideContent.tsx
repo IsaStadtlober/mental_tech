@@ -1,9 +1,9 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withDelay, withTiming } from 'react-native-reanimated';
 
 import { theme } from '../../constants/theme';
 import { EASE_STANDARD } from '../../hooks/useAnimations';
-import { styles } from '../../styles/styles';
+import { styles } from '../../styles';
 import { SlideContentProps } from '../../types/carousel';
 import { CarouselIconCard } from './CarouselIconCard';
 

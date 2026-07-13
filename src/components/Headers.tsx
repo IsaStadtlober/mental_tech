@@ -1,15 +1,14 @@
-import React from 'react';
-import Animated from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
+import Animated from 'react-native-reanimated';
 
 import { theme } from '../constants/theme';
 import { useFadeUp, usePop } from '../hooks/useAnimations';
-import { styles } from '../styles/styles';
+import { styles } from '../styles';
 import {
   AuthHeaderProps,
   PremiumIconBadgeProps,
   SimpleCenteredHeaderProps,
-} from '../types/headers';
+} from '../types/components';
 
 // Subcomponente interno/compartilhado para os Badges de Ícone
 export function PremiumIconBadge({

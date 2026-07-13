@@ -1,17 +1,17 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
 import { useIsFocused, useRouter } from 'expo-router';
 import { ChevronRight } from 'lucide-react-native';
+import { useCallback, useEffect, useState } from 'react';
+import { Text, TouchableOpacity, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { Easing, runOnJS, runOnUI, useAnimatedStyle, useSharedValue, withSequence, withTiming } from 'react-native-reanimated';
 
 import { BackgroundScene } from '../components/background/BackgroundScene';
-import { PrimaryButton } from '../components/PrimaryButton';
 import { Dots } from '../components/carousel/Dots';
 import { SlideContent } from '../components/carousel/SlideContent';
+import { PrimaryButton } from '../components/PrimaryButton';
 
 import { CAROUSEL_CONFIG, SLIDES } from '../constants/carousel';
-import { styles } from '../styles/styles';
+import { styles } from '../styles';
 
 export default function CarouselRoute() {
   const router = useRouter();

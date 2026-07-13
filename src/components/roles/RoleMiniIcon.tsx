@@ -1,5 +1,5 @@
 import { theme } from '../../constants/theme';
-import { RoleMiniIconProps } from '../../types/roles';
+import { RoleMiniIconProps } from '../../types/components';
 import { CompassPlay, GraduationCapPlay } from '../carousel/CarouselIcons';
 
 export function RoleMiniIcon({ type, active }: RoleMiniIconProps) {

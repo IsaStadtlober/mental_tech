@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Text, View } from 'react-native';
 
 import { WIZARD_TOTAL_STEPS } from '../../constants/wizard';
-import { styles } from '../../styles/styles';
+import { styles } from '../../styles';
 import type { ClassData } from '../../types/wizard';
 import { createEmptyClassData, getStepCaption, isClassDataValid } from '../../utils/wizard';
 import { PrimaryButton } from '../PrimaryButton';

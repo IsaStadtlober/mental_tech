@@ -1,12 +1,11 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Text, TextInput } from 'react-native';
 import Animated from 'react-native-reanimated';
 
-import { inputPresets } from '../../constants/inputPresets';
-import { theme } from '../../constants/theme';
+import { inputPresets, theme } from '../../constants/theme';
 import { useFadeUp } from '../../hooks/useAnimations';
-import { styles } from '../../styles/styles';
-import { FormFieldProps } from '../../types/formFields';
+import { styles } from '../../styles';
+import { FormFieldProps } from '../../types/components';
 
 export function FormField({
     label,

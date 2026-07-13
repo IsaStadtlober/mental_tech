@@ -1,7 +1,7 @@
 import { useRouter } from 'expo-router';
 
 import { SuccessScreen } from '../../../components/SuccessScreen';
-import { STUDENT_AUTH_CONSTANTS, EDUCATOR_AUTH_CONSTANTS } from '../../../constants/auth';
+import { EDUCATOR_AUTH_CONSTANTS, STUDENT_AUTH_CONSTANTS } from '../../../constants/auth';
 
 export default function EducatorWelcomeRoute() {
   const router = useRouter();

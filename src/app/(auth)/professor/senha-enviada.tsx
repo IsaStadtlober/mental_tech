@@ -3,8 +3,8 @@ import { Text, View } from 'react-native';
 
 import { SuccessScreen } from '../../../components/SuccessScreen';
 
-import { STUDENT_AUTH_CONSTANTS, EDUCATOR_AUTH_CONSTANTS } from '../../../constants/auth';
-import { styles } from '../../../styles/styles';
+import { EDUCATOR_AUTH_CONSTANTS, STUDENT_AUTH_CONSTANTS } from '../../../constants/auth';
+import { styles } from '../../../styles';
 
 export default function PasswordSentRoute() {
   const router = useRouter();

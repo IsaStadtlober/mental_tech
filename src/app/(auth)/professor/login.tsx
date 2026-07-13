@@ -10,7 +10,7 @@ import { PrimaryButton } from '../../../components/PrimaryButton';
 import { ScreenShell } from '../../../components/ScreenShell';
 
 import { EDUCATOR_AUTH_CONSTANTS } from '../../../constants/auth';
-import { styles } from '../../../styles/styles';
+import { styles } from '../../../styles';
 
 export default function EducatorLoginRoute() {
   const router = useRouter();

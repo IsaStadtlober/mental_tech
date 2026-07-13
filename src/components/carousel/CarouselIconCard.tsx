@@ -1,9 +1,9 @@
-import React, { useEffect } from 'react';
-import Animated, { useAnimatedStyle, useSharedValue, withDelay, withTiming } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useEffect } from 'react';
+import Animated, { useAnimatedStyle, useSharedValue, withDelay, withTiming } from 'react-native-reanimated';
 
 import { EASE_POP, useLoopValue } from '../../hooks/useAnimations';
-import { styles } from '../../styles/styles';
+import { styles } from '../../styles';
 import { CarouselIconCardProps } from '../../types/carousel';
 
 export function CarouselIconCard({ children, accent }: CarouselIconCardProps) {

@@ -1,8 +1,8 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { View } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withSequence, withTiming } from 'react-native-reanimated';
 
-import { styles } from '../../styles/styles';
+import { styles } from '../../styles';
 import { DotProps, DotsProps } from '../../types/carousel';
 
 function Dot({ isActive, accentColor }: DotProps) {

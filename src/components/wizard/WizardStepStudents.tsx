@@ -4,7 +4,7 @@ import { Alert, Text, TouchableOpacity, View } from 'react-native';
 
 import { theme } from '../../constants/theme';
 import { WIZARD_TOTAL_STEPS } from '../../constants/wizard';
-import { styles } from '../../styles/styles';
+import { styles } from '../../styles';
 import type { StudentData } from '../../types/wizard';
 import { createEmptyStudent, getFilledStudents } from '../../utils/wizard';
 import { PrimaryButton } from '../PrimaryButton';

@@ -11,7 +11,7 @@ import { PrimaryButton } from '../../../components/PrimaryButton';
 import { ScreenShell } from '../../../components/ScreenShell';
 
 import { STUDENT_AUTH_CONSTANTS } from '../../../constants/auth';
-import { styles } from '../../../styles/styles';
+import { styles } from '../../../styles';
 
 export default function StudentNameRoute() {
   const router = useRouter();

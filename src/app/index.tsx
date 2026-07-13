@@ -19,12 +19,12 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { ChevronRight } from 'lucide-react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
+import { theme } from '../constants/theme'; // ⬅️ Caminho atualizado conforme sugerido pela IA
 import {
   EASE_POP,
   EASE_STANDARD,
   useLoopValue,
-} from '../animations/animations';
-import { theme } from '../constants/theme'; // ⬅️ Caminho atualizado conforme sugerido pela IA
+} from '../hooks/useAnimations';
 import { styles } from '../styles/styles';
 
 import { BackgroundScene } from '../components/BackgroundScene';
@@ -35,7 +35,7 @@ import {
   GraduationCapPlay,
   SparklesPlay,
   TrophyPlay,
-} from '../icons/CarouselIcons';
+} from '../components/icons/CarouselIcons';
 
 // --- TIPAGENS (TYPESCRIPT) ---
 interface SlideData {

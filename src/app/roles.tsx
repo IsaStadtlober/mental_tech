@@ -15,11 +15,11 @@ import {
   Compass,
 } from 'lucide-react-native';
 
+import { theme } from '../constants/theme'; // ⬅️ Mantido o caminho sugerido
 import {
   EASE_POP,
   EASE_STANDARD,
-} from '../animations/animations';
-import { theme } from '../constants/theme'; // ⬅️ Mantido o caminho sugerido
+} from '../hooks/useAnimations';
 import { styles } from '../styles/styles';
 
 import { BackgroundScene } from '../components/BackgroundScene';
@@ -27,7 +27,7 @@ import { BackgroundScene } from '../components/BackgroundScene';
 import {
   CompassPlay,
   GraduationCapPlay,
-} from '../icons/CarouselIcons';
+} from '../components/icons/CarouselIcons';
 
 // --- TIPAGENS (TYPESCRIPT) ---
 interface RoleMiniIconProps {

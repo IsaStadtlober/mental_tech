@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { KeyboardTypeOptions, Text, TextInput } from 'react-native';
 import Animated from 'react-native-reanimated';
 
-import { useFadeUp } from '../animations/animations';
 import { inputPresets } from '../constants/inputPresets';
 import { theme } from '../constants/theme';
+import { useFadeUp } from '../hooks/useAnimations';
 import { styles } from '../styles/styles';
 
 interface FormFieldProps {

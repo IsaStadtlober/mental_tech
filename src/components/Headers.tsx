@@ -4,8 +4,8 @@ import React from 'react';
 import { View } from 'react-native';
 import Animated from 'react-native-reanimated';
 
-import { useFadeUp, usePop } from '../animations/animations';
 import { theme } from '../constants/theme';
+import { useFadeUp, usePop } from '../hooks/useAnimations';
 import { styles } from '../styles/styles';
 
 interface PremiumIconBadgeProps {

@@ -30,7 +30,7 @@ export function CompassPlay({ size = 42, color }: IconProps) {
     <LottieIcon
       size={size}
       color={color}
-      source={require('../../assets/animations/bussola.json')}
+      source={require('../../../assets/animations/bussola.json')}
     />
   );
 }
@@ -40,7 +40,7 @@ export function TrophyPlay({ size = 42, color }: IconProps) {
     <LottieIcon
       size={size}
       color={color}
-      source={require('../../assets/animations/Trofeu.json')}
+      source={require('../../../assets/animations/Trofeu.json')}
     />
   );
 }
@@ -50,7 +50,7 @@ export function GraduationCapPlay({ size = 42, color }: IconProps) {
     <LottieIcon
       size={size}
       color={color}
-      source={require('../../assets/animations/chapeu.json')}
+      source={require('../../../assets/animations/chapeu.json')}
     />
   );
 }
@@ -60,7 +60,7 @@ export function SparklesPlay({ size = 42, color }: IconProps) {
     <LottieIcon
       size={size}
       color={color}
-      source={require('../../assets/animations/estrelas.json')}
+      source={require('../../../assets/animations/estrelas.json')}
     />
   );
 }

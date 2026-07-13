@@ -1,13 +1,13 @@
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import Animated, {
-  FadeIn,
-  SharedValue,
-  useAnimatedStyle,
+    FadeIn,
+    SharedValue,
+    useAnimatedStyle,
 } from 'react-native-reanimated';
 import Svg, { Path, Rect } from 'react-native-svg';
 
-import { useLoopValue } from '../animations/animations';
 import { theme } from '../constants/theme';
+import { useLoopValue } from '../hooks/useAnimations';
 import { styles } from '../styles/styles';
 
 interface ShapeProps {

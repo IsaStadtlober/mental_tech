@@ -53,7 +53,7 @@ export default function SchoolSignupRoute() {
         Icon={GraduationCap}
         title={EDUCATOR_AUTH_CONSTANTS.TEXTS.SIGNUP_TITLE}
         subtitle={EDUCATOR_AUTH_CONSTANTS.TEXTS.SIGNUP_SUBTITLE}
-        align="left"
+        align="center"
       />
 
       <View style={{ gap: 16 }}>

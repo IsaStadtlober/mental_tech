@@ -49,7 +49,7 @@ export default function RolesRoute() {
   }));
 
   const handleStudent = () => router.push('/aluno/login');
-  const handleEducatorLogin = () => router.replace('/professor/login');
+  const handleEducatorLogin = () => router.push('/professor/login');
   const handleSchoolSignup = () => router.push('/escola/cadastro');
 
   const insets = useSafeAreaInsets();

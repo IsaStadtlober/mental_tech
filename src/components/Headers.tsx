@@ -44,7 +44,7 @@ export function AuthHeader({
   Icon,
   title,
   subtitle,
-  align = 'left',
+  align = 'center',
   titleStyle,
   subtitleStyle,
 }: AuthHeaderProps) {
@@ -67,6 +67,7 @@ export function AuthHeader({
         style={[
           styles.authTitle,
           isCenter ? styles.textCenter : styles.textLeft,
+          Icon ? { marginTop: 15 } : null,
           titleStyle,
           titleFade,
         ]}

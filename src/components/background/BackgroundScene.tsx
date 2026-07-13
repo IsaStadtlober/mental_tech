@@ -1,13 +1,80 @@
-import React from 'react';
 import { StyleSheet, View } from 'react-native';
+import Animated, { FadeIn, useAnimatedStyle } from 'react-native-reanimated';
 
-// Importações corrigidas subindo dois níveis para fora da pasta components/background
-import { BACKGROUND_VARIANTS } from '../../constants/backgroundScene';
+import { ASPECT, BACKGROUND_VARIANTS } from '../../constants/backgroundScene';
+import { theme } from '../../constants/theme';
 import { useLoopValue } from '../../hooks/useAnimations';
-import { BackgroundSceneProps } from '../../types/backgroundScene';
+import { styles } from '../../styles';
+import { BackgroundItemData, BackgroundSceneProps } from '../../types/backgroundScene';
+import { Cloud } from './Cloud';
+import { Tree } from './Tree';
 
-// Como o BackgroundItem está na mesma pasta, a importação fica direta
-import { BackgroundItem } from './BackgroundItem';
+function BackgroundItem({
+    item,
+    color,
+    progress,
+}: {
+    item: BackgroundItemData;
+    color?: string;
+    progress: { value: number };
+}) {
+    const h = Math.round(item.width * ASPECT[item.type]);
+
+    const animatedStyle = useAnimatedStyle(() => {
+        if (item.drift === 'A') {
+            return {
+                transform: [
+                    { translateX: progress.value * 10 },
+                    { translateY: progress.value * -4 },
+                ],
+            };
+        }
+
+        if (item.drift === 'B') {
+            return {
+                transform: [
+                    { translateX: progress.value * -12 },
+                    { translateY: progress.value * 5 },
+                ],
+            };
+        }
+
+        if (item.drift === 'swayA') {
+            return {
+                transformOrigin: 'bottom',
+                transform: [{ rotate: `${progress.value * 3}deg` }],
+            };
+        }
+
+        return {
+            transformOrigin: 'bottom',
+            transform: [{ rotate: `${progress.value * -3}deg` }],
+        };
+    });
+
+    return (
+        <Animated.View
+            entering={FadeIn.duration(700)}
+            style={[styles.bgItem, item.style, animatedStyle as any]}
+        >
+            {item.type === 'cloud' ? (
+                <Cloud
+                    width={item.width}
+                    height={h}
+                    color={color || theme.primary}
+                    opacity={item.opacity}
+                />
+            ) : (
+                <Tree
+                    width={item.width}
+                    height={h}
+                    color={color || theme.primary}
+                    opacity={item.opacity}
+                />
+            )}
+        </Animated.View>
+    );
+}
 
 export function BackgroundScene({
     variant = 'clouds',

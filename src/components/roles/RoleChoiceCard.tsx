@@ -8,7 +8,7 @@ import { theme } from '../../constants/theme';
 import { EASE_STANDARD } from '../../hooks/useAnimations';
 import { styles } from '../../styles';
 import { RoleChoiceCardProps } from '../../types/components';
-import { RoleMiniIcon } from './RoleMiniIcon';
+import { CompassPlay, GraduationCapPlay } from '../carousel/CarouselIcons';
 
 export function RoleChoiceCard({
     type,
@@ -77,7 +77,11 @@ export function RoleChoiceCard({
                             { backgroundColor: active ? theme.primaryFaint : theme.bgSoft },
                         ]}
                     >
-                        <RoleMiniIcon type={type} active={active} />
+                        {type === 'student' ? (
+                            <CompassPlay size={26} color={active ? theme.bg : theme.primary} />
+                        ) : (
+                            <GraduationCapPlay size={26} color={active ? theme.bg : theme.primary} />
+                        )}
                     </View>
 
                     <View style={{ flex: 1 }}>

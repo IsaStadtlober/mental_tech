@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 
 import { FormField } from '../../../components/form/FormField';
-import { PasswordField } from '../../../components/form/PasswordField';
 import { AuthHeader } from '../../../components/Headers';
 import { PrimaryButton } from '../../../components/PrimaryButton';
 import { ScreenShell } from '../../../components/ScreenShell';
@@ -52,11 +51,12 @@ export default function EducatorLoginRoute() {
           preset="educator"
         />
 
-        <PasswordField
+        <FormField
           label={EDUCATOR_AUTH_CONSTANTS.LABELS.PASSWORD}
           value={password}
           onChangeText={setPassword}
           placeholder={EDUCATOR_AUTH_CONSTANTS.PLACEHOLDERS.PASSWORD}
+          secureTextEntry
         />
       </View>
 

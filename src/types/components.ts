@@ -48,14 +48,6 @@ export interface FormFieldProps {
     error?: boolean;
 }
 
-export interface PasswordFieldProps {
-    label?: string;
-    value: string;
-    onChangeText: (text: string) => void;
-    placeholder?: string;
-    error?: boolean;
-}
-
 export interface PremiumIconBadgeProps {
     Icon: React.ElementType;
     size?: number;
@@ -79,11 +71,6 @@ export interface SimpleCenteredHeaderProps {
 
 export type RoleType = 'student' | 'educator';
 export type ChosenRole = 'aluno' | 'educador' | null;
-
-export interface RoleMiniIconProps {
-    type: RoleType;
-    active: boolean;
-}
 
 export interface RoleChoiceCardProps {
     type: RoleType;

@@ -9,9 +9,8 @@ import { styles } from '../../styles';
 import type { ClassData } from '../../types/wizard';
 import { isTeacherEmailValid } from '../../utils/wizard';
 import { PrimaryButton } from '../PrimaryButton';
-import { ScreenShell } from '../ScreenShell';
 import { FormField } from '../form/FormField';
-import { WizardCaption, WizardProgress } from './WizardShared';
+import { WizardStepLayout } from './WizardShared';
 
 interface WizardStepTeacherProps {
   onBack: () => void;
@@ -47,7 +46,12 @@ export function WizardStepTeacher({
   const turmaPeriodo = classDetails?.period || '';
 
   return (
-    <ScreenShell
+    <WizardStepLayout
+      step={1}
+      total={WIZARD_TOTAL_STEPS}
+      caption="Passo 2 de 3"
+      title="Vincular Professor"
+      subtitle="Agora, informe quem será o responsável por guiar esta turma."
       onBack={onBack}
       footerPadding={148}
       footer={
@@ -67,14 +71,6 @@ export function WizardStepTeacher({
         </View>
       }
     >
-      <WizardProgress step={1} total={WIZARD_TOTAL_STEPS} />
-      <WizardCaption>Passo 2 de 3</WizardCaption>
-
-      <Text style={styles.screenTitle}>Vincular Professor</Text>
-      <Text style={styles.screenSubtitle}>
-        Agora, informe quem será o responsável por guiar esta turma.
-      </Text>
-
       <View style={styles.contextCard}>
         <LinearGradient
           colors={theme.gradPrimary as unknown as [string, string, ...string[]]}
@@ -102,6 +98,6 @@ export function WizardStepTeacher({
         preset="educator"
         keyboardType="email-address"
       />
-    </ScreenShell>
+    </WizardStepLayout>
   );
 }

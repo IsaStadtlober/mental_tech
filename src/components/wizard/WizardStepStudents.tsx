@@ -8,9 +8,8 @@ import { styles } from '../../styles';
 import type { StudentData } from '../../types/wizard';
 import { createEmptyStudent, getFilledStudents } from '../../utils/wizard';
 import { PrimaryButton } from '../PrimaryButton';
-import { ScreenShell } from '../ScreenShell';
 import { FormField } from '../form/FormField';
-import { WizardCaption, WizardProgress } from './WizardShared';
+import { WizardStepLayout } from './WizardShared';
 
 interface WizardStepStudentsProps {
   onBack: () => void;
@@ -44,7 +43,12 @@ export function WizardStepStudents({ onBack, onFinish }: WizardStepStudentsProps
   const filledStudents = getFilledStudents(students);
 
   return (
-    <ScreenShell
+    <WizardStepLayout
+      step={2}
+      total={WIZARD_TOTAL_STEPS}
+      caption="Passo 3 de 3"
+      title="Adicionar Alunos"
+      subtitle="Cadastre os alunos que farão parte desta turma."
       onBack={onBack}
       footerPadding={128}
       footer={
@@ -53,14 +57,6 @@ export function WizardStepStudents({ onBack, onFinish }: WizardStepStudentsProps
         </PrimaryButton>
       }
     >
-      <WizardProgress step={2} total={WIZARD_TOTAL_STEPS} />
-      <WizardCaption>Passo 3 de 3</WizardCaption>
-
-      <Text style={styles.screenTitle}>Adicionar Alunos</Text>
-      <Text style={styles.screenSubtitle}>
-        Cadastre os alunos que farão parte desta turma.
-      </Text>
-
       <Text style={styles.sectionLabel}>Importação em lote via CSV</Text>
 
       <TouchableOpacity onPress={handleBatchImport} activeOpacity={0.9} style={styles.uploadBox}>
@@ -116,6 +112,6 @@ export function WizardStepStudents({ onBack, onFinish }: WizardStepStudentsProps
       <TouchableOpacity onPress={addStudent} style={styles.addStudent} activeOpacity={0.75}>
         <Text style={styles.addStudentText}>+ Adicionar mais um aluno</Text>
       </TouchableOpacity>
-    </ScreenShell>
+    </WizardStepLayout>
   );
 }

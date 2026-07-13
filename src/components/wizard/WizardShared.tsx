@@ -4,10 +4,51 @@ import { Text, TouchableOpacity, View } from 'react-native';
 import { theme } from '../../constants/theme';
 import { WIZARD_PERIOD_OPTIONS } from '../../constants/wizard';
 import { styles } from '../../styles';
+import { ScreenShell } from '../ScreenShell';
 
 interface WizardProgressProps {
   step: number;
   total: number;
+}
+
+interface WizardStepLayoutProps {
+  step: number;
+  total: number;
+  caption: React.ReactNode;
+  title: string;
+  subtitle?: string;
+  onBack: () => void;
+  footer?: React.ReactNode;
+  footerPadding?: number;
+  children: React.ReactNode;
+}
+
+export function WizardStepLayout({
+  step,
+  total,
+  caption,
+  title,
+  subtitle,
+  onBack,
+  footer,
+  footerPadding,
+  children,
+}: WizardStepLayoutProps) {
+  return (
+    <ScreenShell
+      onBack={onBack}
+      footerPadding={footerPadding}
+      footer={footer}
+    >
+      <WizardProgress step={step} total={total} />
+      <WizardCaption>{caption}</WizardCaption>
+
+      <Text style={styles.screenTitle}>{title}</Text>
+      {!!subtitle && <Text style={styles.screenSubtitle}>{subtitle}</Text>}
+
+      {children}
+    </ScreenShell>
+  );
 }
 
 export function WizardProgress({ step, total }: WizardProgressProps) {

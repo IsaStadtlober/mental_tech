@@ -1,14 +1,12 @@
 import { useState } from 'react';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 
 import { WIZARD_TOTAL_STEPS } from '../../constants/wizard';
-import { styles } from '../../styles';
 import type { ClassData } from '../../types/wizard';
 import { createEmptyClassData, getStepCaption, isClassDataValid } from '../../utils/wizard';
 import { PrimaryButton } from '../PrimaryButton';
-import { ScreenShell } from '../ScreenShell';
 import { FormField } from '../form/FormField';
-import { PeriodSelect, WizardCaption, WizardProgress } from './WizardShared';
+import { PeriodSelect, WizardStepLayout } from './WizardShared';
 
 interface WizardStepClassProps {
   onBack: () => void;
@@ -26,7 +24,12 @@ export function WizardStepClass({ onBack, onNext, schoolName }: WizardStepClassP
   };
 
   return (
-    <ScreenShell
+    <WizardStepLayout
+      step={0}
+      total={WIZARD_TOTAL_STEPS}
+      caption={getStepCaption(1, schoolName)}
+      title="Crie sua primeira turma"
+      subtitle="Dê um nome para a turma que você vai gerenciar."
       onBack={onBack}
       footerPadding={128}
       footer={
@@ -45,15 +48,6 @@ export function WizardStepClass({ onBack, onNext, schoolName }: WizardStepClassP
         </PrimaryButton>
       }
     >
-      <WizardProgress step={0} total={WIZARD_TOTAL_STEPS} />
-
-      <WizardCaption>{getStepCaption(1, schoolName)}</WizardCaption>
-
-      <Text style={styles.screenTitle}>Crie sua primeira turma</Text>
-      <Text style={styles.screenSubtitle}>
-        Dê um nome para a turma que você vai gerenciar.
-      </Text>
-
       <View style={{ gap: 16 }}>
         <FormField
           label="Nome da Turma"
@@ -73,6 +67,6 @@ export function WizardStepClass({ onBack, onNext, schoolName }: WizardStepClassP
 
         <PeriodSelect value={classData.period} onChange={(value) => updateField('period', value)} />
       </View>
-    </ScreenShell>
+    </WizardStepLayout>
   );
 }

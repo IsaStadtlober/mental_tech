@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { Easing, runOnJS, runOnUI, useAnimatedStyle, useSharedValue, withSequence, withTiming } from 'react-native-reanimated';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BackgroundScene } from '../components/background/BackgroundScene';
 import { Dots } from '../components/carousel/Dots';
@@ -114,9 +115,11 @@ export default function CarouselRoute() {
     transform: [{ translateX: translateX.value }],
   }));
 
+  const insets = useSafeAreaInsets();
+
   return (
     <GestureDetector gesture={panGesture}>
-      <View style={styles.carouselRoot}>
+      <SafeAreaView style={[styles.carouselRoot, { paddingTop: insets.top, paddingBottom: insets.bottom }]}> 
         <BackgroundScene
           variant={slide.bg}
           tintColor={slide.accent[1]}
@@ -147,7 +150,7 @@ export default function CarouselRoute() {
             <View style={{ height: 56 }} />
           )}
         </View>
-      </View>
+      </SafeAreaView>
     </GestureDetector>
   );
 }

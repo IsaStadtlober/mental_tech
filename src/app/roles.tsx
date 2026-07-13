@@ -4,6 +4,7 @@ import { Compass } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ROLES_CONSTANTS } from '../constants/roles';
 import { theme } from '../constants/theme';
@@ -51,8 +52,10 @@ export default function RolesRoute() {
   const handleEducatorLogin = () => router.replace('/professor/login');
   const handleSchoolSignup = () => router.push('/escola/cadastro');
 
+  const insets = useSafeAreaInsets();
+
   return (
-    <View style={styles.roleRoot}>
+    <SafeAreaView style={[styles.roleRoot, { paddingTop: insets.top, paddingBottom: insets.bottom }]}> 
       <BackgroundScene variant="mixed" />
 
       <View style={styles.roleInner}>
@@ -115,6 +118,6 @@ export default function RolesRoute() {
           <Text style={styles.roleBackText}>{ROLES_CONSTANTS.TEXTS.BTN_BACK}</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }

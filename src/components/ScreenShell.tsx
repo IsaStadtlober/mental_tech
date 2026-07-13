@@ -1,5 +1,6 @@
 import { ArrowLeft } from 'lucide-react-native';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { FRAME_H, theme } from '../constants/theme';
 import { styles } from '../styles';
@@ -12,13 +13,15 @@ import { BackgroundScene } from './background/BackgroundScene';
 
 // Botão flutuante de voltar compartilhado pelas telas de formulário
 export function FloatingBackButton({ onPress }: FloatingBackButtonProps) {
+  const insets = useSafeAreaInsets();
+
   if (!onPress) return null;
 
   return (
     <TouchableOpacity
       onPress={onPress}
       activeOpacity={0.8}
-      style={styles.floatingBack}
+      style={[styles.floatingBack, { top: insets.top + 12 }]}
     >
       <ArrowLeft size={18} color={theme.primary} />
       <Text style={styles.floatingBackText}>Voltar</Text>
@@ -43,8 +46,10 @@ export function ScreenShell({
   bannerVariant = 'clouds',
   footerPadding = 112,
 }: ScreenShellProps) {
+  const insets = useSafeAreaInsets();
+
   return (
-    <View style={styles.shellRoot}>
+    <SafeAreaView style={[styles.shellRoot, { paddingTop: insets.top, paddingBottom: insets.bottom }]}> 
       <FloatingBackButton onPress={onBack} />
 
       <ScrollView
@@ -54,7 +59,7 @@ export function ScreenShell({
       >
         <FormBanner variant={bannerVariant} />
 
-        <View style={[styles.sheet, { paddingBottom: footerPadding }]}>
+        <View style={[styles.sheet, { paddingBottom: footerPadding + insets.bottom }]}> 
           {children}
         </View>
       </ScrollView>
@@ -65,6 +70,6 @@ export function ScreenShell({
           {footer}
         </View>
       )}
-    </View>
+    </SafeAreaView>
   );
 }

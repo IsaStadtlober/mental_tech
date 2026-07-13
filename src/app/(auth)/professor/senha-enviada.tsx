@@ -2,6 +2,8 @@ import { useRouter } from 'expo-router';
 import { Text, View } from 'react-native';
 
 import { SuccessScreen } from '../../../components/SuccessScreen';
+
+import { STUDENT_AUTH_CONSTANTS, EDUCATOR_AUTH_CONSTANTS } from '../../../constants/auth';
 import { styles } from '../../../styles/styles';
 
 export default function PasswordSentRoute() {
@@ -9,16 +11,18 @@ export default function PasswordSentRoute() {
 
   return (
     <SuccessScreen
-      eyebrow="E-mail enviado"
-      title="Verifique sua caixa de entrada"
-      description="Enviamos um link de recuperação para o e-mail informado."
+      eyebrow={STUDENT_AUTH_CONSTANTS.TEXTS.DONE_EYEBROW} // Reaproveitando "Tudo pronto" ou string similar
+      title={EDUCATOR_AUTH_CONSTANTS.TEXTS.SENT_TITLE}
+      description={EDUCATOR_AUTH_CONSTANTS.TEXTS.SENT_DESCRIPTION}
       onBack={() => router.back()}
       footer={
         <View style={styles.sentNoticeBox}>
-          <Text style={styles.sentNoticeTitle}>Aviso importante</Text>
+          <Text style={styles.sentNoticeTitle}>
+            {EDUCATOR_AUTH_CONSTANTS.TEXTS.SENT_NOTICE_TITLE}
+          </Text>
 
           <Text style={styles.sentNoticeText}>
-            O link pode levar alguns minutos para chegar. Se não encontrar, confira também o spam ou lixo eletrônico.
+            {EDUCATOR_AUTH_CONSTANTS.TEXTS.SENT_NOTICE_TEXT}
           </Text>
         </View>
       }

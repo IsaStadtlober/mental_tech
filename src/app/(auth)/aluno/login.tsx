@@ -8,12 +8,17 @@ import { AuthHeader } from '../../../components/Headers';
 import { PrimaryButton } from '../../../components/PrimaryButton';
 import { ScreenShell } from '../../../components/ScreenShell';
 
+import { STUDENT_AUTH_CONSTANTS } from '../../../constants/auth';
+import { formatClassCode, formatPin } from '../../../utils/auth';
+
 export default function StudentLoginRoute() {
   const router = useRouter();
   const [classCode, setClassCode] = useState('');
   const [pin, setPin] = useState('');
 
-  const canEnter = classCode.trim().length > 0 && pin.length === 4;
+  const canEnter =
+    classCode.trim().length > 0 &&
+    pin.length === STUDENT_AUTH_CONSTANTS.PIN_LENGTH;
 
   const handleEnter = () => {
     router.push('/aluno/nome');
@@ -27,34 +32,32 @@ export default function StudentLoginRoute() {
           disabled={!canEnter}
           onPress={() => canEnter && handleEnter()}
         >
-          Entrar
+          {STUDENT_AUTH_CONSTANTS.TEXTS.BUTTON_ENTER}
         </PrimaryButton>
       }
     >
       <AuthHeader
         Icon={Compass}
-        title="Entrar na aventura"
-        subtitle="Peça o código e o PIN para sua professora."
+        title={STUDENT_AUTH_CONSTANTS.TEXTS.LOGIN_TITLE}
+        subtitle={STUDENT_AUTH_CONSTANTS.TEXTS.LOGIN_SUBTITLE}
         align="center"
       />
 
       <View style={{ gap: 16 }}>
         <FormField
-          label="Código da Turma"
+          label={STUDENT_AUTH_CONSTANTS.LABELS.CLASS_CODE}
           value={classCode}
-          onChangeText={(value) => setClassCode(value.toUpperCase())}
-          placeholder="EX: 12AB"
+          onChangeText={(value) => setClassCode(formatClassCode(value))}
+          placeholder={STUDENT_AUTH_CONSTANTS.PLACEHOLDERS.CLASS_CODE}
           preset="student"
           center
         />
 
         <FormField
-          label="PIN (4 números)"
+          label={STUDENT_AUTH_CONSTANTS.LABELS.PIN}
           value={pin}
-          onChangeText={(value) =>
-            setPin(value.replace(/[^0-9]/g, '').slice(0, 4))
-          }
-          placeholder="****"
+          onChangeText={(value) => setPin(formatPin(value))}
+          placeholder={STUDENT_AUTH_CONSTANTS.PLACEHOLDERS.PIN}
           preset="student"
           center
           keyboardType="numeric"

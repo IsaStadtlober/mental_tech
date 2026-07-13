@@ -10,6 +10,7 @@ import {
 import { PrimaryButton } from '../../../components/PrimaryButton';
 import { ScreenShell } from '../../../components/ScreenShell';
 
+import { STUDENT_AUTH_CONSTANTS } from '../../../constants/auth';
 import { styles } from '../../../styles/styles';
 
 export default function StudentNameRoute() {
@@ -34,26 +35,26 @@ export default function StudentNameRoute() {
           disabled={!canContinue}
           onPress={() => canContinue && handleDone()}
         >
-          Pronto! Vamos explorar!
+          {STUDENT_AUTH_CONSTANTS.TEXTS.BUTTON_CONTINUE}
         </PrimaryButton>
       }
     >
       <SimpleCenteredHeader
-        title="Qual é o nome do seu explorador?"
-        subtitle="Esse será o nome do seu companheiro em toda a jornada."
+        title={STUDENT_AUTH_CONSTANTS.TEXTS.NAME_TITLE}
+        subtitle={STUDENT_AUTH_CONSTANTS.TEXTS.NAME_SUBTITLE}
       />
 
       <ExplorerAvatarPreview />
 
       <View>
         <Text style={styles.manualLabel}>
-          Dê um nome ao seu explorador
+          {STUDENT_AUTH_CONSTANTS.LABELS.EXPLORER_NAME}
         </Text>
 
         <FormField
           value={name}
           onChangeText={setName}
-          placeholder="Ex: Léo Aventureiro"
+          placeholder={STUDENT_AUTH_CONSTANTS.PLACEHOLDERS.EXPLORER_NAME}
           preset="student"
         />
       </View>

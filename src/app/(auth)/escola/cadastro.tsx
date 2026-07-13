@@ -8,7 +8,9 @@ import { AuthHeader } from '../../../components/Headers';
 import { PrimaryButton } from '../../../components/PrimaryButton';
 import { ScreenShell } from '../../../components/ScreenShell';
 
+import { EDUCATOR_AUTH_CONSTANTS } from '../../../constants/auth';
 import { styles } from '../../../styles/styles';
+import { isValidEmail } from '../../../utils/auth';
 
 export default function SchoolSignupRoute() {
   const router = useRouter();
@@ -18,16 +20,14 @@ export default function SchoolSignupRoute() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
-
-  const passwordMismatch = Boolean(
-    confirmPassword && password !== confirmPassword
-  );
+  const isEmailValid = isValidEmail(email);
+  const passwordMismatch = Boolean(confirmPassword && password !== confirmPassword);
+  const isPasswordLengthValid = password.length >= EDUCATOR_AUTH_CONSTANTS.MIN_PASSWORD_LENGTH;
 
   const isFormValid =
     schoolName.trim().length > 0 &&
     isEmailValid &&
-    password.length >= 6 &&
+    isPasswordLengthValid &&
     password === confirmPassword;
 
   const handleCreated = () => {
@@ -45,57 +45,59 @@ export default function SchoolSignupRoute() {
           disabled={!isFormValid}
           onPress={() => isFormValid && handleCreated()}
         >
-          Continuar cadastro
+          {EDUCATOR_AUTH_CONSTANTS.TEXTS.BUTTON_CONTINUE}
         </PrimaryButton>
       }
     >
       <AuthHeader
         Icon={GraduationCap}
-        title="Cadastre sua Escola"
-        subtitle="Vamos criar o espaço da sua instituição para gerenciar turmas, professores e alunos."
+        title={EDUCATOR_AUTH_CONSTANTS.TEXTS.SIGNUP_TITLE}
+        subtitle={EDUCATOR_AUTH_CONSTANTS.TEXTS.SIGNUP_SUBTITLE}
         align="left"
       />
 
       <View style={{ gap: 16 }}>
         <FormField
-          label="Nome da escola"
+          label={EDUCATOR_AUTH_CONSTANTS.LABELS.SCHOOL_NAME}
           value={schoolName}
           onChangeText={setSchoolName}
-          placeholder="Ex: Escola Caminho do Saber"
+          placeholder={EDUCATOR_AUTH_CONSTANTS.PLACEHOLDERS.SCHOOL_NAME}
           preset="educator"
         />
 
         <FormField
-          label="E-mail do responsável"
+          label={EDUCATOR_AUTH_CONSTANTS.LABELS.RESPONSIBLE_EMAIL}
           value={email}
           onChangeText={setEmail}
-          placeholder="Ex: diretor@escola.com"
+          placeholder={EDUCATOR_AUTH_CONSTANTS.PLACEHOLDERS.EMAIL}
           keyboardType="email-address"
           preset="educator"
         />
 
         <PasswordField
-          label="Crie uma senha"
+          label={EDUCATOR_AUTH_CONSTANTS.LABELS.CREATE_PASSWORD}
           value={password}
           onChangeText={setPassword}
-          placeholder="Mínimo 6 caracteres"
+          placeholder={EDUCATOR_AUTH_CONSTANTS.PLACEHOLDERS.CREATE_PASSWORD}
         />
 
         <PasswordField
-          label="Confirme a senha"
+          label={EDUCATOR_AUTH_CONSTANTS.LABELS.CONFIRM_PASSWORD}
           value={confirmPassword}
           onChangeText={setConfirmPassword}
-          placeholder="Digite a senha novamente"
+          placeholder={EDUCATOR_AUTH_CONSTANTS.PLACEHOLDERS.CONFIRM_PASSWORD}
           error={passwordMismatch}
         />
 
         {passwordMismatch && (
-          <Text style={styles.errorText}>As senhas não coincidem</Text>
+          <Text style={styles.errorText}>
+            {EDUCATOR_AUTH_CONSTANTS.ERRORS.PASSWORD_MISMATCH}
+          </Text>
         )}
 
-        {password.length > 0 && password.length < 6 && (
+        {password.length > 0 && !isPasswordLengthValid && (
           <Text style={styles.errorText}>
-            A senha precisa ter pelo menos 6 caracteres
+            {EDUCATOR_AUTH_CONSTANTS.ERRORS.PASSWORD_TOO_SHORT}
           </Text>
         )}
       </View>

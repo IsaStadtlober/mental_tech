@@ -1,213 +1,31 @@
-import { useRouter } from 'expo-router'; // ⬅️ Hook do Expo Router
+import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withDelay,
-  withTiming,
-} from 'react-native-reanimated';
-
+import { Compass } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import {
-  ChevronRight,
-  Compass,
-} from 'lucide-react-native';
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
-import { theme } from '../constants/theme'; // ⬅️ Mantido o caminho sugerido
-import {
-  EASE_POP,
-  EASE_STANDARD,
-} from '../hooks/useAnimations';
+import { theme } from '../constants/theme';
 import { styles } from '../styles/styles';
+import { EASE_POP } from '../hooks/useAnimations';
+import { ROLES_CONSTANTS } from '../constants/roles';
+import { ChosenRole } from '../types/roles';
 
 import { BackgroundScene } from '../components/BackgroundScene';
+import { RoleChoiceCard } from '../components/roles/RoleChoiceCard';
+import { OptionButton } from '../components/roles/OptionButton';
 
-import {
-  CompassPlay,
-  GraduationCapPlay,
-} from '../components/icons/CarouselIcons';
-
-// --- TIPAGENS (TYPESCRIPT) ---
-interface RoleMiniIconProps {
-  type: 'student' | 'educator';
-  active: boolean;
-}
-
-interface RoleChoiceCardProps {
-  type: 'student' | 'educator';
-  active: boolean;
-  title: string;
-  description: string;
-  onPress: () => void;
-  delay?: number;
-}
-
-interface OptionButtonProps {
-  children: React.ReactNode;
-  onPress: () => void;
-}
-// ------------------------------
-
-function RoleMiniIcon({ type, active }: RoleMiniIconProps) {
-  const color = active ? theme.bg : theme.primary;
-
-  if (type === 'student') {
-    return <CompassPlay size={26} color={color} />;
-  }
-
-  return <GraduationCapPlay size={26} color={color} />;
-}
-
-function RoleChoiceCard({
-  type,
-  active,
-  title,
-  description,
-  onPress,
-  delay = 0,
-}: RoleChoiceCardProps) {
-  const fade = useSharedValue(0);
-
-  useEffect(() => {
-    fade.value = withDelay(
-      delay,
-      withTiming(1, {
-        duration: 450,
-        easing: EASE_STANDARD,
-      })
-    );
-  }, [delay, fade]);
-
-  const fadeStyle = useAnimatedStyle(() => ({
-    opacity: fade.value,
-    transform: [{ translateY: 10 * (1 - fade.value) }],
-  }));
-
-  return (
-    <Animated.View style={fadeStyle}>
-      <TouchableOpacity
-        onPress={onPress}
-        activeOpacity={0.9}
-        style={[
-          styles.roleCard,
-          {
-            backgroundColor: active ? theme.primary : theme.card,
-            ...(active
-              ? {
-                  shadowColor: 'rgba(30,107,92,1)',
-                  shadowOffset: { width: 0, height: 16 },
-                  shadowOpacity: 0.24,
-                  shadowRadius: 18,
-                  elevation: 8,
-                }
-              : theme.shadowCard),
-          },
-        ]}
-      >
-        <View
-          style={[
-            styles.roleCardGlow,
-            {
-              backgroundColor: active
-                ? 'rgba(255,255,255,0.08)'
-                : 'rgba(47,143,118,0.06)',
-            },
-          ]}
-        />
-
-        <View
-          style={[
-            styles.roleSparkle,
-            {
-              backgroundColor: active ? theme.bg : theme.primaryLight,
-            },
-          ]}
-        />
-
-        <View style={styles.roleCardContent}>
-          <View
-            style={[
-              styles.roleIconBox,
-              {
-                backgroundColor: active ? theme.primaryFaint : theme.bgSoft,
-              },
-            ]}
-          >
-            <RoleMiniIcon type={type} active={active} />
-          </View>
-
-          <View style={{ flex: 1 }}>
-            <Text
-              style={[
-                styles.roleTitle,
-                {
-                  color: active ? '#FFFFFF' : theme.textDark,
-                },
-              ]}
-            >
-              {title}
-            </Text>
-
-            <Text
-              style={[
-                styles.roleDescription,
-                {
-                  color: active ? '#D9EAE5' : '#6B7A75',
-                },
-              ]}
-            >
-              {description}
-            </Text>
-          </View>
-
-          <View
-            style={[
-              styles.roleArrow,
-              {
-                backgroundColor: active ? theme.primaryFaint : theme.bgSoft,
-              },
-            ]}
-          >
-            <ChevronRight
-              size={17}
-              color={active ? theme.bg : theme.primary}
-            />
-          </View>
-        </View>
-      </TouchableOpacity>
-    </Animated.View>
-  );
-}
-
-// ⬅️ Mantive seu OptionButton original intacto para não perder o visual
-function OptionButton({ children, onPress }: OptionButtonProps) {
-  return (
-    <TouchableOpacity
-      onPress={onPress}
-      style={styles.optionButton}
-      activeOpacity={0.75}
-    >
-      <Text style={styles.optionText}>{children}</Text>
-      <Text style={styles.optionArrow}>→</Text>
-    </TouchableOpacity>
-  );
-}
-
-// ⬅️ Removidas as props onBack, onStudent, etc., pois agora usamos o router
 export default function RolesRoute() {
-  const router = useRouter(); // ⬅️ Inicialização do Expo Router
+  const router = useRouter();
 
-  // ⬅️ Tipagem do estado de escolha
-  const [chosen, setChosen] = useState<'aluno' | 'educador' | null>(null);
+  const [chosen, setChosen] = useState<ChosenRole>(null);
 
   const pop = useSharedValue(0);
   const educatorProgress = useSharedValue(0);
 
   useEffect(() => {
     pop.value = withTiming(1, {
-      duration: 300,
+      duration: ROLES_CONSTANTS.ANIMATIONS.HERO_POP_DURATION,
       easing: EASE_POP,
     });
   }, [pop]);
@@ -215,7 +33,7 @@ export default function RolesRoute() {
   useEffect(() => {
     if (chosen === 'educador') {
       educatorProgress.value = withTiming(1, {
-        duration: 300,
+        duration: ROLES_CONSTANTS.ANIMATIONS.EDUCATOR_FADE_DURATION,
       });
     }
   }, [chosen, educatorProgress]);
@@ -229,22 +47,12 @@ export default function RolesRoute() {
     opacity: educatorProgress.value,
   }));
 
-  // ⬅️ Handlers de navegação centralizados
-  const handleStudent = () => {
-    router.push('/aluno/login');
-  };
-
-  const handleEducatorLogin = () => {
-    router.replace('/professor/login');
-  };
-
-  const handleSchoolSignup = () => {
-    router.push('/escola/cadastro');
-  };
+  const handleStudent = () => router.push('/aluno/login');
+  const handleEducatorLogin = () => router.replace('/professor/login');
+  const handleSchoolSignup = () => router.push('/escola/cadastro');
 
   return (
     <View style={styles.roleRoot}>
-      {/* ⬅️ O TypeScript não vai reclamar do "mixed" porque arrumamos isso na etapa anterior */}
       <BackgroundScene variant="mixed" />
 
       <View style={styles.roleInner}>
@@ -262,55 +70,49 @@ export default function RolesRoute() {
           </LinearGradient>
         </Animated.View>
 
-        <Text style={styles.roleEyebrow}>Escolha seu caminho</Text>
-
-        <Text style={styles.roleHeading}>Como você vai explorar?</Text>
-
-        <Text style={styles.roleSubheading}>
-          Comece como aluno aventureiro ou entre para guiar sua turma.
-        </Text>
+        <Text style={styles.roleEyebrow}>{ROLES_CONSTANTS.TEXTS.EYEBROW}</Text>
+        <Text style={styles.roleHeading}>{ROLES_CONSTANTS.TEXTS.HEADING}</Text>
+        <Text style={styles.roleSubheading}>{ROLES_CONSTANTS.TEXTS.SUBHEADING}</Text>
 
         <View style={styles.roleCards}>
           <RoleChoiceCard
             type="student"
             active={chosen === 'aluno'}
-            title="Sou Explorador"
-            description="Tenho código da turma e PIN"
-            delay={320}
+            title={ROLES_CONSTANTS.TEXTS.STUDENT_TITLE}
+            description={ROLES_CONSTANTS.TEXTS.STUDENT_DESC}
+            delay={ROLES_CONSTANTS.ANIMATIONS.CARD_STUDENT_DELAY}
             onPress={() => {
               setChosen('aluno');
-              setTimeout(handleStudent, 180); // ⬅️ Agora chama o handler interno
+              setTimeout(handleStudent, ROLES_CONSTANTS.DELAYS.STUDENT_NAVIGATION);
             }}
           />
 
           <RoleChoiceCard
             type="educator"
             active={chosen === 'educador'}
-            title="Sou Educador"
-            description="Vou acessar ou cadastrar uma escola"
-            delay={420}
+            title={ROLES_CONSTANTS.TEXTS.EDUCATOR_TITLE}
+            description={ROLES_CONSTANTS.TEXTS.EDUCATOR_DESC}
+            delay={ROLES_CONSTANTS.ANIMATIONS.CARD_EDUCATOR_DELAY}
             onPress={() => setChosen('educador')}
           />
         </View>
 
         {chosen === 'educador' && (
           <Animated.View style={[styles.educatorOptions, educatorStyle]}>
-            {/* ⬅️ Componentes OptionButton originais restaurados com as novas funções */}
             <OptionButton onPress={handleEducatorLogin}>
-              Entrar com convite
+              {ROLES_CONSTANTS.TEXTS.BTN_LOGIN_INVITE}
             </OptionButton>
 
             <View style={styles.optionDivider} />
 
             <OptionButton onPress={handleSchoolSignup}>
-              Quero cadastrar minha escola
+              {ROLES_CONSTANTS.TEXTS.BTN_REGISTER_SCHOOL}
             </OptionButton>
           </Animated.View>
         )}
 
-        {/* ⬅️ Botão de voltar agora usa o router.back() */}
         <TouchableOpacity onPress={() => router.back()} style={styles.roleBack}>
-          <Text style={styles.roleBackText}>← Voltar</Text>
+          <Text style={styles.roleBackText}>{ROLES_CONSTANTS.TEXTS.BTN_BACK}</Text>
         </TouchableOpacity>
       </View>
     </View>

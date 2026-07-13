@@ -7,6 +7,8 @@ import { FormField, PasswordField } from '../../../components/FormFields';
 import { AuthHeader } from '../../../components/Headers';
 import { PrimaryButton } from '../../../components/PrimaryButton';
 import { ScreenShell } from '../../../components/ScreenShell';
+
+import { EDUCATOR_AUTH_CONSTANTS } from '../../../constants/auth';
 import { styles } from '../../../styles/styles';
 
 export default function EducatorLoginRoute() {
@@ -28,32 +30,32 @@ export default function EducatorLoginRoute() {
           disabled={!canEnter}
           onPress={() => canEnter && handleEnter()}
         >
-          Entrar
+          {EDUCATOR_AUTH_CONSTANTS.TEXTS.BUTTON_ENTER}
         </PrimaryButton>
       }
     >
       <AuthHeader
         Icon={GraduationCap}
-        title="Entrar como Educador"
-        subtitle="Use o e-mail e senha da sua conta de Professor ou Escola."
+        title={EDUCATOR_AUTH_CONSTANTS.TEXTS.LOGIN_TITLE}
+        subtitle={EDUCATOR_AUTH_CONSTANTS.TEXTS.LOGIN_SUBTITLE}
         align="center"
       />
 
       <View style={{ gap: 16 }}>
         <FormField
-          label="E-mail"
+          label={EDUCATOR_AUTH_CONSTANTS.LABELS.EMAIL}
           value={email}
           onChangeText={setEmail}
-          placeholder="seu@email.com"
+          placeholder={EDUCATOR_AUTH_CONSTANTS.PLACEHOLDERS.EMAIL}
           keyboardType="email-address"
           preset="educator"
         />
 
         <PasswordField
-          label="Senha"
+          label={EDUCATOR_AUTH_CONSTANTS.LABELS.PASSWORD}
           value={password}
           onChangeText={setPassword}
-          placeholder="••••••••"
+          placeholder={EDUCATOR_AUTH_CONSTANTS.PLACEHOLDERS.PASSWORD}
         />
       </View>
 
@@ -65,8 +67,7 @@ export default function EducatorLoginRoute() {
           activeOpacity={0.75}
         >
           <Text style={styles.linkMuted}>
-            Esqueci minha{' '}
-            <Text style={styles.linkStrong}>senha</Text>
+            Esqueci minha <Text style={styles.linkStrong}>senha</Text>
           </Text>
         </TouchableOpacity>
 

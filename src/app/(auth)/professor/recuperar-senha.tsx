@@ -7,13 +7,16 @@ import { FormField } from '../../../components/FormFields';
 import { AuthHeader } from '../../../components/Headers';
 import { PrimaryButton } from '../../../components/PrimaryButton';
 import { ScreenShell } from '../../../components/ScreenShell';
+
+import { EDUCATOR_AUTH_CONSTANTS } from '../../../constants/auth';
 import { styles } from '../../../styles/styles';
+import { isValidEmail } from '../../../utils/auth';
 
 export default function ForgotPasswordRoute() {
   const router = useRouter();
   const [email, setEmail] = useState('');
 
-  const canSend = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+  const canSend = isValidEmail(email);
 
   const handleSent = () => {
     router.push('/professor/senha-enviada');
@@ -27,28 +30,28 @@ export default function ForgotPasswordRoute() {
           disabled={!canSend}
           onPress={() => canSend && handleSent()}
         >
-          Enviar link
+          {EDUCATOR_AUTH_CONSTANTS.TEXTS.BUTTON_SEND_LINK}
         </PrimaryButton>
       }
     >
       <AuthHeader
         Icon={Sparkles}
-        title="Recuperar senha"
-        subtitle="Informe seu e-mail para receber as instruções de recuperação."
+        title={EDUCATOR_AUTH_CONSTANTS.TEXTS.RECOVERY_TITLE}
+        subtitle={EDUCATOR_AUTH_CONSTANTS.TEXTS.RECOVERY_SUBTITLE}
         align="center"
       />
 
       <FormField
-        label="E-mail"
+        label={EDUCATOR_AUTH_CONSTANTS.LABELS.EMAIL}
         value={email}
         onChangeText={setEmail}
-        placeholder="seu@email.com"
+        placeholder={EDUCATOR_AUTH_CONSTANTS.PLACEHOLDERS.EMAIL}
         keyboardType="email-address"
         preset="educator"
       />
 
       <Text style={styles.recoveryHelperText}>
-        Enviaremos um link para redefinir sua senha. Verifique também a caixa de spam ou lixo eletrônico.
+        {EDUCATOR_AUTH_CONSTANTS.TEXTS.RECOVERY_HELPER}
       </Text>
     </ScreenShell>
   );

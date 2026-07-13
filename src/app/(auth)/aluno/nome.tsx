@@ -2,7 +2,7 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Text, View } from 'react-native';
 
-import { FormField } from '../../../components/FormFields';
+import { FormField } from '../../../components/form/FormField';
 import {
   ExplorerAvatarPreview,
   SimpleCenteredHeader,

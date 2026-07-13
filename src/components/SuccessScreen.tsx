@@ -5,18 +5,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { theme } from '../constants/theme';
 import { styles } from '../styles/styles';
 import { FRAME_H } from '../constants/layout';
-import {
-  FloatingBackButton,
-  FormBanner,
-} from './ScreenShell';
-
-interface SuccessScreenProps {
-  eyebrow: string;
-  title: string;
-  description?: string;
-  footer?: React.ReactNode;
-  onBack?: () => void;
-}
+import { FloatingBackButton, FormBanner } from './ScreenShell';
+import { SuccessScreenProps } from '../types/components';
 
 export function SuccessScreen({
   eyebrow,
@@ -56,7 +46,7 @@ export function SuccessScreen({
             <Text style={styles.successDescription}>{description}</Text>
           )}
 
-          {!!footer && <View style={{ width: '100%' }}>{footer}</View>}
+          {!!footer && <View style={styles.successFooter}>{footer}</View>}
         </View>
       </ScrollView>
     </View>

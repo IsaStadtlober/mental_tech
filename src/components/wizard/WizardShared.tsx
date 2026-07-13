@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 
 import { theme } from '../../constants/theme';
+import { WIZARD_PERIOD_OPTIONS } from '../../constants/wizard';
 import { styles } from '../../styles/styles';
 
 interface WizardProgressProps {
@@ -93,14 +94,12 @@ interface PeriodSelectProps {
 }
 
 export function PeriodSelect({ value, onChange }: PeriodSelectProps) {
-  const options = ['Manhã', 'Tarde', 'Integral'];
-
   return (
     <View style={styles.periodSelectWrap}>
       <Text style={styles.inputLabel}>Período</Text>
 
       <View style={styles.periodOptionsRow}>
-        {options.map((option) => (
+        {WIZARD_PERIOD_OPTIONS.map((option) => (
           <PeriodOption
             key={option}
             label={option}

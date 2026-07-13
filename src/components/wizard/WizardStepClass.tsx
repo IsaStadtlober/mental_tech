@@ -1,17 +1,14 @@
-import React, { useState } from 'react';
-import { View, Text } from 'react-native';
+import { useState } from 'react';
+import { Text, View } from 'react-native';
 
-import { ScreenShell } from '../ScreenShell';
-import { PrimaryButton } from '../PrimaryButton';
-import { FormField } from '../FormFields';
+import { WIZARD_TOTAL_STEPS } from '../../constants/wizard';
 import { styles } from '../../styles/styles';
-import { WizardProgress, WizardCaption, PeriodSelect } from './WizardShared';
-
-export interface ClassData {
-  name: string;
-  grade: string;
-  period: string;
-}
+import type { ClassData } from '../../types/wizard';
+import { createEmptyClassData, getStepCaption, isClassDataValid } from '../../utils/wizard';
+import { PrimaryButton } from '../PrimaryButton';
+import { ScreenShell } from '../ScreenShell';
+import { FormField } from '../form/FormField';
+import { PeriodSelect, WizardCaption, WizardProgress } from './WizardShared';
 
 interface WizardStepClassProps {
   onBack: () => void;
@@ -20,14 +17,13 @@ interface WizardStepClassProps {
 }
 
 export function WizardStepClass({ onBack, onNext, schoolName }: WizardStepClassProps) {
-  const [className, setClassName] = useState('');
-  const [grade, setGrade] = useState('');
-  const [period, setPeriod] = useState('');
+  const [classData, setClassData] = useState<ClassData>(createEmptyClassData());
 
-  const isFormValid =
-    className.trim().length > 0 &&
-    grade.trim().length > 0 &&
-    period.trim().length > 0;
+  const isFormValid = isClassDataValid(classData);
+
+  const updateField = (field: keyof ClassData, value: string) => {
+    setClassData((current) => ({ ...current, [field]: value }));
+  };
 
   return (
     <ScreenShell
@@ -39,9 +35,9 @@ export function WizardStepClass({ onBack, onNext, schoolName }: WizardStepClassP
           onPress={() =>
             isFormValid &&
             onNext({
-              name: className.trim(),
-              grade: grade.trim(),
-              period,
+              name: classData.name.trim(),
+              grade: classData.grade.trim(),
+              period: classData.period.trim(),
             })
           }
         >
@@ -49,11 +45,9 @@ export function WizardStepClass({ onBack, onNext, schoolName }: WizardStepClassP
         </PrimaryButton>
       }
     >
-      <WizardProgress step={0} total={3} />
+      <WizardProgress step={0} total={WIZARD_TOTAL_STEPS} />
 
-      <WizardCaption>
-        {schoolName ? `${schoolName} · Passo 1 de 3` : 'Passo 1 de 3'}
-      </WizardCaption>
+      <WizardCaption>{getStepCaption(1, schoolName)}</WizardCaption>
 
       <Text style={styles.screenTitle}>Crie sua primeira turma</Text>
       <Text style={styles.screenSubtitle}>
@@ -63,21 +57,21 @@ export function WizardStepClass({ onBack, onNext, schoolName }: WizardStepClassP
       <View style={{ gap: 16 }}>
         <FormField
           label="Nome da Turma"
-          value={className}
-          onChangeText={setClassName}
+          value={classData.name}
+          onChangeText={(value) => updateField('name', value)}
           placeholder="Ex: 4º Ano A"
           preset="educator"
         />
-        
+
         <FormField
           label="Série/Ano"
-          value={grade}
-          onChangeText={setGrade}
+          value={classData.grade}
+          onChangeText={(value) => updateField('grade', value)}
           placeholder="Ex: 4º Ano"
           preset="educator"
         />
 
-        <PeriodSelect value={period} onChange={setPeriod} />
+        <PeriodSelect value={classData.period} onChange={(value) => updateField('period', value)} />
       </View>
     </ScreenShell>
   );

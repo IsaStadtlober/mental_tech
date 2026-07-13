@@ -1,6 +1,7 @@
-import React from 'react';
-import { SuccessScreen } from '../SuccessScreen';
+
+import { getStudentsCountLabel } from '../../utils/wizard';
 import { PrimaryButton } from '../PrimaryButton';
+import { SuccessScreen } from '../SuccessScreen';
 
 interface WizardDoneScreenProps {
   studentsCount: number;
@@ -16,9 +17,7 @@ export function WizardDoneScreen({
   return (
     <SuccessScreen
       eyebrow="Turma pronta"
-      title={`${studentsCount} ${
-        studentsCount === 1 ? 'aluno cadastrado' : 'alunos cadastrados'
-      }!`}
+      title={`${studentsCount} ${getStudentsCountLabel(studentsCount)}!`}
       description="Os PINs de cada aluno já estão prontos para impressão ou envio aos responsáveis."
       onBack={onBack}
       footer={

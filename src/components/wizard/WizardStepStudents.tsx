@@ -1,18 +1,16 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Alert } from 'react-native';
 import { Upload } from 'lucide-react-native';
+import { useState } from 'react';
+import { Alert, Text, TouchableOpacity, View } from 'react-native';
 
-import { ScreenShell } from '../ScreenShell';
-import { PrimaryButton } from '../PrimaryButton';
-import { FormField } from '../FormFields';
+import { theme } from '../../constants/theme';
+import { WIZARD_TOTAL_STEPS } from '../../constants/wizard';
 import { styles } from '../../styles/styles';
-import { theme } from '../../constants/theme'; // Path atualizado para a versão nova
-import { WizardProgress, WizardCaption } from './WizardShared';
-
-export interface StudentData {
-  name: string;
-  contact: string;
-}
+import type { StudentData } from '../../types/wizard';
+import { createEmptyStudent, getFilledStudents } from '../../utils/wizard';
+import { PrimaryButton } from '../PrimaryButton';
+import { ScreenShell } from '../ScreenShell';
+import { FormField } from '../form/FormField';
+import { WizardCaption, WizardProgress } from './WizardShared';
 
 interface WizardStepStudentsProps {
   onBack: () => void;
@@ -20,49 +18,42 @@ interface WizardStepStudentsProps {
 }
 
 export function WizardStepStudents({ onBack, onFinish }: WizardStepStudentsProps) {
-  const [students, setStudents] = useState<StudentData[]>([
-    { name: '', contact: '' },
-  ]);
+  const [students, setStudents] = useState<StudentData[]>([createEmptyStudent()]);
 
   const updateStudent = (index: number, field: keyof StudentData, value: string) => {
-    const nextStudents = [...students];
-    nextStudents[index][field] = value;
-    setStudents(nextStudents);
+    setStudents((current) => {
+      const nextStudents = [...current];
+      nextStudents[index][field] = value;
+      return nextStudents;
+    });
   };
 
   const addStudent = () => {
-    setStudents([...students, { name: '', contact: '' }]);
+    setStudents((current) => [...current, createEmptyStudent()]);
   };
 
   const removeStudent = (indexToRemove: number) => {
     if (students.length === 1) return;
-    setStudents(students.filter((_, index) => index !== indexToRemove));
+    setStudents((current) => current.filter((_, index) => index !== indexToRemove));
   };
 
-  // Handler mockado preparado para receber o expo-document-picker no futuro
   const handleBatchImport = async () => {
-    Alert.alert(
-      "Importação", 
-      "Aqui implementaremos o expo-document-picker para ler o CSV."
-    );
+    Alert.alert('Importação', 'Aqui implementaremos o expo-document-picker para ler o CSV.');
   };
 
-  const filledStudents = students.filter((student) => student.name.trim());
+  const filledStudents = getFilledStudents(students);
 
   return (
     <ScreenShell
       onBack={onBack}
       footerPadding={128}
       footer={
-        <PrimaryButton
-          disabled={filledStudents.length === 0}
-          onPress={() => onFinish(filledStudents)}
-        >
+        <PrimaryButton disabled={filledStudents.length === 0} onPress={() => onFinish(filledStudents)}>
           Concluir cadastro
         </PrimaryButton>
       }
     >
-      <WizardProgress step={2} total={3} />
+      <WizardProgress step={2} total={WIZARD_TOTAL_STEPS} />
       <WizardCaption>Passo 3 de 3</WizardCaption>
 
       <Text style={styles.screenTitle}>Adicionar Alunos</Text>
@@ -70,26 +61,16 @@ export function WizardStepStudents({ onBack, onFinish }: WizardStepStudentsProps
         Cadastre os alunos que farão parte desta turma.
       </Text>
 
-      {/* --- INÍCIO DA SESSÃO RESTAURADA: IMPORTAÇÃO EM LOTE --- */}
       <Text style={styles.sectionLabel}>Importação em lote via CSV</Text>
 
-      <TouchableOpacity 
-        onPress={handleBatchImport}
-        activeOpacity={0.9} 
-        style={styles.uploadBox}
-      >
+      <TouchableOpacity onPress={handleBatchImport} activeOpacity={0.9} style={styles.uploadBox}>
         <View style={styles.uploadIconBox}>
-          {/* Corrigido para acessar o tema da estrutura atual */}
-          <Upload size={24} color={theme.textMuted || '#A79E90'} /> 
+          <Upload size={24} color={theme.textMuted || '#A79E90'} />
         </View>
 
-        <Text style={styles.uploadTitle}>
-          Clique ou arraste o arquivo aqui
-        </Text>
+        <Text style={styles.uploadTitle}>Clique ou arraste o arquivo aqui</Text>
 
-        <Text style={styles.uploadSubtitle}>
-          Formatos aceitos: .csv, .xlsx
-        </Text>
+        <Text style={styles.uploadSubtitle}>Formatos aceitos: .csv, .xlsx</Text>
       </TouchableOpacity>
 
       <View style={styles.orRow}>
@@ -97,7 +78,6 @@ export function WizardStepStudents({ onBack, onFinish }: WizardStepStudentsProps
         <Text style={styles.orText}>ou</Text>
         <View style={styles.orLine} />
       </View>
-      {/* --- FIM DA SESSÃO RESTAURADA --- */}
 
       <View style={styles.studentManualBlock}>
         {students.map((student, index) => (

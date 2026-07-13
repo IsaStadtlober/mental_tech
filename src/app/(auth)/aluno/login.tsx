@@ -3,7 +3,7 @@ import { Compass } from 'lucide-react-native';
 import { useState } from 'react';
 import { View } from 'react-native';
 
-import { FormField } from '../../../components/FormFields';
+import { FormField } from '../../../components/form/FormField';
 import { AuthHeader } from '../../../components/Headers';
 import { PrimaryButton } from '../../../components/PrimaryButton';
 import { ScreenShell } from '../../../components/ScreenShell';

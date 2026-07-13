@@ -8,7 +8,6 @@ export type WelcomeDoneSearchParams = {
     explorerName: string;
 };
 
-
 // Tipos para autenticação de educador
 export type SchoolSignupSearchParams = {
     schoolName: string;
@@ -18,4 +17,4 @@ export type WizardSearchParams = {
     schoolName: string;
 };
 
-export type WizardStepType = 1 | 2 | 3 | 4;
+export type { WizardStepType } from './wizard';

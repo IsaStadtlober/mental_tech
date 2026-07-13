@@ -3,7 +3,8 @@ import { GraduationCap } from 'lucide-react-native';
 import { useState } from 'react';
 import { Text, View } from 'react-native';
 
-import { FormField, PasswordField } from '../../../components/FormFields';
+import { FormField } from '../../../components/form/FormField';
+import { PasswordField } from '../../../components/form/PasswordField';
 import { AuthHeader } from '../../../components/Headers';
 import { PrimaryButton } from '../../../components/PrimaryButton';
 import { ScreenShell } from '../../../components/ScreenShell';

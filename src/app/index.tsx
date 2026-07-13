@@ -5,7 +5,7 @@ import { ChevronRight } from 'lucide-react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { Easing, runOnJS, runOnUI, useAnimatedStyle, useSharedValue, withSequence, withTiming } from 'react-native-reanimated';
 
-import { BackgroundScene } from '../components/BackgroundScene';
+import { BackgroundScene } from '../components/background/BackgroundScene';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { Dots } from '../components/carousel/Dots';
 import { SlideContent } from '../components/carousel/SlideContent';

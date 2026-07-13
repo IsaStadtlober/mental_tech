@@ -11,7 +11,7 @@ import { EASE_POP } from '../hooks/useAnimations';
 import { ROLES_CONSTANTS } from '../constants/roles';
 import { ChosenRole } from '../types/roles';
 
-import { BackgroundScene } from '../components/BackgroundScene';
+import { BackgroundScene } from '../components/background/BackgroundScene';
 import { RoleChoiceCard } from '../components/roles/RoleChoiceCard';
 import { OptionButton } from '../components/roles/OptionButton';
 

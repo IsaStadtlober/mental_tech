@@ -9,11 +9,13 @@ import {
   withRepeat,
   withTiming,
 } from 'react-native-reanimated';
+import { AnimStyleResult, PopStyleResult } from '../types/animations';
 
 export const EASE_SLIDE = Easing.bezier(0.22, 1, 0.36, 1);
 export const EASE_POP = Easing.bezier(0.34, 1.56, 0.64, 1);
 export const EASE_STANDARD = Easing.out(Easing.cubic);
 
+// Cria um valor numérico compartilhado que fica alternando entre 'from' e 'to' continuamente
 export function useLoopValue(
   from: number,
   to: number,
@@ -50,6 +52,7 @@ export function useLoopValue(
   return v;
 }
 
+// Semelhante aouseLoopValue, mas executa o loop de forma direta sem reverter o efeito
 export function useLoopValueOnce(duration: number, delay: number = 0): SharedValue<number> {
   const v = useSharedValue(0);
 
@@ -70,7 +73,8 @@ export function useLoopValueOnce(duration: number, delay: number = 0): SharedVal
   return v;
 }
 
-export function useFadeUp(delay: number = 0, duration: number = 420) {
+// Fornece um estilo animado de surgimento suave de baixo para cima (Fade-in + TranslateY)
+export function useFadeUp(delay: number = 0, duration: number = 420): AnimStyleResult | any {
   const t = useSharedValue(0);
 
   useEffect(() => {
@@ -93,14 +97,15 @@ export function useFadeUp(delay: number = 0, duration: number = 420) {
   }));
 }
 
-export function usePop(delay: number = 0) {
+// Cria um efeito elástico de escala (Pop-in) muito usado em ícones, Badges e Avatares
+export function usePop(delay: number = 0, duration: number = 450): PopStyleResult | any {
   const t = useSharedValue(0);
 
   useEffect(() => {
     t.value = withDelay(
       delay,
       withTiming(1, {
-        duration: 300,
+        duration,
         easing: EASE_POP,
       })
     );
@@ -108,10 +113,9 @@ export function usePop(delay: number = 0) {
     return () => {
       cancelAnimation(t);
     };
-  }, [delay, t]);
+  }, [delay, duration, t]);
 
   return useAnimatedStyle(() => ({
-    opacity: t.value,
     transform: [{ scale: t.value }],
   }));
 }

@@ -1,6 +1,6 @@
-import { StyleSheet, Platform } from 'react-native';
-import { theme, fonts } from '../constants/theme'; // Caminho atualizado
-import { FRAME_W, FRAME_H, BANNER_H } from '../constants/layout';
+import { Platform, StyleSheet } from 'react-native';
+import { BANNER_H, FRAME_H, FRAME_W } from '../constants/layout';
+import { fonts, theme } from '../constants/theme'; // Caminho atualizado
 
 /* ============================================================
    STYLESHEET
@@ -480,6 +480,10 @@ export const styles = StyleSheet.create({
     color: theme.textMuted,
     textAlign: 'center',
     marginBottom: 36,
+  },
+  successFooter: {
+    marginTop: 12,
+    alignItems: 'center',
   },
 
   separator: {

@@ -1,37 +1,25 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useState } from 'react';
 
-// Importa os componentes de cada passo
 import { WizardDoneScreen } from '../../components/wizard/WizardDoneScreen';
-import { ClassData, WizardStepClass } from '../../components/wizard/WizardStepClass';
-import { StudentData, WizardStepStudents } from '../../components/wizard/WizardStepStudents';
+import { WizardStepClass } from '../../components/wizard/WizardStepClass';
+import { WizardStepStudents } from '../../components/wizard/WizardStepStudents';
 import { WizardStepTeacher } from '../../components/wizard/WizardStepTeacher';
-
-import { WizardSearchParams, WizardStepType } from '../../types/auth';
+import { useWizardFlow } from '../../hooks/useWizardFlow';
+import type { WizardSearchParams } from '../../types/auth';
 
 export default function WizardRoute() {
   const router = useRouter();
-
-  // Captura de forma tipada o nome da escola vindo da tela de cadastro anterior
   const { schoolName } = useLocalSearchParams<WizardSearchParams>();
+  const { state, saveClassDetails, saveTeacherEmail, saveStudents, goBack, goToStep } = useWizardFlow();
 
-  // Estado para controlar qual tela (passo) exibir
-  const [step, setStep] = useState<WizardStepType>(1);
-
-  // Estado para guardar os dados entre os passos
-  const [classDetails, setClassDetails] = useState<ClassData | null>(null);
-  const [teacherEmail, setTeacherEmail] = useState<string>('');
-  const [students, setStudents] = useState<StudentData[]>([]);
+  const { step, classDetails, students } = state;
 
   switch (step) {
     case 1:
       return (
         <WizardStepClass
           onBack={() => router.back()}
-          onNext={(data) => {
-            setClassDetails(data);
-            setStep(2);
-          }}
+          onNext={saveClassDetails}
           schoolName={schoolName || 'Minha Escola'}
         />
       );
@@ -39,33 +27,24 @@ export default function WizardRoute() {
       return (
         <WizardStepTeacher
           classDetails={classDetails}
-          onBack={() => setStep(1)}
-          onNext={(email) => {
-            setTeacherEmail(email);
-            setStep(3);
-          }}
-          onSkip={() => setStep(3)}
+          onBack={() => goBack(1)}
+          onNext={saveTeacherEmail}
+          onSkip={() => goToStep(3)}
         />
       );
     case 3:
       return (
         <WizardStepStudents
-          onBack={() => setStep(2)}
-          onFinish={(studentsData) => {
-            setStudents(studentsData);
-            // Aqui normalmente você faria o POST para sua API enviando os dados unificados
-            setStep(4);
-          }}
+          onBack={() => goBack(2)}
+          onFinish={saveStudents}
         />
       );
     case 4:
       return (
         <WizardDoneScreen
           studentsCount={students.length}
-          onBack={() => setStep(3)}
-          onGoDashboard={() => {
-            router.replace('/professor/bem-vindo');
-          }}
+          onBack={() => goBack(3)}
+          onGoDashboard={() => router.replace('/professor/bem-vindo')}
         />
       );
     default:

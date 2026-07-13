@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Text, TouchableOpacity, ViewStyle, StyleProp } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -12,15 +12,7 @@ import { ChevronRight } from 'lucide-react-native';
 
 import { theme } from '../constants/theme';
 import { styles } from '../styles/styles';
-
-interface PrimaryButtonProps {
-  onPress: () => void;
-  disabled?: boolean;
-  children: React.ReactNode;
-  icon?: boolean;
-  style?: StyleProp<ViewStyle>;
-  pulse?: boolean;
-}
+import { PrimaryButtonProps } from '../types/components';
 
 export function PrimaryButton({
   onPress,
@@ -78,13 +70,7 @@ export function PrimaryButton({
           children
         )}
 
-        {icon && (
-          <ChevronRight
-            size={20}
-            color="#fff"
-            style={{ opacity: 0.85 }}
-          />
-        )}
+        {icon && <ChevronRight size={18} color="#fff" />}
       </TouchableOpacity>
     </Animated.View>
   );

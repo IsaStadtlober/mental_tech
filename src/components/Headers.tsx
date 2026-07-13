@@ -1,21 +1,18 @@
-import { LinearGradient } from 'expo-linear-gradient';
-import { Sparkles } from 'lucide-react-native';
 import React from 'react';
-import { View } from 'react-native';
 import Animated from 'react-native-reanimated';
+import { LinearGradient } from 'expo-linear-gradient';
 
 import { theme } from '../constants/theme';
 import { useFadeUp, usePop } from '../hooks/useAnimations';
 import { styles } from '../styles/styles';
+import {
+  AuthHeaderProps,
+  PremiumIconBadgeProps,
+  SimpleCenteredHeaderProps,
+} from '../types/headers';
 
-interface PremiumIconBadgeProps {
-  Icon: React.ElementType;
-  size?: number;
-  iconSize?: number;
-  animated?: boolean;
-}
-
-function PremiumIconBadge({
+// Subcomponente interno/compartilhado para os Badges de Ícone
+export function PremiumIconBadge({
   Icon,
   size = 74,
   iconSize = 30,
@@ -38,75 +35,41 @@ function PremiumIconBadge({
         animated ? popStyle : null,
       ]}
     >
-      <View
-        style={{
-          position: 'absolute',
-          width: 6,
-          height: 6,
-          borderRadius: 3,
-          top: size * 0.22,
-          right: size * 0.22,
-          backgroundColor: theme.primary,
-          opacity: 0.35,
-        }}
-      />
-
-      <View
-        style={{
-          position: 'absolute',
-          width: 6,
-          height: 6,
-          borderRadius: 3,
-          bottom: size * 0.23,
-          left: size * 0.24,
-          backgroundColor: theme.primary,
-          opacity: 0.25,
-        }}
-      />
-
       <Icon size={iconSize} color={theme.primary} />
     </Animated.View>
   );
 }
 
-interface AuthHeaderProps {
-  Icon: React.ElementType;
-  title: string;
-  subtitle?: string;
-  align?: 'left' | 'center';
-  animate?: boolean;
-}
-
+// Cabeçalho de Autenticação Principal (Usado em login, cadastro, etc.)
 export function AuthHeader({
   Icon,
   title,
   subtitle,
   align = 'left',
-  animate = false,
+  titleStyle,
+  subtitleStyle,
 }: AuthHeaderProps) {
   const isCenter = align === 'center';
-
-  const headerStyle = useFadeUp(50, 450);
-  const titleStyle = useFadeUp(140, 420);
-  const subtitleStyle = useFadeUp(220, 420);
+  const headerFade = useFadeUp(0, 400);
+  const titleFade = useFadeUp(100, 400);
+  const subtitleFade = useFadeUp(200, 400);
 
   return (
     <Animated.View
       style={[
         styles.authHeader,
-        isCenter ? styles.centerItems : styles.leftItems,
-        headerStyle,
+        headerFade,
+        { alignItems: isCenter ? 'center' : 'flex-start' }
       ]}
     >
-      <View style={{ marginBottom: 24 }}>
-        <PremiumIconBadge Icon={Icon} animated={animate} />
-      </View>
+      {!!Icon && <PremiumIconBadge Icon={Icon} animated />}
 
       <Animated.Text
         style={[
           styles.authTitle,
           isCenter ? styles.textCenter : styles.textLeft,
           titleStyle,
+          titleFade,
         ]}
       >
         {title}
@@ -118,6 +81,7 @@ export function AuthHeader({
             styles.authSubtitle,
             isCenter ? styles.textCenter : styles.textLeft,
             subtitleStyle,
+            subtitleFade,
           ]}
         >
           {subtitle}
@@ -127,12 +91,11 @@ export function AuthHeader({
   );
 }
 
-interface SimpleCenteredHeaderProps {
-  title: string;
-  subtitle?: string;
-}
-
-export function SimpleCenteredHeader({ title, subtitle }: SimpleCenteredHeaderProps) {
+// Cabeçalho Simples e Centralizado (Usado no fluxo do Aluno)
+export function SimpleCenteredHeader({
+  title,
+  subtitle
+}: SimpleCenteredHeaderProps) {
   const hStyle = useFadeUp(50, 450);
   const tStyle = useFadeUp(120, 420);
   const sStyle = useFadeUp(220, 420);
@@ -152,22 +115,18 @@ export function SimpleCenteredHeader({ title, subtitle }: SimpleCenteredHeaderPr
   );
 }
 
+// Preview do Avatar do Explorador
 export function ExplorerAvatarPreview() {
   const popStyle = usePop(200);
 
   return (
     <Animated.View style={[styles.explorerAvatar, popStyle]}>
       <LinearGradient
-        colors={theme.gradPrimary}
+        colors={theme.gradPrimary || ['#1E6B5C', '#2F8F76']}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        style={styles.explorerAvatarGradient}
-      >
-        <View style={[styles.heroDot, { top: 18, right: 20 }]} />
-        <View style={[styles.heroDotSmall, { bottom: 20, left: 22 }]} />
-
-        <Sparkles size={44} color={theme.bg} strokeWidth={1.8} />
-      </LinearGradient>
+        style={{ flex: 1, borderRadius: 999 }}
+      />
     </Animated.View>
   );
 }

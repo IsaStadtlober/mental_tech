@@ -1,15 +1,17 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
-import { GraduationCap } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { GraduationCap } from 'lucide-react-native';
+import { useState } from 'react';
+import { Text, TouchableOpacity, View } from 'react-native';
 
-import { ScreenShell } from '../ScreenShell';
-import { PrimaryButton } from '../PrimaryButton';
-import { FormField } from '../FormFields';
 import { theme } from '../../constants/theme';
+import { WIZARD_TOTAL_STEPS } from '../../constants/wizard';
 import { styles } from '../../styles/styles';
-import { WizardProgress, WizardCaption } from './WizardShared';
-import { ClassData } from './WizardStepClass';
+import type { ClassData } from '../../types/wizard';
+import { isTeacherEmailValid } from '../../utils/wizard';
+import { PrimaryButton } from '../PrimaryButton';
+import { ScreenShell } from '../ScreenShell';
+import { FormField } from '../form/FormField';
+import { WizardCaption, WizardProgress } from './WizardShared';
 
 interface WizardStepTeacherProps {
   onBack: () => void;
@@ -27,7 +29,7 @@ export function WizardStepTeacher({
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent'>('idle');
 
-  const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+  const isEmailValid = isTeacherEmailValid(email);
 
   const handleLinkAndContinue = () => {
     if (!isEmailValid || status !== 'idle') return;
@@ -65,7 +67,7 @@ export function WizardStepTeacher({
         </View>
       }
     >
-      <WizardProgress step={1} total={3} />
+      <WizardProgress step={1} total={WIZARD_TOTAL_STEPS} />
       <WizardCaption>Passo 2 de 3</WizardCaption>
 
       <Text style={styles.screenTitle}>Vincular Professor</Text>

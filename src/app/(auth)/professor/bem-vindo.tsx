@@ -1,7 +1,6 @@
-import React from 'react';
 import { useRouter } from 'expo-router';
 
-import { SuccessScreen } from '../../components/SuccessScreen';
+import { SuccessScreen } from '../../../components/SuccessScreen';
 
 export default function EducatorWelcomeRoute() {
   const router = useRouter();

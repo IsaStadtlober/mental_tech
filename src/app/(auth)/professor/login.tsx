@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
-import { GraduationCap } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
+import { GraduationCap } from 'lucide-react-native';
+import { useState } from 'react';
+import { Text, TouchableOpacity, View } from 'react-native';
 
-import { ScreenShell } from '../../components/ScreenShell';
-import { PrimaryButton } from '../../components/PrimaryButton';
-import { FormField, PasswordField } from '../../components/FormFields';
-import { AuthHeader } from '../../components/Headers';
-import { styles } from '../../styles/styles';
+import { FormField, PasswordField } from '../../../components/FormFields';
+import { AuthHeader } from '../../../components/Headers';
+import { PrimaryButton } from '../../../components/PrimaryButton';
+import { ScreenShell } from '../../../components/ScreenShell';
+import { styles } from '../../../styles/styles';
 
 export default function EducatorLoginRoute() {
   const router = useRouter();
@@ -17,7 +17,7 @@ export default function EducatorLoginRoute() {
   const canEnter = email.trim().length > 3 && password.length > 0;
 
   const handleEnter = () => {
-    router.replace('/(professor)/bem-vindo');
+    router.replace('/professor/bem-vindo');
   };
 
   return (
@@ -60,8 +60,8 @@ export default function EducatorLoginRoute() {
       <View style={styles.separator} />
 
       <View style={styles.loginLinks}>
-        <TouchableOpacity 
-          onPress={() => router.push('/(professor)/recuperar-senha')} 
+        <TouchableOpacity
+          onPress={() => router.push('/professor/recuperar-senha')}
           activeOpacity={0.75}
         >
           <Text style={styles.linkMuted}>
@@ -72,9 +72,9 @@ export default function EducatorLoginRoute() {
 
         <Text style={styles.linkMuted}>
           Ainda não tem uma escola cadastrada?{' '}
-          <Text 
-            style={styles.linkStrong} 
-            onPress={() => router.push('/(escola)/cadastro')}
+          <Text
+            style={styles.linkStrong}
+            onPress={() => router.push('/escola/cadastro')}
           >
             Cadastre aqui
           </Text>

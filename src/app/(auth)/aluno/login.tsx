@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import { View } from 'react-native';
+import { useRouter } from 'expo-router';
 import { Compass } from 'lucide-react-native';
-import { useRouter } from 'expo-router'; // ⬅️ 
+import { useState } from 'react';
+import { View } from 'react-native';
 
-import { ScreenShell } from '../../components/ScreenShell';
-import { PrimaryButton } from '../../components/PrimaryButton';
-import { FormField } from '../../components/FormFields';
-import { AuthHeader } from '../../components/Headers';
+import { FormField } from '../../../components/FormFields';
+import { AuthHeader } from '../../../components/Headers';
+import { PrimaryButton } from '../../../components/PrimaryButton';
+import { ScreenShell } from '../../../components/ScreenShell';
 
 export default function StudentLoginRoute() {
   const router = useRouter();
@@ -16,8 +16,7 @@ export default function StudentLoginRoute() {
   const canEnter = classCode.trim().length > 0 && pin.length === 4;
 
   const handleEnter = () => {
-    // Quando válido, vai para a próxima tela do fluxo
-    router.push('/(aluno)/nome');
+    router.push('/aluno/nome');
   };
 
   return (

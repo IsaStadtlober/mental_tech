@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
 import { useRouter } from 'expo-router';
+import { useState } from 'react';
 
 // Importa os componentes de cada passo
-import { WizardStepClass, ClassData } from '../../components/wizard/WizardStepClass';
-import { WizardStepTeacher } from '../../components/wizard/WizardStepTeacher';
-import { WizardStepStudents, StudentData } from '../../components/wizard/WizardStepStudents';
 import { WizardDoneScreen } from '../../components/wizard/WizardDoneScreen';
+import { ClassData, WizardStepClass } from '../../components/wizard/WizardStepClass';
+import { StudentData, WizardStepStudents } from '../../components/wizard/WizardStepStudents';
+import { WizardStepTeacher } from '../../components/wizard/WizardStepTeacher';
 
 
 export default function WizardRoute() {
@@ -60,8 +60,7 @@ export default function WizardRoute() {
           studentsCount={students.length}
           onBack={() => setStep(3)} // Se desejar permitir voltar
           onGoDashboard={() => {
-            // Substitua '/(professor)' pelo caminho real do seu dashboard!
-            router.replace('/(professor)/bem-vindo');
+            router.replace('/professor/bem-vindo');
           }}
         />
       );

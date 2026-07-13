@@ -1,16 +1,16 @@
-import React, { useState } from 'react';
-import { View, Text } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useState } from 'react';
+import { Text, View } from 'react-native';
 
-import { ScreenShell } from '../../components/ScreenShell';
-import { PrimaryButton } from '../../components/PrimaryButton';
-import { FormField } from '../../components/FormFields';
+import { FormField } from '../../../components/FormFields';
 import {
-  SimpleCenteredHeader,
   ExplorerAvatarPreview,
-} from '../../components/Headers';
+  SimpleCenteredHeader,
+} from '../../../components/Headers';
+import { PrimaryButton } from '../../../components/PrimaryButton';
+import { ScreenShell } from '../../../components/ScreenShell';
 
-import { styles } from '../../styles/styles';
+import { styles } from '../../../styles/styles';
 
 export default function StudentNameRoute() {
   const router = useRouter();
@@ -19,9 +19,8 @@ export default function StudentNameRoute() {
   const canContinue = name.trim().length > 0;
 
   const handleDone = () => {
-    // Passamos o nome inserido pela URL (Params) para a próxima tela
     router.push({
-      pathname: '/(aluno)/concluido',
+      pathname: '/aluno/concluido',
       params: { explorerName: name.trim() },
     });
   };

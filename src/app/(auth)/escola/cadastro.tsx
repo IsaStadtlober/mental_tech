@@ -1,18 +1,18 @@
-import React, { useState } from 'react';
-import { View, Text } from 'react-native';
-import { GraduationCap } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
+import { GraduationCap } from 'lucide-react-native';
+import { useState } from 'react';
+import { Text, View } from 'react-native';
 
-import { ScreenShell } from '../../components/ScreenShell';
-import { PrimaryButton } from '../../components/PrimaryButton';
-import { FormField, PasswordField } from '../../components/FormFields';
-import { AuthHeader } from '../../components/Headers';
+import { FormField, PasswordField } from '../../../components/FormFields';
+import { AuthHeader } from '../../../components/Headers';
+import { PrimaryButton } from '../../../components/PrimaryButton';
+import { ScreenShell } from '../../../components/ScreenShell';
 
-import { styles } from '../../styles/styles';
+import { styles } from '../../../styles/styles';
 
 export default function SchoolSignupRoute() {
   const router = useRouter();
-  
+
   const [schoolName, setSchoolName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -31,9 +31,8 @@ export default function SchoolSignupRoute() {
     password === confirmPassword;
 
   const handleCreated = () => {
-    // Roteia para o seu wizard no grupo (auth), passando o nome da escola
     router.push({
-      pathname: '/(auth)/wizard',
+      pathname: '/wizard',
       params: { schoolName: schoolName.trim() },
     });
   };

@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router'; // ⬅️ Hook do Expo Router
+import React, { useEffect, useState } from 'react';
+import { Text, TouchableOpacity, View } from 'react-native';
 
 import Animated, {
-  useSharedValue,
   useAnimatedStyle,
-  withTiming,
+  useSharedValue,
   withDelay,
+  withTiming,
 } from 'react-native-reanimated';
 
 import { LinearGradient } from 'expo-linear-gradient';
@@ -15,12 +15,12 @@ import {
   Compass,
 } from 'lucide-react-native';
 
-import { theme } from '../constants/theme'; // ⬅️ Mantido o caminho sugerido
-import { styles } from '../styles/styles';
 import {
   EASE_POP,
   EASE_STANDARD,
 } from '../animations/animations';
+import { theme } from '../constants/theme'; // ⬅️ Mantido o caminho sugerido
+import { styles } from '../styles/styles';
 
 import { BackgroundScene } from '../components/BackgroundScene';
 
@@ -231,15 +231,15 @@ export default function RolesRoute() {
 
   // ⬅️ Handlers de navegação centralizados
   const handleStudent = () => {
-    router.push('/(aluno)/login');
+    router.push('/aluno/login');
   };
 
   const handleEducatorLogin = () => {
-    router.replace('/(professor)/login');
+    router.replace('/professor/login');
   };
 
   const handleSchoolSignup = () => {
-    router.push('/(escola)/cadastro');
+    router.push('/escola/cadastro');
   };
 
   return (

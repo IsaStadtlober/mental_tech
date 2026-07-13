@@ -1,9 +1,8 @@
-import React from 'react';
-import { View, Text } from 'react-native';
 import { useRouter } from 'expo-router';
+import { Text, View } from 'react-native';
 
-import { SuccessScreen } from '../../components/SuccessScreen';
-import { styles } from '../../styles/styles';
+import { SuccessScreen } from '../../../components/SuccessScreen';
+import { styles } from '../../../styles/styles';
 
 export default function PasswordSentRoute() {
   const router = useRouter();

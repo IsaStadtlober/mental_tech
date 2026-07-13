@@ -17,33 +17,6 @@ O Mental Tech é uma plataforma de tecnologia educacional voltada para promover 
 - **Lucide React Native** - Biblioteca de ícones vetoriais.
 - **Expo Google Fonts** - Carregamento das fontes Quicksand e Atkinson Hyperlegible.
 
-## Estrutura do projeto
-
-```text
-src/
-├── app/
-│   ├── (auth)/                     # Grupo de Autenticação
-│   │   ├── aluno/
-│   │   │   └── login.tsx           
-│   │   ├── profissional/           # Fluxo unificado para Professor + Escola
-│   │   │   ├── login.tsx           # Login unificado
-│   │   │   ├── cadastro-escola.tsx # Cadastro da Escola
-│   │   │   └── recuperar.tsx       # Recuperação unificada
-│   │   └── _layout.tsx             # Layout/Stack do fluxo de autenticação
-│   ├── (aluno)/                    
-│   ├── (professor)/                
-│   ├── (escola)/              
-│   ├── _layout.tsx                 # Layout raiz (Gerencia Splash/Loading e Fontes)
-│   └── index.tsx                   # Porta de entrada (Escolha de perfil ou Redirecionamento)
-├── components/                     # Componentes reutilizáveis
-├── constants/                      # Constantes globais
-├── hooks/                          # Lógica do aplicativo
-├── service/                        # Integração com APIs e serviços externos
-├── styles/                         # Estilos
-├── types/                          # Definições de tipos do TypeScript
-└── utils/                          # Funções auxiliares e utilitários
-```
-
 ## Dependências Principais
 
 - **@expo-google-fonts/quicksand** - Fonte usada em títulos, chamadas principais e elementos de destaque.

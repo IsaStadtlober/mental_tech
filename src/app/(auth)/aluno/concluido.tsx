@@ -1,12 +1,9 @@
-import React from 'react';
-import { useRouter, useLocalSearchParams } from 'expo-router';
-import { SuccessScreen } from '../../components/SuccessScreen';
-import { PrimaryButton } from '../../components/PrimaryButton';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { PrimaryButton } from '../../../components/PrimaryButton';
+import { SuccessScreen } from '../../../components/SuccessScreen';
 
 export default function WelcomeDoneRoute() {
   const router = useRouter();
-  
-  // Resgata o nome que passamos na tela anterior via parâmetro de rota
   const { explorerName } = useLocalSearchParams<{ explorerName: string }>();
 
   return (
@@ -16,7 +13,7 @@ export default function WelcomeDoneRoute() {
       description="Vamos rumo à sua primeira missão."
       onBack={() => router.back()}
       footer={
-        <PrimaryButton onPress={() => router.replace('/(aluno)/dashboard' as any)}>
+        <PrimaryButton onPress={() => router.replace('/roles' as any)}>
           Acessar minha conta
         </PrimaryButton>
       }

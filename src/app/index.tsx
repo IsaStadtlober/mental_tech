@@ -1,39 +1,40 @@
-import React, { useState, useCallback, useEffect } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Text, TouchableOpacity, View } from 'react-native';
 
 
-import { useRouter, useIsFocused } from 'expo-router'; 
+import { useIsFocused, useRouter } from 'expo-router';
 
 import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  withSequence,
-  withDelay,
-  runOnJS,
   Easing,
+  runOnJS,
+  runOnUI,
+  useAnimatedStyle,
+  useSharedValue,
+  withDelay,
+  withSequence,
+  withTiming,
 } from 'react-native-reanimated';
 
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import { ChevronRight } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { ChevronRight } from 'lucide-react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
-import { theme } from '../constants/theme'; // ⬅️ Caminho atualizado conforme sugerido pela IA
-import { styles } from '../styles/styles';
 import {
   EASE_POP,
   EASE_STANDARD,
   useLoopValue,
 } from '../animations/animations';
+import { theme } from '../constants/theme'; // ⬅️ Caminho atualizado conforme sugerido pela IA
+import { styles } from '../styles/styles';
 
 import { BackgroundScene } from '../components/BackgroundScene';
 import { PrimaryButton } from '../components/PrimaryButton';
 
 import {
   CompassPlay,
-  TrophyPlay,
   GraduationCapPlay,
   SparklesPlay,
+  TrophyPlay,
 } from '../icons/CarouselIcons';
 
 // --- TIPAGENS (TYPESCRIPT) ---
@@ -361,11 +362,8 @@ export default function CarouselRoute() {
     const HINT_INTERVAL = 4200;
     const FIRST_DELAY = 1100;
 
-    const playHint = () => {
+    const runHintUI = () => {
       'worklet';
-
-      if (hasInteracted.value) return;
-
       translateX.value = withSequence(
         withTiming(-14, {
           duration: 420,
@@ -378,12 +376,16 @@ export default function CarouselRoute() {
       );
     };
 
-    // ⬅️ Erro de NodeJS.Timeout corrigido aqui
     const timeouts: ReturnType<typeof setTimeout>[] = [];
 
     for (let i = 0; i < HINT_REPEATS; i++) {
       const t = setTimeout(() => {
-        if (!hasInteracted.value) playHint();
+        runOnUI(() => {
+          'worklet';
+          if (!hasInteracted.value) {
+            runHintUI();
+          }
+        })();
       }, FIRST_DELAY + i * HINT_INTERVAL);
 
       timeouts.push(t);
@@ -414,6 +416,7 @@ export default function CarouselRoute() {
 
   const panGesture = Gesture.Pan()
     .onStart(() => {
+      'worklet';
       hasInteracted.value = true;
     })
     .onUpdate((e) => {

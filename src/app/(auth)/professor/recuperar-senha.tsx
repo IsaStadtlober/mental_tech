@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
-import { Text } from 'react-native';
-import { Sparkles } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
+import { Sparkles } from 'lucide-react-native';
+import { useState } from 'react';
+import { Text } from 'react-native';
 
-import { ScreenShell } from '../../components/ScreenShell';
-import { PrimaryButton } from '../../components/PrimaryButton';
-import { FormField } from '../../components/FormFields';
-import { AuthHeader } from '../../components/Headers';
-import { styles } from '../../styles/styles';
+import { FormField } from '../../../components/FormFields';
+import { AuthHeader } from '../../../components/Headers';
+import { PrimaryButton } from '../../../components/PrimaryButton';
+import { ScreenShell } from '../../../components/ScreenShell';
+import { styles } from '../../../styles/styles';
 
 export default function ForgotPasswordRoute() {
   const router = useRouter();
@@ -16,7 +16,7 @@ export default function ForgotPasswordRoute() {
   const canSend = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
 
   const handleSent = () => {
-    router.push('/(professor)/senha-enviada');
+    router.push('/professor/senha-enviada');
   };
 
   return (

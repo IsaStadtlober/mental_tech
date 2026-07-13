@@ -1,5 +1,4 @@
 import { ViewStyle } from 'react-native';
-import { SharedValue } from 'react-native-reanimated';
 
 export type DriftType = 'A' | 'B' | 'swayA' | 'swayB';
 export type ItemType = 'cloud' | 'tree';
@@ -19,12 +18,6 @@ export interface BackgroundItemData {
     opacity: number;
     drift: DriftType;
     dur: number;
-}
-
-export interface BackgroundItemProps {
-    item: BackgroundItemData;
-    color?: string;
-    progress: SharedValue<number>;
 }
 
 export interface BackgroundSceneProps {

@@ -9,11 +9,6 @@ export interface SlideData {
     accent: readonly [string, string];
 }
 
-export interface CarouselIconCardProps {
-    children: React.ReactNode;
-    accent: readonly [string, string];
-}
-
 export interface DotProps {
     isActive: boolean;
     accentColor: string;

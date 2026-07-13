@@ -36,6 +36,41 @@ O Mental Tech é uma plataforma de tecnologia educacional voltada para promover 
 - **expo-document-picker** - Seleção de arquivos CSV/XLSX para importação de alunos.
 - **papaparse** - Leitura e validação de arquivos CSV.
 
+## Estrutura do projeto
+
+Abaixo está uma partilha da estrutura do projeto:
+
+```text
+mental_tech/
+├── assets/
+│   ├── animations/            # Animações e lotties
+│   ├── images/                # Imagens e arquivos SVG
+│   └── expo.icons/            # Ícones do Expo
+└──src/
+    ├── app/
+    │   ├── (auth)/            # Rotas de autenticação
+    │   │   ├── aluno/
+    │   │   ├── escola/
+    │   │   └── professor/
+    │   ├── (aluno)/           # Rotas de aluno
+    │   ├── (escola)/          # Rotas de escola
+    │   ├── (professor)/       # Rotas de professor
+    │   ├── _layout.tsx
+    │   ├── index.tsx          # Tela com o Carrossel de telas
+    │   └── roles.tsx          # Tela de escolha de perfil
+    ├── components/            # Componentes reutilizáveis
+    │   ├── background/
+    │   ├── carousel/
+    │   ├── form/
+    │   ├── roles/
+    │   └── wizard/
+    ├── constants/             # Constantes e variáveis globais
+    ├── hooks/                 # Lógica do aplicativo
+    ├── service/               # Serviços e regras de negócio
+    ├── styles/                # Estilos
+    ├── types/                 # Tipagens
+    └── utils/                 # Funções auxiliares
+```
 
 ## Como rodar
 

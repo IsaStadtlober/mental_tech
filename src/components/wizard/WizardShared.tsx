@@ -1,8 +1,8 @@
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 
+import { WIZARD_PERIOD_OPTIONS } from '../../constants/auth';
 import { theme } from '../../constants/theme';
-import { WIZARD_PERIOD_OPTIONS } from '../../constants/wizard';
 import { styles } from '../../styles';
 import { ScreenShell } from '../ScreenShell';
 

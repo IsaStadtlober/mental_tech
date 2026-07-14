@@ -2,9 +2,8 @@ import { Upload } from 'lucide-react-native';
 import { useState } from 'react';
 import { Alert, Text, TouchableOpacity, View } from 'react-native';
 
-import { WIZARD_CONSTANTS } from '../../constants/auth';
+import { WIZARD_CONSTANTS, WIZARD_TOTAL_STEPS } from '../../constants/auth';
 import { theme } from '../../constants/theme';
-import { WIZARD_TOTAL_STEPS } from '../../constants/wizard';
 import { styles } from '../../styles';
 import type { StudentData } from '../../types/wizard';
 import { createEmptyStudent, getFilledStudents } from '../../utils/wizard';

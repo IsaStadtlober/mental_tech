@@ -1,4 +1,4 @@
-import { WIZARD_EMAIL_REGEX } from '../constants/wizard';
+import { WIZARD_EMAIL_REGEX } from '../constants/auth';
 import type { ClassData, StudentData } from '../types/wizard';
 
 export function createEmptyClassData(): ClassData {

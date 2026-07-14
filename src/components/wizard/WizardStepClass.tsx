@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { View } from 'react-native';
 
-import { WIZARD_CONSTANTS } from '../../constants/auth';
-import { WIZARD_TOTAL_STEPS } from '../../constants/wizard';
+import { WIZARD_CONSTANTS, WIZARD_TOTAL_STEPS } from '../../constants/auth';
 import type { ClassData } from '../../types/wizard';
 import { createEmptyClassData, isClassDataValid } from '../../utils/wizard';
 import { PrimaryButton } from '../PrimaryButton';

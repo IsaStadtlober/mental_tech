@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { View } from 'react-native';
 
+import { WIZARD_CONSTANTS } from '../../constants/auth';
 import { WIZARD_TOTAL_STEPS } from '../../constants/wizard';
 import type { ClassData } from '../../types/wizard';
-import { createEmptyClassData, getStepCaption, isClassDataValid } from '../../utils/wizard';
+import { createEmptyClassData, isClassDataValid } from '../../utils/wizard';
 import { PrimaryButton } from '../PrimaryButton';
 import { FormField } from '../form/FormField';
 import { PeriodSelect, WizardStepLayout } from './WizardShared';
@@ -27,11 +28,10 @@ export function WizardStepClass({ onBack, onNext, schoolName }: WizardStepClassP
     <WizardStepLayout
       step={0}
       total={WIZARD_TOTAL_STEPS}
-      caption={getStepCaption(1, schoolName)}
-      title="Crie sua primeira turma"
-      subtitle="Dê um nome para a turma que você vai gerenciar."
+      caption={WIZARD_CONSTANTS.STEP_CLASS.CAPTION}
+      title={WIZARD_CONSTANTS.STEP_CLASS.TITLE}
+      subtitle={WIZARD_CONSTANTS.STEP_CLASS.SUBTITLE}
       onBack={onBack}
-      footerPadding={128}
       footer={
         <PrimaryButton
           disabled={!isFormValid}
@@ -44,24 +44,24 @@ export function WizardStepClass({ onBack, onNext, schoolName }: WizardStepClassP
             })
           }
         >
-          Criar turma
+          {WIZARD_CONSTANTS.STEP_CLASS.BUTTON}
         </PrimaryButton>
       }
     >
       <View style={{ gap: 16 }}>
         <FormField
-          label="Nome da Turma"
+          label={WIZARD_CONSTANTS.STEP_CLASS.LABELS.CLASS_NAME}
           value={classData.name}
           onChangeText={(value) => updateField('name', value)}
-          placeholder="Ex: 4º Ano A"
+          placeholder={WIZARD_CONSTANTS.STEP_CLASS.PLACEHOLDERS.CLASS_NAME}
           preset="educator"
         />
 
         <FormField
-          label="Série/Ano"
+          label={WIZARD_CONSTANTS.STEP_CLASS.LABELS.GRADE}
           value={classData.grade}
           onChangeText={(value) => updateField('grade', value)}
-          placeholder="Ex: 4º Ano"
+          placeholder={WIZARD_CONSTANTS.STEP_CLASS.PLACEHOLDERS.GRADE}
           preset="educator"
         />
 

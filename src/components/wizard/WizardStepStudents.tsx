@@ -2,6 +2,7 @@ import { Upload } from 'lucide-react-native';
 import { useState } from 'react';
 import { Alert, Text, TouchableOpacity, View } from 'react-native';
 
+import { WIZARD_CONSTANTS } from '../../constants/auth';
 import { theme } from '../../constants/theme';
 import { WIZARD_TOTAL_STEPS } from '../../constants/wizard';
 import { styles } from '../../styles';
@@ -37,7 +38,7 @@ export function WizardStepStudents({ onBack, onFinish }: WizardStepStudentsProps
   };
 
   const handleBatchImport = async () => {
-    Alert.alert('Importação', 'Aqui implementaremos o expo-document-picker para ler o CSV.');
+    Alert.alert(WIZARD_CONSTANTS.STEP_STUDENTS.ALERTS.IMPORT_TITLE, WIZARD_CONSTANTS.STEP_STUDENTS.ALERTS.IMPORT_MESSAGE);
   };
 
   const filledStudents = getFilledStudents(students);
@@ -46,32 +47,31 @@ export function WizardStepStudents({ onBack, onFinish }: WizardStepStudentsProps
     <WizardStepLayout
       step={2}
       total={WIZARD_TOTAL_STEPS}
-      caption="Passo 3 de 3"
-      title="Adicionar Alunos"
-      subtitle="Cadastre os alunos que farão parte desta turma."
+      caption={WIZARD_CONSTANTS.STEP_STUDENTS.CAPTION}
+      title={WIZARD_CONSTANTS.STEP_STUDENTS.TITLE}
+      subtitle={WIZARD_CONSTANTS.STEP_STUDENTS.SUBTITLE}
       onBack={onBack}
-      footerPadding={128}
       footer={
         <PrimaryButton disabled={filledStudents.length === 0} onPress={() => onFinish(filledStudents)}>
-          Concluir cadastro
+          {WIZARD_CONSTANTS.STEP_STUDENTS.TEXTS.BUTTON_FINISH}
         </PrimaryButton>
       }
     >
-      <Text style={styles.sectionLabel}>Importação em lote via CSV</Text>
+      <Text style={styles.sectionLabel}>{WIZARD_CONSTANTS.STEP_STUDENTS.TEXTS.IMPORT_SECTION}</Text>
 
       <TouchableOpacity onPress={handleBatchImport} activeOpacity={0.9} style={styles.uploadBox}>
         <View style={styles.uploadIconBox}>
           <Upload size={24} color={theme.textMuted || '#A79E90'} />
         </View>
 
-        <Text style={styles.uploadTitle}>Clique ou arraste o arquivo aqui</Text>
+        <Text style={styles.uploadTitle}>{WIZARD_CONSTANTS.STEP_STUDENTS.TEXTS.UPLOAD_TITLE}</Text>
 
-        <Text style={styles.uploadSubtitle}>Formatos aceitos: .csv, .xlsx</Text>
+        <Text style={styles.uploadSubtitle}>{WIZARD_CONSTANTS.STEP_STUDENTS.TEXTS.UPLOAD_SUBTITLE}</Text>
       </TouchableOpacity>
 
       <View style={styles.orRow}>
         <View style={styles.orLine} />
-        <Text style={styles.orText}>ou</Text>
+        <Text style={styles.orText}>{WIZARD_CONSTANTS.STEP_STUDENTS.TEXTS.OR}</Text>
         <View style={styles.orLine} />
       </View>
 
@@ -79,30 +79,30 @@ export function WizardStepStudents({ onBack, onFinish }: WizardStepStudentsProps
         {students.map((student, index) => (
           <View key={index} style={{ gap: 12, marginBottom: 16 }}>
             <View style={styles.studentBlockHeader}>
-              <Text style={styles.studentBlockTitle}>Aluno {index + 1}</Text>
+              <Text style={styles.studentBlockTitle}>{WIZARD_CONSTANTS.STEP_STUDENTS.TEXTS.STUDENT_NUMBER} {index + 1}</Text>
               {students.length > 1 && (
                 <TouchableOpacity
                   onPress={() => removeStudent(index)}
                   activeOpacity={0.75}
                   style={styles.removeStudentButton}
                 >
-                  <Text style={styles.removeStudentText}>Remover</Text>
+                  <Text style={styles.removeStudentText}>{WIZARD_CONSTANTS.STEP_STUDENTS.TEXTS.REMOVE_BUTTON}</Text>
                 </TouchableOpacity>
               )}
             </View>
 
             <FormField
-              label="Nome do aluno"
+              label={WIZARD_CONSTANTS.STEP_STUDENTS.LABELS.STUDENT_NAME}
               value={student.name}
               onChangeText={(value) => updateStudent(index, 'name', value)}
-              placeholder="Ex: João Silva"
+              placeholder={WIZARD_CONSTANTS.STEP_STUDENTS.PLACEHOLDERS.STUDENT_NAME}
               preset="educator"
             />
             <FormField
-              label="Contato do responsável"
+              label={WIZARD_CONSTANTS.STEP_STUDENTS.LABELS.STUDENT_CONTACT}
               value={student.contact}
               onChangeText={(value) => updateStudent(index, 'contact', value)}
-              placeholder="email@exemplo.com ou (11) 99999-9999"
+              placeholder={WIZARD_CONSTANTS.STEP_STUDENTS.PLACEHOLDERS.STUDENT_CONTACT}
               preset="educator"
             />
           </View>
@@ -110,7 +110,7 @@ export function WizardStepStudents({ onBack, onFinish }: WizardStepStudentsProps
       </View>
 
       <TouchableOpacity onPress={addStudent} style={styles.addStudent} activeOpacity={0.75}>
-        <Text style={styles.addStudentText}>+ Adicionar mais um aluno</Text>
+        <Text style={styles.addStudentText}>{WIZARD_CONSTANTS.STEP_STUDENTS.TEXTS.ADD_MORE}</Text>
       </TouchableOpacity>
     </WizardStepLayout>
   );

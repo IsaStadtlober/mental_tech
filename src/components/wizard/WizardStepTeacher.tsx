@@ -3,6 +3,7 @@ import { GraduationCap } from 'lucide-react-native';
 import { useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 
+import { WIZARD_CONSTANTS } from '../../constants/auth';
 import { theme } from '../../constants/theme';
 import { WIZARD_TOTAL_STEPS } from '../../constants/wizard';
 import { styles } from '../../styles';
@@ -49,23 +50,22 @@ export function WizardStepTeacher({
     <WizardStepLayout
       step={1}
       total={WIZARD_TOTAL_STEPS}
-      caption="Passo 2 de 3"
-      title="Vincular Professor"
-      subtitle="Agora, informe quem será o responsável por guiar esta turma."
+      caption={WIZARD_CONSTANTS.STEP_TEACHER.CAPTION}
+      title={WIZARD_CONSTANTS.STEP_TEACHER.TITLE}
+      subtitle={WIZARD_CONSTANTS.STEP_TEACHER.SUBTITLE}
       onBack={onBack}
-      footerPadding={148}
       footer={
         <View style={{ gap: 16 }}>
           <PrimaryButton
             disabled={!isEmailValid || status !== 'idle'}
             onPress={handleLinkAndContinue}
           >
-            {status === 'sending' ? 'Vinculando...' : status === 'sent' ? 'Vinculado!' : 'Vincular e continuar'}
+            {status === 'sending' ? WIZARD_CONSTANTS.STEP_TEACHER.BUTTONS.LINKING : status === 'sent' ? WIZARD_CONSTANTS.STEP_TEACHER.BUTTONS.LINKED : WIZARD_CONSTANTS.STEP_TEACHER.BUTTONS.LINK_AND_CONTINUE}
           </PrimaryButton>
 
           <TouchableOpacity onPress={onSkip} style={styles.skipButton}>
             <Text style={[styles.skipSecondary, { opacity: status === 'idle' ? 1 : 0.45 }]}>
-              Pular por enquanto
+              {WIZARD_CONSTANTS.STEP_TEACHER.BUTTONS.SKIP}
             </Text>
           </TouchableOpacity>
         </View>
@@ -82,7 +82,7 @@ export function WizardStepTeacher({
         </LinearGradient>
 
         <View style={{ flex: 1 }}>
-          <Text style={styles.contextLabel}>Contexto da Turma</Text>
+          <Text style={styles.contextLabel}>{WIZARD_CONSTANTS.STEP_TEACHER.LABELS.CONTEXT}</Text>
           <Text style={styles.contextTitle}>
             {turmaNome}
             {turmaPeriodo ? ` - ${turmaPeriodo}` : ''}
@@ -91,10 +91,10 @@ export function WizardStepTeacher({
       </View>
 
       <FormField
-        label="E-mail do professor"
+        label={WIZARD_CONSTANTS.STEP_TEACHER.LABELS.TEACHER_EMAIL}
         value={email}
         onChangeText={setEmail}
-        placeholder="exemplo@escola.com"
+        placeholder={WIZARD_CONSTANTS.STEP_TEACHER.PLACEHOLDERS.TEACHER_EMAIL}
         preset="educator"
         keyboardType="email-address"
       />

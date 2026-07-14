@@ -65,3 +65,71 @@ export const EDUCATOR_AUTH_CONSTANTS = {
         BUTTON_SEND_LINK: 'Enviar link',
     },
 };
+
+// Constantes do Wizard de Criação de Turma
+export const WIZARD_CONSTANTS = {
+    STEP_CLASS: {
+        CAPTION: 'Passo 1 de 3',
+        TITLE: 'Crie sua primeira turma',
+        SUBTITLE: 'Dê um nome para a turma que você vai gerenciar.',
+        LABELS: {
+            CLASS_NAME: 'Nome da Turma',
+            GRADE: 'Série/Ano',
+        },
+        PLACEHOLDERS: {
+            CLASS_NAME: 'Ex: 4º Ano A',
+            GRADE: 'Ex: 4º Ano',
+        },
+        BUTTON: 'Criar turma',
+    },
+    STEP_TEACHER: {
+        CAPTION: 'Passo 2 de 3',
+        TITLE: 'Vincular Professor',
+        SUBTITLE: 'Agora, informe quem será o responsável por guiar esta turma.',
+        LABELS: {
+            TEACHER_EMAIL: 'E-mail do professor',
+            CONTEXT: 'Contexto da Turma',
+        },
+        PLACEHOLDERS: {
+            TEACHER_EMAIL: 'exemplo@escola.com',
+        },
+        BUTTONS: {
+            LINK_AND_CONTINUE: 'Vincular e continuar',
+            LINKING: 'Vinculando...',
+            LINKED: 'Vinculado!',
+            SKIP: 'Pular por enquanto',
+        },
+    },
+    STEP_STUDENTS: {
+        CAPTION: 'Passo 3 de 3',
+        TITLE: 'Adicionar Alunos',
+        SUBTITLE: 'Cadastre os alunos que farão parte desta turma.',
+        LABELS: {
+            STUDENT_NAME: 'Nome do aluno',
+            STUDENT_CONTACT: 'Contato do responsável',
+        },
+        PLACEHOLDERS: {
+            STUDENT_NAME: 'Ex: João Silva',
+            STUDENT_CONTACT: 'email@exemplo.com ou (11) 99999-9999',
+        },
+        TEXTS: {
+            IMPORT_SECTION: 'Importação em lote via CSV',
+            UPLOAD_TITLE: 'Clique ou arraste o arquivo aqui',
+            UPLOAD_SUBTITLE: 'Formatos aceitos: .csv, .xlsx',
+            OR: 'ou',
+            STUDENT_NUMBER: 'Aluno',
+            REMOVE_BUTTON: 'Remover',
+            ADD_MORE: '+ Adicionar mais um aluno',
+            BUTTON_FINISH: 'Concluir cadastro',
+        },
+        ALERTS: {
+            IMPORT_TITLE: 'Importação',
+            IMPORT_MESSAGE: 'Aqui implementaremos o expo-document-picker para ler o CSV.',
+        },
+    },
+    DONE_SCREEN: {
+        EYEBROW: 'Turma pronta',
+        DESCRIPTION: 'Os PINs de cada aluno já estão prontos para impressão ou envio aos responsáveis.',
+        BUTTON: 'Ir para o Dashboard',
+    },
+};

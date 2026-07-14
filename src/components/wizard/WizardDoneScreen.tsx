@@ -1,4 +1,5 @@
 
+import { WIZARD_CONSTANTS } from '../../constants/auth';
 import { getStudentsCountLabel } from '../../utils/wizard';
 import { PrimaryButton } from '../PrimaryButton';
 import { SuccessScreen } from '../SuccessScreen';
@@ -16,13 +17,13 @@ export function WizardDoneScreen({
 }: WizardDoneScreenProps) {
   return (
     <SuccessScreen
-      eyebrow="Turma pronta"
+      eyebrow={WIZARD_CONSTANTS.DONE_SCREEN.EYEBROW}
       title={`${studentsCount} ${getStudentsCountLabel(studentsCount)}!`}
-      description="Os PINs de cada aluno já estão prontos para impressão ou envio aos responsáveis."
+      description={WIZARD_CONSTANTS.DONE_SCREEN.DESCRIPTION}
       onBack={onBack}
       footer={
         <PrimaryButton onPress={onGoDashboard} icon={false}>
-          Ir para o Dashboard
+          {WIZARD_CONSTANTS.DONE_SCREEN.BUTTON}
         </PrimaryButton>
       }
     />

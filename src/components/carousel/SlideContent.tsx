@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withDelay, withTiming } from 'react-native-reanimated';
 
 import { theme } from '../../constants/theme';
-import { EASE_POP, EASE_STANDARD, useLoopValue } from '../../hooks/useAnimations';
+import { EASE_STANDARD, useLoopValue } from '../../hooks/useAnimations';
 import { styles } from '../../styles';
 import { SlideContentProps } from '../../types/carousel';
 
@@ -12,7 +12,6 @@ export function SlideContent({ slide, direction }: SlideContentProps) {
 
     const enter = useSharedValue(direction === 'next' ? 6 : -6);
     const opacity = useSharedValue(0);
-    const scale = useSharedValue(0.99);
     const pop = useSharedValue(0);
 
     const t1 = useSharedValue(0);
@@ -20,32 +19,29 @@ export function SlideContent({ slide, direction }: SlideContentProps) {
     const t3 = useSharedValue(0);
 
     useEffect(() => {
-        enter.value = direction === 'next' ? 6 : -6;
+        enter.value = direction === 'next' ? 8 : -8;
         opacity.value = 0;
-        scale.value = 0.99;
         pop.value = 0;
         t1.value = 0;
         t2.value = 0;
         t3.value = 0;
 
-        enter.value = withTiming(0, { duration: 360, easing: Easing.out(Easing.cubic) });
-        opacity.value = withTiming(1, { duration: 420, easing: Easing.out(Easing.cubic) });
-        scale.value = withTiming(1, { duration: 360, easing: Easing.out(Easing.cubic) });
-        pop.value = withDelay(40, withTiming(1, { duration: 340, easing: EASE_POP }));
+        enter.value = withTiming(0, { duration: 520, easing: Easing.out(Easing.cubic) });
+        opacity.value = withTiming(1, { duration: 720, easing: Easing.out(Easing.cubic) });
+        pop.value = withDelay(80, withTiming(1, { duration: 520, easing: Easing.out(Easing.cubic) }));
 
-        t1.value = withDelay(200, withTiming(1, { duration: 640, easing: EASE_STANDARD }));
-        t2.value = withDelay(360, withTiming(1, { duration: 700, easing: EASE_STANDARD }));
-        t3.value = withDelay(540, withTiming(1, { duration: 760, easing: EASE_STANDARD }));
-    }, [slide, direction, enter, opacity, scale, pop, t1, t2, t3]);
+        t1.value = withDelay(240, withTiming(1, { duration: 720, easing: EASE_STANDARD }));
+        t2.value = withDelay(360, withTiming(1, { duration: 780, easing: EASE_STANDARD }));
+        t3.value = withDelay(500, withTiming(1, { duration: 840, easing: EASE_STANDARD }));
+    }, [slide, direction, enter, opacity, pop, t1, t2, t3]);
 
     const animatedContainer = useAnimatedStyle(() => ({
         opacity: opacity.value,
-        transform: [{ translateX: enter.value }, { scale: scale.value }],
+        transform: [{ translateX: enter.value }],
     }));
 
     const popStyle = useAnimatedStyle(() => ({
         opacity: pop.value,
-        transform: [{ scale: pop.value }],
     }));
 
     const halo = useLoopValue(0, 1, 1800, 0);

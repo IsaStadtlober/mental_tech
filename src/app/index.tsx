@@ -35,8 +35,8 @@ export default function CarouselRoute() {
     const runHintUI = () => {
       'worklet';
       translateX.value = withSequence(
-        withTiming(-14, { duration: 420, easing: Easing.out(Easing.cubic) }),
-        withTiming(0, { duration: 520, easing: Easing.out(Easing.cubic) })
+        withTiming(-10, { duration: 520, easing: Easing.out(Easing.cubic) }),
+        withTiming(0, { duration: 640, easing: Easing.out(Easing.cubic) })
       );
     };
 
@@ -106,7 +106,7 @@ export default function CarouselRoute() {
       }
 
       translateX.value = withTiming(0, {
-        duration: 220,
+        duration: 280,
         easing: Easing.out(Easing.cubic),
       });
     });

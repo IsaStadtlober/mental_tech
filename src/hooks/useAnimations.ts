@@ -12,7 +12,7 @@ import {
 import { AnimStyleResult, PopStyleResult } from '../types/animations';
 
 export const EASE_SLIDE = Easing.bezier(0.22, 1, 0.36, 1);
-export const EASE_POP = Easing.bezier(0.34, 1.56, 0.64, 1);
+export const EASE_POP = Easing.bezier(0.16, 0.84, 0.22, 1);
 export const EASE_STANDARD = Easing.out(Easing.cubic);
 
 // Cria um valor numérico compartilhado que fica alternando entre 'from' e 'to' continuamente

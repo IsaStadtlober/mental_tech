@@ -3,12 +3,11 @@ import { useRouter } from 'expo-router';
 import { Compass } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, { Easing, useAnimatedStyle, useSharedValue, withDelay, withTiming } from 'react-native-reanimated';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ROLES_CONSTANTS } from '../constants/roles';
 import { theme } from '../constants/theme';
-import { EASE_POP } from '../hooks/useAnimations';
 import { styles } from '../styles';
 import { ChosenRole } from '../types/components';
 
@@ -25,10 +24,13 @@ export default function RolesRoute() {
   const educatorProgress = useSharedValue(0);
 
   useEffect(() => {
-    pop.value = withTiming(1, {
-      duration: ROLES_CONSTANTS.ANIMATIONS.HERO_POP_DURATION,
-      easing: EASE_POP,
-    });
+    pop.value = withDelay(
+      60,
+      withTiming(1, {
+        duration: 620,
+        easing: Easing.out(Easing.cubic),
+      })
+    );
   }, [pop]);
 
   useEffect(() => {
@@ -41,7 +43,6 @@ export default function RolesRoute() {
 
   const popStyle = useAnimatedStyle(() => ({
     opacity: pop.value,
-    transform: [{ scale: pop.value }],
   }));
 
   const educatorStyle = useAnimatedStyle(() => ({

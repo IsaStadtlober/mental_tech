@@ -56,7 +56,7 @@ export default function SchoolSignupRoute() {
         align="center"
       />
 
-      <View style={{ gap: 16 }}>
+      <View style={styles.formStack}>
         <FormField
           label={EDUCATOR_AUTH_CONSTANTS.LABELS.SCHOOL_NAME}
           value={schoolName}

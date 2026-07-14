@@ -47,7 +47,7 @@ export function PrimaryButton({
 
   return (
     <Animated.View
-      style={[pulse ? pulseStyle : null, { width: '100%', borderRadius: 18 }]}
+      style={[pulse ? pulseStyle : null, styles.primaryButtonWrapper]}
     >
       <TouchableOpacity
         onPress={onPress}
@@ -70,7 +70,7 @@ export function PrimaryButton({
           children
         )}
 
-        {icon && <ChevronRight size={18} color="#fff" />}
+        {icon && <ChevronRight size={18} color={theme.white} />}
       </TouchableOpacity>
     </Animated.View>
   );

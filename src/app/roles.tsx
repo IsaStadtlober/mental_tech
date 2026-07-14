@@ -69,8 +69,8 @@ export default function RolesRoute() {
           >
             <Compass size={31} color={theme.bg} strokeWidth={1.8} />
 
-            <View style={[styles.heroDot, { top: 16, right: 17 }]} />
-            <View style={[styles.heroDotSmall, { bottom: 17, left: 18 }]} />
+            <View style={[styles.heroDot, styles.heroDotTopRight]} />
+            <View style={[styles.heroDotSmall, styles.heroDotSmallBottomLeft]} />
           </LinearGradient>
         </Animated.View>
 

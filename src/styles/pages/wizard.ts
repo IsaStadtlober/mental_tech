@@ -21,14 +21,32 @@ export const wizardStyles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
+    progressDotActive: {
+        backgroundColor: theme.primary,
+    },
+    progressDotInactive: {
+        backgroundColor: theme.border,
+    },
     progressNumber: {
         fontFamily: fonts.bodyBold,
         fontSize: 12,
+    },
+    progressNumberActive: {
+        color: theme.textInverse,
+    },
+    progressNumberInactive: {
+        color: theme.textMutedAlt,
     },
     progressLine: {
         width: 24,
         height: 2,
         borderRadius: borderRadius.pill,
+    },
+    progressLineActive: {
+        backgroundColor: theme.primary,
+    },
+    progressLineInactive: {
+        backgroundColor: theme.bgSoft,
     },
     wizardCaption: {
         fontFamily: fonts.bodyRegular,
@@ -53,9 +71,23 @@ export const wizardStyles = StyleSheet.create({
         justifyContent: 'center',
         paddingHorizontal: 10,
     },
+    periodOptionActive: {
+        backgroundColor: theme.primary,
+        borderColor: theme.primary,
+    },
+    periodOptionInactive: {
+        backgroundColor: theme.bg,
+        borderColor: theme.transparent,
+    },
     periodOptionText: {
         fontFamily: fonts.bodyBold,
         fontSize: 13,
+    },
+    periodOptionTextActive: {
+        color: theme.white,
+    },
+    periodOptionTextInactive: {
+        color: theme.textMuted,
     },
     uploadBox: {
         position: 'relative',
@@ -117,6 +149,10 @@ export const wizardStyles = StyleSheet.create({
     },
     studentManualBlock: {
         gap: spacing.md,
+    },
+    studentEntryBlock: {
+        gap: 12,
+        marginBottom: 16,
     },
     addStudent: {
         alignItems: 'center',

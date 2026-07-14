@@ -9,6 +9,7 @@ import { PrimaryButton } from '../../../components/PrimaryButton';
 import { ScreenShell } from '../../../components/ScreenShell';
 
 import { STUDENT_AUTH_CONSTANTS } from '../../../constants/auth';
+import { styles } from '../../../styles';
 import { formatClassCode, formatPin } from '../../../utils/auth';
 
 export default function StudentLoginRoute() {
@@ -43,7 +44,7 @@ export default function StudentLoginRoute() {
         align="center"
       />
 
-      <View style={{ gap: 16 }}>
+      <View style={styles.formStack}>
         <FormField
           label={STUDENT_AUTH_CONSTANTS.LABELS.CLASS_CODE}
           value={classCode}

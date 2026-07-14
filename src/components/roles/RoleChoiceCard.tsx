@@ -44,15 +44,7 @@ export function RoleChoiceCard({
                     styles.roleCard,
                     {
                         backgroundColor: active ? theme.primary : theme.card,
-                        ...(active
-                            ? {
-                                shadowColor: 'rgba(30,107,92,1)',
-                                shadowOffset: { width: 0, height: 16 },
-                                shadowOpacity: 0.24,
-                                shadowRadius: 18,
-                                elevation: 8,
-                            }
-                            : theme.shadowCard),
+                        ...(active ? styles.roleCardActive : theme.shadowCard),
                     },
                 ]}
             >
@@ -84,12 +76,12 @@ export function RoleChoiceCard({
                         )}
                     </View>
 
-                    <View style={{ flex: 1 }}>
-                        <Text style={[styles.roleTitle, { color: active ? '#FFFFFF' : theme.textDark }]}>
+                    <View style={styles.contextBody}>
+                        <Text style={[styles.roleTitle, active ? styles.roleTitleActive : styles.roleTitleInactive]}>
                             {title}
                         </Text>
 
-                        <Text style={[styles.roleDescription, { color: active ? '#D9EAE5' : '#6B7A75' }]}>
+                        <Text style={[styles.roleDescription, active ? styles.roleDescriptionActive : styles.roleDescriptionInactive]}>
                             {description}
                         </Text>
                     </View>

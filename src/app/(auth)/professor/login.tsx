@@ -41,7 +41,7 @@ export default function EducatorLoginRoute() {
         align="center"
       />
 
-      <View style={{ gap: 16 }}>
+      <View style={styles.formStack}>
         <FormField
           label={EDUCATOR_AUTH_CONSTANTS.LABELS.EMAIL}
           value={email}

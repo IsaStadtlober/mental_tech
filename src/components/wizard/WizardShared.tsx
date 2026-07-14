@@ -2,7 +2,6 @@ import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 
 import { WIZARD_PERIOD_OPTIONS } from '../../constants/auth';
-import { theme } from '../../constants/theme';
 import { styles } from '../../styles';
 import { ScreenShell } from '../ScreenShell';
 
@@ -59,17 +58,13 @@ export function WizardProgress({ step, total }: WizardProgressProps) {
           <View
             style={[
               styles.progressDot,
-              {
-                backgroundColor: index <= step ? theme.primary : theme.border,
-              },
+              index <= step ? styles.progressDotActive : styles.progressDotInactive,
             ]}
           >
             <Text
               style={[
                 styles.progressNumber,
-                {
-                  color: index <= step ? '#FBF3EC' : '#A79E90',
-                },
+                index <= step ? styles.progressNumberActive : styles.progressNumberInactive,
               ]}
             >
               {index + 1}
@@ -80,9 +75,7 @@ export function WizardProgress({ step, total }: WizardProgressProps) {
             <View
               style={[
                 styles.progressLine,
-                {
-                  backgroundColor: index < step ? theme.primary : theme.bgSoft,
-                },
+                index < step ? styles.progressLineActive : styles.progressLineInactive,
               ]}
             />
           )}
@@ -109,18 +102,13 @@ export function PeriodOption({ label, active, onPress }: PeriodOptionProps) {
       activeOpacity={0.82}
       style={[
         styles.periodOption,
-        {
-          backgroundColor: active ? theme.primary : theme.bg,
-          borderColor: active ? theme.primary : 'transparent',
-        },
+        active ? styles.periodOptionActive : styles.periodOptionInactive,
       ]}
     >
       <Text
         style={[
           styles.periodOptionText,
-          {
-            color: active ? '#FFFFFF' : theme.textMuted,
-          },
+          active ? styles.periodOptionTextActive : styles.periodOptionTextInactive,
         ]}
       >
         {label}

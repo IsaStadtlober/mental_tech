@@ -25,7 +25,7 @@ export function FormField({
     const wrapStyle = useFadeUp(80, 380);
 
     return (
-        <Animated.View style={[{ gap: 6 }, wrapStyle]}>
+        <Animated.View style={[styles.fieldWrap, wrapStyle]}>
             {!!label && (
                 <Text style={[styles.inputLabel, { fontSize: p.labelSize }]}>
                     {label}
@@ -36,7 +36,7 @@ export function FormField({
                 value={value}
                 onChangeText={onChangeText}
                 placeholder={placeholder}
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={theme.placeholder}
                 keyboardType={keyboardType}
                 secureTextEntry={secureTextEntry}
                 maxLength={maxLength}
@@ -55,7 +55,7 @@ export function FormField({
                             ? theme.danger
                             : isFocused
                                 ? p.activeBorder
-                                : 'transparent',
+                                : theme.transparent,
                         textAlign: center ? 'center' : 'left',
                         opacity: editable ? 1 : 0.7,
                     },

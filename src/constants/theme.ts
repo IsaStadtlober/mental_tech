@@ -52,6 +52,10 @@ export const theme = {
   textMuted: '#6B7A75',
   textFaint: '#8A968F',
   textSoft: '#4A5A55',
+  textInverse: '#FBF3EC',
+  textMutedAlt: '#A79E90',
+  textOnPrimarySoft: '#D9EAE5',
+  placeholder: '#9CA3AF',
   border: '#EFE7DC',
   disabled: '#B9C7C1',
   danger: '#E53E3E',
@@ -63,6 +67,7 @@ export const theme = {
   whiteBorder: 'rgba(255,255,255,0.35)',
   shellBg: '#F0EAE1',
   frameBorder: '#17171A',
+  transparent: 'transparent',
 
   shadowCard: {
     shadowColor: 'rgba(23,63,55,1)',

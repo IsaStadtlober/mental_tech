@@ -12,6 +12,7 @@ import { SlideContent } from '../components/carousel/SlideContent';
 import { PrimaryButton } from '../components/PrimaryButton';
 
 import { CAROUSEL_CONFIG, SLIDES } from '../constants/carousel';
+import { theme } from '../constants/theme';
 import { styles } from '../styles';
 
 export default function CarouselRoute() {
@@ -143,11 +144,11 @@ export default function CarouselRoute() {
             <PrimaryButton onPress={next} icon={false}>
               <View style={styles.ctaRow}>
                 <Text style={styles.primaryBtnText}>Começar jornada</Text>
-                <ChevronRight size={18} color="#fff" />
+                <ChevronRight size={18} color={theme.white} />
               </View>
             </PrimaryButton>
           ) : (
-            <View style={{ height: 56 }} />
+            <View style={styles.ctaSpacer} />
           )}
         </View>
       </SafeAreaView>

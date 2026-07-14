@@ -54,7 +54,7 @@ export function WizardStepTeacher({
       subtitle={WIZARD_CONSTANTS.STEP_TEACHER.SUBTITLE}
       onBack={onBack}
       footer={
-        <View style={{ gap: 16 }}>
+        <View style={styles.formStack}>
           <PrimaryButton
             disabled={!isEmailValid || status !== 'idle'}
             onPress={handleLinkAndContinue}
@@ -63,7 +63,7 @@ export function WizardStepTeacher({
           </PrimaryButton>
 
           <TouchableOpacity onPress={onSkip} style={styles.skipButton}>
-            <Text style={[styles.skipSecondary, { opacity: status === 'idle' ? 1 : 0.45 }]}>
+            <Text style={[styles.skipSecondary, status === 'idle' ? styles.skipSecondaryActive : styles.skipSecondaryMuted]}>
               {WIZARD_CONSTANTS.STEP_TEACHER.BUTTONS.SKIP}
             </Text>
           </TouchableOpacity>
@@ -77,10 +77,10 @@ export function WizardStepTeacher({
           end={{ x: 1, y: 1 }}
           style={styles.contextIcon}
         >
-          <GraduationCap size={24} color="#FFFFFF" />
+          <GraduationCap size={24} color={theme.white} />
         </LinearGradient>
 
-        <View style={{ flex: 1 }}>
+        <View style={styles.contextBody}>
           <Text style={styles.contextLabel}>{WIZARD_CONSTANTS.STEP_TEACHER.LABELS.CONTEXT}</Text>
           <Text style={styles.contextTitle}>
             {turmaNome}

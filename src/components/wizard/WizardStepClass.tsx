@@ -47,7 +47,7 @@ export function WizardStepClass({ onBack, onNext, schoolName }: WizardStepClassP
         </PrimaryButton>
       }
     >
-      <View style={{ gap: 16 }}>
+      <View style={styles.formStack}>
         <FormField
           label={WIZARD_CONSTANTS.STEP_CLASS.LABELS.CLASS_NAME}
           value={classData.name}

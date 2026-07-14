@@ -37,6 +37,10 @@ export const rolesStyles = StyleSheet.create({
         backgroundColor: theme.bg,
         opacity: 0.65,
     },
+    heroDotTopRight: {
+        top: 16,
+        right: 17,
+    },
     heroDotSmall: {
         position: 'absolute',
         width: 6,
@@ -44,6 +48,22 @@ export const rolesStyles = StyleSheet.create({
         borderRadius: 3,
         backgroundColor: theme.bg,
         opacity: 0.45,
+    },
+    heroDotSmallBottomLeft: {
+        bottom: 17,
+        left: 18,
+    },
+    roleTitleActive: {
+        color: theme.white,
+    },
+    roleTitleInactive: {
+        color: theme.textDark,
+    },
+    roleDescriptionActive: {
+        color: theme.textOnPrimarySoft,
+    },
+    roleDescriptionInactive: {
+        color: theme.textMuted,
     },
     roleEyebrow: {
         fontFamily: fonts.bodyBold,
@@ -86,6 +106,13 @@ export const rolesStyles = StyleSheet.create({
         width: 130,
         height: 130,
         borderRadius: 80,
+    },
+    roleCardActive: {
+        shadowColor: theme.shadowBtn.shadowColor,
+        shadowOffset: { width: 0, height: 16 },
+        shadowOpacity: 0.24,
+        shadowRadius: 18,
+        elevation: 8,
     },
     roleSparkle: {
         position: 'absolute',

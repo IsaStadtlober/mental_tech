@@ -134,6 +134,37 @@ export const globalStyles = StyleSheet.create({
         marginTop: 14,
         paddingHorizontal: spacing.sm,
     },
+    formStack: {
+        gap: spacing.md,
+    },
+    fieldWrap: {
+        gap: 6,
+    },
+    keyboardView: {
+        flex: 1,
+    },
+    ctaSpacer: {
+        height: 56,
+    },
+    scrollContentMinHeight: {
+        minHeight: FRAME_H,
+    },
+    headerTitleSpacing: {
+        marginTop: 15,
+    },
+    primaryButtonWrapper: {
+        width: '100%',
+        borderRadius: borderRadius.button,
+    },
+    contextBody: {
+        flex: 1,
+    },
+    skipSecondaryActive: {
+        opacity: 1,
+    },
+    skipSecondaryMuted: {
+        opacity: 0.45,
+    },
     errorText: {
         fontFamily: fonts.bodyBold,
         color: theme.danger,

@@ -124,6 +124,10 @@ export const authStyles = StyleSheet.create({
         backgroundColor: theme.bg,
         opacity: 0.65,
     },
+    successDotTopRight: {
+        top: 17,
+        right: 19,
+    },
     successDotSmall: {
         position: 'absolute',
         width: 6,
@@ -131,6 +135,10 @@ export const authStyles = StyleSheet.create({
         borderRadius: 3,
         backgroundColor: theme.bg,
         opacity: 0.45,
+    },
+    successDotSmallBottomLeft: {
+        bottom: 19,
+        left: 20,
     },
     successTitle: {
         fontFamily: fonts.headlineBold,

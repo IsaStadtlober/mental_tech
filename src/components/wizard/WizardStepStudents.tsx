@@ -76,7 +76,7 @@ export function WizardStepStudents({ onBack, onFinish }: WizardStepStudentsProps
 
       <View style={styles.studentManualBlock}>
         {students.map((student, index) => (
-          <View key={index} style={{ gap: 12, marginBottom: 16 }}>
+          <View key={index} style={styles.studentEntryBlock}>
             <View style={styles.studentBlockHeader}>
               <Text style={styles.studentBlockTitle}>{WIZARD_CONSTANTS.STEP_STUDENTS.TEXTS.STUDENT_NUMBER} {index + 1}</Text>
               {students.length > 1 && (

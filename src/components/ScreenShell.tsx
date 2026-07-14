@@ -53,7 +53,7 @@ export function ScreenShell({
       <FloatingBackButton onPress={onBack} />
 
       <KeyboardAvoidingView
-        style={{ flex: 1 }}
+        style={styles.keyboardView}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={insets.top + 44}
       >

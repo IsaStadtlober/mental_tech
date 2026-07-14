@@ -67,7 +67,7 @@ export function AuthHeader({
         style={[
           styles.authTitle,
           isCenter ? styles.textCenter : styles.textLeft,
-          Icon ? { marginTop: 15 } : null,
+          Icon ? styles.headerTitleSpacing : null,
           titleStyle,
           titleFade,
         ]}
@@ -125,7 +125,7 @@ export function ExplorerAvatarPreview() {
         colors={theme.gradPrimary || ['#1E6B5C', '#2F8F76']}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        style={{ flex: 1, borderRadius: 999 }}
+        style={styles.explorerAvatarGradient}
       />
     </Animated.View>
   );

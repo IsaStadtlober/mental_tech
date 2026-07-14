@@ -1,16 +1,23 @@
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from "expo-router";
 
-import { WizardDoneScreen } from '../../components/wizard/WizardDoneScreen';
-import { WizardStepClass } from '../../components/wizard/WizardStepClass';
-import { WizardStepStudents } from '../../components/wizard/WizardStepStudents';
-import { WizardStepTeacher } from '../../components/wizard/WizardStepTeacher';
-import { useWizardFlow } from '../../hooks/useWizardFlow';
-import type { WizardSearchParams } from '../../types/auth';
+import { WizardDoneScreen } from "../../components/wizard/WizardDoneScreen";
+import { WizardStepClass } from "../../components/wizard/WizardStepClass";
+import { WizardStepStudents } from "../../components/wizard/WizardStepStudents";
+import { WizardStepTeacher } from "../../components/wizard/WizardStepTeacher";
+import { useWizardFlow } from "../../hooks/useWizardFlow";
+import type { WizardSearchParams } from "../../types/auth";
 
 export default function WizardRoute() {
   const router = useRouter();
   const { schoolName } = useLocalSearchParams<WizardSearchParams>();
-  const { state, saveClassDetails, saveTeacherEmail, saveStudents, goBack, goToStep } = useWizardFlow();
+  const {
+    state,
+    saveClassDetails,
+    saveTeacherData,
+    saveStudents,
+    goBack,
+    goToStep,
+  } = useWizardFlow();
 
   const { step, classDetails, students } = state;
 
@@ -20,7 +27,7 @@ export default function WizardRoute() {
         <WizardStepClass
           onBack={() => router.back()}
           onNext={saveClassDetails}
-          schoolName={schoolName || 'Minha Escola'}
+          schoolName={schoolName || "Minha Escola"}
         />
       );
     case 2:
@@ -28,23 +35,20 @@ export default function WizardRoute() {
         <WizardStepTeacher
           classDetails={classDetails}
           onBack={() => goBack(1)}
-          onNext={saveTeacherEmail}
+          onNext={saveTeacherData}
           onSkip={() => goToStep(3)}
         />
       );
     case 3:
       return (
-        <WizardStepStudents
-          onBack={() => goBack(2)}
-          onFinish={saveStudents}
-        />
+        <WizardStepStudents onBack={() => goBack(2)} onFinish={saveStudents} />
       );
     case 4:
       return (
         <WizardDoneScreen
           studentsCount={students.length}
           onBack={() => goBack(3)}
-          onGoDashboard={() => router.replace('/professor/bem-vindo')}
+          onGoDashboard={() => router.replace("/professor/bem-vindo")}
         />
       );
     default:

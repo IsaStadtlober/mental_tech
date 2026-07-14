@@ -1,0 +1,140 @@
+-- 1. Tipos ENUM
+CREATE TYPE user_role AS ENUM ('school', 'teacher', 'student', 'guardian');
+CREATE TYPE activity_status AS ENUM ('draft', 'published');
+CREATE TYPE submission_status AS ENUM ('submitted', 'corrected');
+CREATE TYPE item_category AS ENUM ('cloth', 'shoe', 'backpack', 'hat', 'accessory', 'hairstyle', 'color');
+CREATE TYPE shift_type AS ENUM ('morning', 'afternoon', 'full_time');
+
+-- 2. Perfis (Centraliza todos os dados de pessoas)
+CREATE TABLE public.profiles (
+    id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    full_name VARCHAR(255) NOT NULL,
+    cpf VARCHAR(20) UNIQUE,
+    phone VARCHAR(20),
+    birth_date DATE,
+    role user_role NOT NULL,
+    is_active BOOLEAN DEFAULT true NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
+);
+
+-- 3. Escolas (Dados Jurídicos e Endereço Físico)
+CREATE TABLE public.schools (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    profile_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
+    legal_name VARCHAR(255) NOT NULL, -- razao_social
+    trade_name VARCHAR(255) NOT NULL, -- nome_fantasia
+    cnpj VARCHAR(20) UNIQUE NOT NULL,
+    inep_code VARCHAR(50) UNIQUE, -- codigo_inep
+    contact_email VARCHAR(255),
+    phone VARCHAR(20),
+    zip_code VARCHAR(20), -- cep
+    street VARCHAR(255), -- logradouro
+    number VARCHAR(50), -- numero
+    complement VARCHAR(255), -- complemento
+    neighborhood VARCHAR(255), -- bairro
+    city VARCHAR(255), -- cidade
+    state VARCHAR(50), -- estado
+    is_active BOOLEAN DEFAULT true NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
+);
+
+-- 4. Professores (Dados Empregatícios)
+CREATE TABLE public.teachers (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    profile_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
+    school_id UUID REFERENCES public.schools(id) ON DELETE CASCADE NOT NULL,
+    position VARCHAR(255), -- cargo
+    registration_number VARCHAR(100),
+    is_active BOOLEAN DEFAULT true NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
+);
+
+-- 5. Turmas
+CREATE TABLE public.classes (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    school_id UUID REFERENCES public.schools(id) ON DELETE CASCADE NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    grade VARCHAR(100) NOT NULL,
+    academic_year INT NOT NULL,
+    shift shift_type NOT NULL,
+    is_active BOOLEAN DEFAULT true NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
+);
+
+-- 6. Tabela Pivot Professor_Turma (N:N - Um professor pode dar aula em várias turmas)
+CREATE TABLE public.teacher_classes (
+    teacher_id UUID REFERENCES public.teachers(id) ON DELETE CASCADE,
+    class_id UUID REFERENCES public.classes(id) ON DELETE CASCADE,
+    PRIMARY KEY (teacher_id, class_id)
+);
+
+-- 7. Alunos
+CREATE TABLE public.students (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    profile_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
+    school_id UUID REFERENCES public.schools(id) ON DELETE CASCADE NOT NULL,
+    class_id UUID REFERENCES public.classes(id) ON DELETE SET NULL,
+    guardian_id UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
+    enrollment_number VARCHAR(100) UNIQUE, -- matricula_escolar
+    coins INT DEFAULT 0 NOT NULL CHECK (coins >= 0),
+    xp INT DEFAULT 0 NOT NULL CHECK (xp >= 0),
+    is_active BOOLEAN DEFAULT true NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
+);
+
+-- 8. Atividades
+CREATE TABLE public.activities (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    teacher_id UUID REFERENCES public.teachers(id) ON DELETE RESTRICT NOT NULL,
+    class_id UUID REFERENCES public.classes(id) ON DELETE CASCADE NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    content_url VARCHAR(512),
+    status activity_status DEFAULT 'draft' NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
+    published_at TIMESTAMP WITH TIME ZONE
+);
+
+-- 9. Submissões
+CREATE TABLE public.submissions (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    activity_id UUID REFERENCES public.activities(id) ON DELETE CASCADE NOT NULL,
+    student_id UUID REFERENCES public.students(id) ON DELETE CASCADE NOT NULL,
+    student_answers JSONB NOT NULL,
+    status submission_status DEFAULT 'submitted' NOT NULL,
+    submitted_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
+    teacher_feedback TEXT,
+    performance_rating VARCHAR(50),
+    corrected_at TIMESTAMP WITH TIME ZONE
+);
+
+-- 10. Itens da Loja
+CREATE TABLE public.shop_items (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    category item_category NOT NULL,
+    price INT NOT NULL CHECK (price >= 0),
+    image_url VARCHAR(512) NOT NULL
+);
+
+-- 11. Inventário do Aluno (N:N)
+CREATE TABLE public.student_inventories (
+    student_id UUID REFERENCES public.students(id) ON DELETE CASCADE,
+    item_id UUID REFERENCES public.shop_items(id) ON DELETE CASCADE,
+    purchased_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
+    PRIMARY KEY (student_id, item_id)
+);
+
+-- 12. Configuração do Avatar
+CREATE TABLE public.avatars (
+    student_id UUID REFERENCES public.students(id) ON DELETE CASCADE PRIMARY KEY,
+    equipped_items JSONB DEFAULT '{}'::jsonb NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
+);

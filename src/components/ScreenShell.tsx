@@ -1,5 +1,5 @@
 import { ArrowLeft } from 'lucide-react-native';
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { FRAME_H, theme } from '../constants/theme';
@@ -52,17 +52,24 @@ export function ScreenShell({
     <SafeAreaView style={[styles.shellRoot, { paddingTop: insets.top, paddingBottom: insets.bottom }]}> 
       <FloatingBackButton onPress={onBack} />
 
-      <ScrollView
-        style={styles.shellScroll}
-        contentContainerStyle={{ minHeight: FRAME_H }}
-        showsVerticalScrollIndicator={false}
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={insets.top + 44}
       >
-        <FormBanner variant={bannerVariant} />
+        <ScrollView
+          style={styles.shellScroll}
+          contentContainerStyle={{ minHeight: FRAME_H, flexGrow: 1 }}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
+          <FormBanner variant={bannerVariant} />
 
-        <View style={[styles.sheet, { paddingBottom: footerPadding + insets.bottom }]}> 
-          {children}
-        </View>
-      </ScrollView>
+          <View style={[styles.sheet, { paddingBottom: footerPadding + insets.bottom }]}> 
+            {children}
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
 
       {/* Container fixo inferior para injeção de botões ou ações do rodapé */}
       {!!footer && (

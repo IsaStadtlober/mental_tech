@@ -6,8 +6,20 @@ export const authStyles = StyleSheet.create({
         flex: 1,
         backgroundColor: theme.bg,
     },
+    shellFrame: {
+        flex: 1,
+    },
     shellScroll: {
         flex: 1,
+        minHeight: 0,
+    },
+    sheetBody: {
+        flex: 1,
+        minHeight: 0,
+    },
+    shellContentContainer: {
+        flexGrow: 1,
+        paddingBottom: 0,
     },
     formBanner: {
         height: BANNER_H,
@@ -15,12 +27,27 @@ export const authStyles = StyleSheet.create({
         overflow: 'hidden',
     },
     sheet: {
+        flex: 1,
         backgroundColor: theme.card,
         borderTopLeftRadius: borderRadius.frame,
         borderTopRightRadius: borderRadius.frame,
         paddingHorizontal: spacing.xl,
         paddingTop: spacing.xl,
+        paddingBottom: 0,
+        overflow: 'hidden',
         ...theme.shadowSheet,
+    },
+    sheetContent: {
+        flexGrow: 1,
+    },
+    sheetFooter: {
+        marginTop: spacing.md,
+        paddingTop: spacing.md,
+        paddingBottom: 0,
+        borderTopWidth: 1,
+        borderTopColor: theme.border,
+        backgroundColor: theme.card,
+        flexShrink: 0,
     },
     footerOverlay: {
         position: 'absolute',

@@ -2,7 +2,7 @@ import { ArrowLeft } from 'lucide-react-native';
 import { KeyboardAvoidingView, Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { FRAME_H, theme } from '../constants/theme';
+import { theme } from '../constants/theme';
 import { styles } from '../styles';
 import {
   FloatingBackButtonProps,
@@ -44,12 +44,12 @@ export function ScreenShell({
   footer,
   children,
   bannerVariant = 'clouds',
-  footerPadding = 112,
+  footerPadding = 10,
 }: ScreenShellProps) {
   const insets = useSafeAreaInsets();
 
   return (
-    <SafeAreaView style={[styles.shellRoot, { paddingTop: insets.top, paddingBottom: insets.bottom }]}> 
+    <SafeAreaView style={[styles.shellRoot, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
       <FloatingBackButton onPress={onBack} />
 
       <KeyboardAvoidingView
@@ -57,26 +57,29 @@ export function ScreenShell({
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={insets.top + 44}
       >
-        <ScrollView
-          style={styles.shellScroll}
-          contentContainerStyle={{ minHeight: FRAME_H, flexGrow: 1 }}
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
-        >
+        <View style={styles.shellFrame}>
           <FormBanner variant={bannerVariant} />
 
-          <View style={[styles.sheet, { paddingBottom: footerPadding + insets.bottom }]}> 
-            {children}
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
+          <View style={styles.sheet}>
+            <View style={styles.sheetBody}>
+              <ScrollView
+                style={styles.shellScroll}
+                contentContainerStyle={styles.shellContentContainer}
+                showsVerticalScrollIndicator={false}
+                keyboardShouldPersistTaps="handled"
+              >
+                <View style={styles.sheetContent}>{children}</View>
+              </ScrollView>
+            </View>
 
-      {/* Container fixo inferior para injeção de botões ou ações do rodapé */}
-      {!!footer && (
-        <View style={{ width: '100%', marginTop: 24 }}>
-          {footer}
+            {!!footer && (
+              <View style={[styles.sheetFooter, { paddingBottom: footerPadding + insets.bottom }]}>
+                {footer}
+              </View>
+            )}
+          </View>
         </View>
-      )}
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }

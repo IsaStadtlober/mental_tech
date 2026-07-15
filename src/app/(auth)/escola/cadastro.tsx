@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import { GraduationCap } from "lucide-react-native";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Text, View } from "react-native";
 
 import { FormField } from "../../../components/form/FormField";
@@ -23,6 +23,8 @@ import {
 export default function SchoolSignupRoute() {
   const router = useRouter();
   const { signUpSchool, loading, error } = useAuth();
+  const lastSearchedCnpj = useRef("");
+  const lastSearchedCep = useRef("");
 
   const [tradeName, setTradeName] = useState("");
   const [legalName, setLegalName] = useState("");
@@ -67,10 +69,12 @@ export default function SchoolSignupRoute() {
 
   const handleCnpjBlur = async () => {
     const sanitized = sanitizeDigits(cnpj);
-    if (!isValidCnpj(sanitized)) return;
+    if (!isValidCnpj(sanitized) || sanitized === lastSearchedCnpj.current)
+      return;
 
     try {
       setLookupLoading(true);
+      lastSearchedCnpj.current = sanitized;
       setCnpj(
         sanitized.replace(
           /(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/,
@@ -92,10 +96,11 @@ export default function SchoolSignupRoute() {
 
   const handleZipCodeBlur = async () => {
     const sanitized = sanitizeDigits(zipCode);
-    if (!isValidCep(sanitized)) return;
+    if (!isValidCep(sanitized) || sanitized === lastSearchedCep.current) return;
 
     try {
       setLookupLoading(true);
+      lastSearchedCep.current = sanitized;
       setZipCode(`${sanitized.slice(0, 5)}-${sanitized.slice(5)}`);
       setCepLookupError("");
 
@@ -159,6 +164,20 @@ export default function SchoolSignupRoute() {
       submitRef.current = false;
     }
   };
+  // Busca automática ao digitar os números completos
+  useEffect(() => {
+    const sanitized = sanitizeDigits(cnpj);
+    if (sanitized.length === 14) {
+      handleCnpjBlur();
+    }
+  }, [cnpj]);
+
+  useEffect(() => {
+    const sanitized = sanitizeDigits(zipCode);
+    if (sanitized.length === 8) {
+      handleZipCodeBlur();
+    }
+  }, [zipCode]);
 
   return (
     <ScreenShell

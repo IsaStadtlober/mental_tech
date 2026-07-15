@@ -24,8 +24,6 @@ export function FormField({
   const [isFocused, setIsFocused] = useState(false);
   const p = inputPresets[preset];
   const wrapStyle = useFadeUp(80, 380);
-
-<<<<<<< Updated upstream
     return (
         <Animated.View style={[styles.fieldWrap, wrapStyle]}>
             {!!label && (
@@ -65,8 +63,7 @@ export function FormField({
             />
         </Animated.View>
     );
-}
-=======
+
   return (
     <Animated.View style={[{ gap: 6 }, wrapStyle]}>
       {!!label && (
@@ -110,4 +107,3 @@ export function FormField({
     </Animated.View>
   );
 }
->>>>>>> Stashed changes

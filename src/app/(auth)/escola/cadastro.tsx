@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import { GraduationCap } from "lucide-react-native";
-import { useRef, useState, useEffect } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Text, View } from "react-native";
 
 import { FormField } from "../../../components/form/FormField";
@@ -44,7 +44,7 @@ export default function SchoolSignupRoute() {
   const [formError, setFormError] = useState("");
   const [cnpjLookupError, setCnpjLookupError] = useState("");
   const [cepLookupError, setCepLookupError] = useState("");
-  const [lookupLoading, setLookupLoading] = useState(false);
+  const [, setLookupLoading] = useState(false);
 
   const isEmailValid = isValidEmail(email);
   const passwordMismatch = Boolean(
@@ -67,7 +67,7 @@ export default function SchoolSignupRoute() {
     isPasswordLengthValid &&
     password === confirmPassword;
 
-  const handleCnpjBlur = async () => {
+  const handleCnpjBlur = useCallback(async () => {
     const sanitized = sanitizeDigits(cnpj);
     if (!isValidCnpj(sanitized) || sanitized === lastSearchedCnpj.current)
       return;
@@ -87,14 +87,14 @@ export default function SchoolSignupRoute() {
       if (result?.legal_name && !legalName.trim()) {
         setLegalName(result.legal_name);
       }
-    } catch (err) {
+    } catch {
       setCnpjLookupError("Não foi possível buscar dados do CNPJ.");
     } finally {
       setLookupLoading(false);
     }
-  };
+  }, [cnpj, legalName]);
 
-  const handleZipCodeBlur = async () => {
+  const handleZipCodeBlur = useCallback(async () => {
     const sanitized = sanitizeDigits(zipCode);
     if (!isValidCep(sanitized) || sanitized === lastSearchedCep.current) return;
 
@@ -122,12 +122,12 @@ export default function SchoolSignupRoute() {
       if (address.state && !stateField.trim()) {
         setStateField(address.state);
       }
-    } catch (err) {
+    } catch {
       setCepLookupError("Não foi possível buscar o CEP.");
     } finally {
       setLookupLoading(false);
     }
-  };
+  }, [zipCode, street, neighborhood, city, stateField]);
 
   const submitRef = useRef(false);
 
@@ -168,16 +168,22 @@ export default function SchoolSignupRoute() {
   useEffect(() => {
     const sanitized = sanitizeDigits(cnpj);
     if (sanitized.length === 14) {
-      handleCnpjBlur();
+      const id = setTimeout(() => {
+        handleCnpjBlur();
+      }, 0);
+      return () => clearTimeout(id);
     }
-  }, [cnpj]);
+  }, [cnpj, handleCnpjBlur]);
 
   useEffect(() => {
     const sanitized = sanitizeDigits(zipCode);
     if (sanitized.length === 8) {
-      handleZipCodeBlur();
+      const id = setTimeout(() => {
+        handleZipCodeBlur();
+      }, 0);
+      return () => clearTimeout(id);
     }
-  }, [zipCode]);
+  }, [zipCode, handleZipCodeBlur]);
 
   return (
     <ScreenShell

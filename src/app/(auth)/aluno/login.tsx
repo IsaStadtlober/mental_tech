@@ -19,7 +19,8 @@ export default function StudentLoginRoute() {
 
   const canEnter =
     classCode.trim().length > 0 &&
-    pin.length === STUDENT_AUTH_CONSTANTS.PIN_LENGTH;
+    pin.length >= STUDENT_AUTH_CONSTANTS.MIN_PIN_LENGTH &&
+    pin.length <= STUDENT_AUTH_CONSTANTS.MAX_PIN_LENGTH;
 
   const handleEnter = () => {
     router.push('/aluno/nome');

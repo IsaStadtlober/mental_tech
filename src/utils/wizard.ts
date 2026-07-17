@@ -13,6 +13,7 @@ export function createEmptyStudent(): StudentData {
     return {
         name: '',
         contact: '',
+        enrollmentNumber: '',
     };
 }
 

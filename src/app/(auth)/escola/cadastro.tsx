@@ -9,7 +9,7 @@ import { PrimaryButton } from "../../../components/PrimaryButton";
 import { ScreenShell } from "../../../components/ScreenShell";
 
 import { EDUCATOR_AUTH_CONSTANTS } from "../../../constants/auth";
-import { useAuth } from "../../../hooks/useAuth";
+import { useWizardFlow } from "../../../hooks/useWizardFlow";
 import { styles } from "../../../styles";
 import {
   fetchAddressByCep,
@@ -22,7 +22,7 @@ import {
 
 export default function SchoolSignupRoute() {
   const router = useRouter();
-  const { signUpSchool, loading, error } = useAuth();
+  const { setSchoolData } = useWizardFlow();
   const lastSearchedCnpj = useRef("");
   const lastSearchedCep = useRef("");
 
@@ -45,6 +45,7 @@ export default function SchoolSignupRoute() {
   const [cnpjLookupError, setCnpjLookupError] = useState("");
   const [cepLookupError, setCepLookupError] = useState("");
   const [, setLookupLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const isEmailValid = isValidEmail(email);
   const passwordMismatch = Boolean(
@@ -132,12 +133,14 @@ export default function SchoolSignupRoute() {
   const submitRef = useRef(false);
 
   const handleCreated = async () => {
-    if (loading || submitRef.current || !isFormValid) return;
+    if (saving || submitRef.current || !isFormValid) return;
 
     submitRef.current = true;
     setFormError("");
+    setSaving(true);
+
     try {
-      await signUpSchool({
+      setSchoolData({
         email: email.trim(),
         password,
         legal_name: legalName.trim(),
@@ -159,9 +162,10 @@ export default function SchoolSignupRoute() {
         params: { schoolName: tradeName.trim() },
       });
     } catch (err: any) {
-      setFormError(err?.message || "Erro ao cadastrar a escola.");
+      setFormError(err?.message || "Erro ao salvar os dados da escola.");
     } finally {
       submitRef.current = false;
+      setSaving(false);
     }
   };
   // Busca automática ao digitar os números completos
@@ -190,10 +194,10 @@ export default function SchoolSignupRoute() {
       onBack={() => router.back()}
       footer={
         <PrimaryButton
-          disabled={!isFormValid || loading}
-          onPress={() => !loading && isFormValid && handleCreated()}
+          disabled={!isFormValid || saving}
+          onPress={() => !saving && isFormValid && handleCreated()}
         >
-          {loading
+          {saving
             ? "Aguarde..."
             : EDUCATOR_AUTH_CONSTANTS.TEXTS.BUTTON_CONTINUE}
         </PrimaryButton>
@@ -356,7 +360,6 @@ export default function SchoolSignupRoute() {
         )}
 
         {!!formError && <Text style={styles.errorText}>{formError}</Text>}
-        {!!error && <Text style={styles.errorText}>{error}</Text>}
       </View>
     </ScreenShell>
   );

@@ -7,6 +7,7 @@ import { createEmptyClassData, isClassDataValid } from '../../utils/wizard';
 import { PrimaryButton } from '../PrimaryButton';
 import { FormField } from '../form/FormField';
 import { PeriodSelect, WizardStepLayout } from './WizardShared';
+import { styles } from '../../styles';
 
 interface WizardStepClassProps {
   onBack: () => void;

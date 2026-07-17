@@ -1,4 +1,10 @@
 import { supabase } from "@/service/supabase";
+import type {
+    ClassData,
+    SchoolOnboardingData,
+    StudentData,
+    TeacherData,
+} from "@/types/wizard";
 import { useState } from "react";
 
 interface SchoolSignUpPayload {
@@ -16,6 +22,13 @@ interface SchoolSignUpPayload {
   neighborhood?: string;
   city?: string;
   state?: string;
+}
+
+interface FinalizeSchoolOnboardingPayload {
+  school: SchoolOnboardingData;
+  classDetails: ClassData;
+  teacher: TeacherData | null;
+  students: StudentData[];
 }
 
 interface SchoolSignUpData {
@@ -51,10 +64,11 @@ export function useAuth() {
       });
 
       if (authError) {
-        const status = (authError as any)?.status || (authError as any)?.status_code;
-        if (status === 429 || /rate limit/i.test(authError.message || '')) {
+        const status =
+          (authError as any)?.status || (authError as any)?.status_code;
+        if (status === 429 || /rate limit/i.test(authError.message || "")) {
           throw new Error(
-            'Limite de tentativas atingido. Aguarde alguns minutos antes de tentar novamente.',
+            "Limite de tentativas atingido. Aguarde alguns minutos antes de tentar novamente.",
           );
         }
         throw authError;
@@ -144,8 +158,142 @@ export function useAuth() {
       setLoading(false);
     }
   }
+
+  async function finalizeSchoolOnboarding(
+    payload: FinalizeSchoolOnboardingPayload,
+  ) {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const { school, classDetails, teacher, students } = payload;
+
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: school.email,
+        password: school.password,
+      });
+
+      if (authError) {
+        const status =
+          (authError as any)?.status || (authError as any)?.status_code;
+        if (status === 429 || /rate limit/i.test(authError.message || "")) {
+          throw new Error(
+            "Limite de tentativas atingido. Aguarde alguns minutos antes de tentar novamente.",
+          );
+        }
+
+        throw authError;
+      }
+
+      const user = authData.user;
+      if (!user) {
+        throw new Error("Erro ao recuperar usuário criado.");
+      }
+
+      const { error: profileError } = await supabase.from("profiles").insert([
+        {
+          id: user.id,
+          email: user.email,
+          full_name: school.trade_name,
+          role: "school",
+        },
+      ]);
+      if (profileError) throw profileError;
+
+      const { data: schoolData, error: schoolError } = await supabase
+        .from("schools")
+        .insert([
+          {
+            profile_id: user.id,
+            legal_name: school.legal_name,
+            trade_name: school.trade_name,
+            cnpj: school.cnpj.replace(/\D/g, ""),
+            inep_code: school.inep_code || null,
+            contact_email: school.email,
+            phone: school.phone || null,
+            zip_code: school.zip_code?.replace(/\D/g, "") || null,
+            street: school.street || null,
+            number: school.number || null,
+            complement: school.complement || null,
+            neighborhood: school.neighborhood || null,
+            city: school.city || null,
+            state: school.state || null,
+          },
+        ])
+        .select()
+        .single();
+
+      if (schoolError) throw schoolError;
+      if (!schoolData || !schoolData.id) {
+        throw new Error("Erro ao recuperar a escola criada.");
+      }
+
+      const { data: classData, error: classError } = await supabase
+        .from("classes")
+        .insert([
+          {
+            school_id: schoolData.id,
+            name: classDetails.name.trim(),
+            grade: classDetails.grade.trim(),
+            period: classDetails.period.trim(),
+          },
+        ])
+        .select()
+        .single();
+
+      if (classError) throw classError;
+      if (!classData || !classData.id) {
+        throw new Error("Erro ao recuperar a turma criada.");
+      }
+
+      if (teacher?.email) {
+        const { error: teacherError } = await supabase
+          .from("school_teachers")
+          .insert([
+            {
+              school_id: schoolData.id,
+              class_id: classData.id,
+              teacher_email: teacher.email.trim(),
+            },
+          ]);
+
+        if (teacherError) {
+          throw teacherError;
+        }
+      }
+
+      if (students.length > 0) {
+        const studentsPayload = students.map((student) => ({
+          school_id: schoolData.id,
+          class_id: classData.id,
+          name: student.name.trim(),
+          contact: student.contact.trim() || null,
+          enrollment_number: student.enrollmentNumber?.trim() || null,
+        }));
+
+        const { error: studentsError } = await supabase
+          .from("students")
+          .insert(studentsPayload);
+        if (studentsError) throw studentsError;
+      }
+
+      return { user, school: schoolData, class: classData };
+    } catch (err: any) {
+      setError(err.message || "Erro ao finalizar o onboarding da escola.");
+      console.error("Erro ao finalizar o onboarding da escola:", err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }
+
   //Cadastro de turma
 
-
-  return { loading, error, signUpSchool, registerSchoolData };
+  return {
+    loading,
+    error,
+    signUpSchool,
+    registerSchoolData,
+    finalizeSchoolOnboarding,
+  };
 }

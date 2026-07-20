@@ -63,3 +63,44 @@ export const PROFESSOR_DASHBOARD_MESSAGES = {
         correctButton: 'Corrigir',
     },
 };
+
+// Notifications
+export const PROFESSOR_NOTIFICATIONS_MESSAGES = {
+    header: {
+        title: 'Notificações',
+        subtitle: 'Acompanhe envios, correções, atividades e alunos que precisam de atenção.',
+        backButton: 'Dashboard',
+        clearReadButton: (isCompact: boolean) =>
+            isCompact ? 'Limpar lidas' : 'Limpar notificações lidas',
+        markAllReadButton: (isCompact: boolean) =>
+            isCompact ? 'Marcar todas' : 'Marcar todas como lidas',
+    },
+    summary: {
+        unreadCount: (count: number) => (count === 1 ? '1 não lida' : `${count} não lidas`),
+        helperText: 'Da mais recente para a mais antiga',
+    },
+    filter: {
+        title: 'Filtrar notificações',
+    },
+    count: {
+        total: (count: number) => `${count} ${count === 1 ? 'notificação' : 'notificações'}`,
+    },
+    emptyState: {
+        title: 'Nenhuma notificação encontrada',
+        descriptionUnread: 'Você já leu todas as notificações.',
+        descriptionEmpty: 'Você não possui notificações no momento.',
+        descriptionFilter: 'Nenhum evento corresponde ao filtro selecionado.',
+    },
+    item: {
+        newTag: 'Nova',
+        deleteButton: 'Excluir',
+        actions: {
+            correctionQueue: 'Abrir fila',
+            studentProfile: 'Ver aluno',
+            activityDetail: 'Ver atividade',
+            reports: 'Ver relatórios',
+            read: 'Lida',
+            markAsRead: 'Marcar como lida',
+        },
+    },
+};

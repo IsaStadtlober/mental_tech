@@ -1,20 +1,18 @@
-import { useMemo, useState } from 'react';
-import { Pressable, ScrollView, Text, useWindowDimensions, View } from 'react-native';
 import { useRouter } from 'expo-router';
-import {
-    Bell, BookOpen, CheckSquare2, GraduationCap, Settings2, Trash2,
-} from 'lucide-react-native';
+import { Bell, Trash2 } from 'lucide-react-native';
+import { Pressable, ScrollView, Text, useWindowDimensions, View } from 'react-native';
 
-import { theme } from '@/constants/theme';
-import { getHorizontalPadding, isCompactWidth } from '@/constants/professor/prof_Layout';
 import {
-    NOTIFICATION_CATEGORY_CONFIG, NOTIFICATION_FILTERS, type NotificationFilter,
+    NOTIFICATION_CATEGORY_CONFIG, NOTIFICATION_FILTERS,
 } from '@/constants/professor/notifications';
+import { getHorizontalPadding, isCompactWidth } from '@/constants/professor/prof_Layout';
 import { PROFESSOR_NOTIFICATIONS_MESSAGES } from '@/constants/professor/professor';
-import { notificationsStyles as styles } from '@/styles/professor/notifications';
+import { theme } from '@/constants/theme';
+import { useEducatorNotifications } from '@/hooks/useEducatorNotifications';
 import { useProfessorPrototype } from '@/hooks/useProfessorPrototype';
 import { PROFESSOR_ROUTES } from '@/router';
-import type { EducatorNotification, NotificationCategory } from '@/types/professor';
+import { notificationsStyles as styles } from '@/styles/professor/notifications';
+import type { EducatorNotification } from '@/types/professor';
 
 import AppButton from '@/components/professor/AppButton';
 import AppCard from '@/components/professor/AppCard';
@@ -52,71 +50,16 @@ function NotificationsScreen({
     const isCompact = isCompactWidth(width);
     const horizontalPadding = getHorizontalPadding(width);
 
-    const [filter, setFilter] = useState<NotificationFilter>('all');
-
-    const unreadCount = notifications.filter((item) => !item.read).length;
-    const readCount = notifications.filter((item) => item.read).length;
-
-    const filteredNotifications = useMemo(() => {
-        if (filter === 'all') return notifications;
-        if (filter === 'unread') return notifications.filter((item) => !item.read);
-        return notifications.filter((item) => item.category === filter);
-    }, [filter, notifications]);
-
-    function getCategoryIcon(category: NotificationCategory) {
-        const config = NOTIFICATION_CATEGORY_CONFIG[category];
-        switch (category) {
-            case 'correction':
-                return <CheckSquare2 size={20} color={config.foregroundColor} />;
-            case 'activity':
-                return <BookOpen size={20} color={config.foregroundColor} />;
-            case 'student':
-                return <GraduationCap size={20} color={config.foregroundColor} />;
-            default:
-                return <Settings2 size={20} color={config.foregroundColor} />;
-        }
-    }
-
-    function getActionLabel(notification: EducatorNotification) {
-        switch (notification.destination.type) {
-            case 'correctionQueue':
-                return PROFESSOR_NOTIFICATIONS_MESSAGES.item.actions.correctionQueue;
-            case 'studentProfile':
-                return PROFESSOR_NOTIFICATIONS_MESSAGES.item.actions.studentProfile;
-            case 'activityDetail':
-                return PROFESSOR_NOTIFICATIONS_MESSAGES.item.actions.activityDetail;
-            case 'reports':
-                return PROFESSOR_NOTIFICATIONS_MESSAGES.item.actions.reports;
-            default:
-                return notification.read
-                    ? PROFESSOR_NOTIFICATIONS_MESSAGES.item.actions.read
-                    : PROFESSOR_NOTIFICATIONS_MESSAGES.item.actions.markAsRead;
-        }
-    }
-
-    function openNotification(notification: EducatorNotification) {
-        if (!notification.read) {
-            onMarkAsRead(notification.id);
-        }
-
-        const destination = notification.destination;
-        switch (destination.type) {
-            case 'correctionQueue':
-                onOpenCorrectionQueue();
-                return;
-            case 'studentProfile':
-                onOpenStudent(destination.studentId);
-                return;
-            case 'activityDetail':
-                onOpenActivity(destination.activityId);
-                return;
-            case 'reports':
-                onOpenReports();
-                return;
-            default:
-                return;
-        }
-    }
+    const {
+        filter,
+        setFilter,
+        unreadCount,
+        readCount,
+        filteredNotifications,
+        getActionLabel,
+        getCategoryIcon,
+        openNotification,
+    } = useEducatorNotifications(notifications);
 
     return (
         <ScrollView
@@ -282,7 +225,7 @@ function NotificationsScreen({
                                                     { backgroundColor: config.backgroundColor },
                                                 ]}
                                             >
-                                                {getCategoryIcon(notification.category)}
+                                                {getCategoryIcon(notification.category, config.foregroundColor)}
                                             </View>
 
                                             <View style={styles.cardTextContent}>
@@ -332,7 +275,13 @@ function NotificationsScreen({
                                                 }
                                                 size="small"
                                                 disabled={notification.read && !hasDestination}
-                                                onPress={() => openNotification(notification)}
+                                                onPress={() => openNotification(notification, {
+                                                    onMarkAsRead: onMarkAsRead,
+                                                    onOpenCorrectionQueue: onOpenCorrectionQueue,
+                                                    onOpenStudent: onOpenStudent,
+                                                    onOpenActivity: onOpenActivity,
+                                                    onOpenReports: onOpenReports,
+                                                })}
                                             />
 
                                             <AppButton

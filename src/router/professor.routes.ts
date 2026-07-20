@@ -5,13 +5,13 @@ export const PROFESSOR_ROUTES = {
     CORRECTIONS: '/(professor)/correcoes',
     REPORTS: '/(professor)/relatorios',
     NOTIFICATIONS: '/(professor)/notificacoes',
+    PROFILE: '/(professor)/perfil',
     STUDENT_PROFILE: (studentId: string) => ({
         pathname: '/(professor)/alunos/[studentId]',
         params: { studentId },
     }),
-    
     ACTIVITY_DETAIL: (activityId: string) => ({
-        pathname: '/(professor)/[activityId]',
+        pathname: '/(professor)/atividades/[activityId]',
         params: { activityId },
     }),
 } as const;

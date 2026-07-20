@@ -1,15 +1,16 @@
-import { ScrollView, Text, useWindowDimensions, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Plus } from 'lucide-react-native';
+import { ScrollView, Text, useWindowDimensions, View } from 'react-native';
 
-import { theme } from '@/constants/theme';
-import { useProfessorPrototype } from '@/hooks/useProfessorPrototype';
-import { educatorStyles } from '@/styles/professor/educator';
-import { dashboardStyles as styles } from '@/styles/professor/dashboard';
 import { MOCK_STUDENTS, RECENT_SUBMISSIONS } from '@/constants/professor/dashboard';
-import type { EducatorDashboardScreenProps } from '@/types/professor';
-import { PROFESSOR_ROUTES } from '@/router';
 import { PROFESSOR_DASHBOARD_MESSAGES } from '@/constants/professor/professor';
+import { theme } from '@/constants/theme';
+import { useEducatorDashboard } from '@/hooks/useEducatorDashboard';
+import { useProfessorPrototype } from '@/hooks/useProfessorPrototype';
+import { PROFESSOR_ROUTES } from '@/router';
+import { dashboardStyles as styles } from '@/styles/professor/dashboard';
+import { educatorStyles } from '@/styles/professor/educator';
+import type { EducatorDashboardScreenProps } from '@/types/professor';
 
 import AppButton from '@/components/professor/AppButton';
 import AppCard from '@/components/professor/AppCard';
@@ -351,14 +352,10 @@ function EducatorDashboardScreen({
 export default function DashboardRoute() {
     const router = useRouter();
     const { activities, submissions } = useProfessorPrototype();
-
-    const pendingCorrectionsCount = submissions.filter(
-        (item) => item.status === 'pending'
-    ).length;
-
-    const publishedActivitiesCount = activities.filter(
-        (item) => item.status === 'published'
-    ).length;
+    const { pendingCorrectionsCount, publishedActivitiesCount } = useEducatorDashboard(
+        activities,
+        submissions,
+    );
 
     return (
         <ProfessorRouteShell>

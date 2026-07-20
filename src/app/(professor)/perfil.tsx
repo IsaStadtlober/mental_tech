@@ -1,50 +1,22 @@
-import { useRouter } from 'expo-router';
-import { ProfessorRouteShell } from '@/components/professor/ProfessorRouteShell';
-import { borderRadius, fonts, theme } from '@/constants/theme';
-import React, { useState } from 'react';
-import {
-    Pressable,
-    ScrollView,
-    Switch,
-    Text,
-    TextInput,
-    useWindowDimensions,
-    View,
-} from 'react-native';
-import { KeyRound, Save } from 'lucide-react-native';
-import BackButton from '@/components/professor/BackButton';
 import AppButton from '@/components/professor/AppButton';
 import AppCard from '@/components/professor/AppCard';
+import BackButton from '@/components/professor/BackButton';
+import { ProfessorRouteShell } from '@/components/professor/ProfessorRouteShell';
 import SectionHeader from '@/components/professor/SectionHeader';
+import { PROFESSOR_PROFILE_MESSAGES } from '@/constants/professor/professor';
+import { fonts, theme } from '@/constants/theme';
+import { useEducatorProfileForm } from '@/hooks/useEducatorProfile';
+import { PROFESSOR_ROUTES } from '@/router';
+import { profileStyles as styles } from '@/styles/professor/perfil';
+import type {
+    EducatorProfileScreenProps, PasswordInputProps, PreferenceRowProps,
+} from '@/types/professor';
+import { useRouter } from 'expo-router';
+import { KeyRound, Save } from 'lucide-react-native';
+import {
+    Pressable, ScrollView, Switch, Text, TextInput, useWindowDimensions, View,
+} from 'react-native';
 
-export interface EducatorProfileData {
-    name: string;
-    email: string;
-}
-
-export interface EducatorProfileScreenProps {
-    name: string;
-    email: string;
-
-    onBack: () => void;
-
-    onSave: (data: EducatorProfileData) => void;
-}
-
-interface PreferenceRowProps {
-    title: string;
-    description: string;
-    value: boolean;
-    onValueChange: (value: boolean) => void;
-}
-
-/**
- * FRONT-END:
- * Linha compartilhada somente dentro da tela D1.
- *
- * Mantida no mesmo arquivo porque não existe reutilização
- * em outras áreas do protótipo neste momento.
- */
 function PreferenceRow({
     title,
     description,
@@ -59,43 +31,16 @@ function PreferenceRow({
             }}
             onPress={() => onValueChange(!value)}
             style={({ pressed }) => ({
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                gap: 18,
-
-                paddingVertical: 15,
-
+                ...styles.preferenceRow,
                 opacity: pressed ? 0.84 : 1,
             })}
         >
-            <View
-                style={{
-                    flex: 1,
-                    minWidth: 0,
-                }}
-            >
-                <Text
-                    style={{
-                        color: theme.textDark,
-                        fontFamily: fonts.bodyBold,
-                        fontSize: 14,
-                    }}
-                >
+            <View style={styles.preferenceContent}>
+                <Text style={styles.preferenceTitle}>
                     {title}
                 </Text>
 
-                <Text
-                    style={{
-                        marginTop: 4,
-
-                        color: theme.textMuted,
-                        fontFamily: fonts.bodyRegular,
-
-                        fontSize: 12,
-                        lineHeight: 18,
-                    }}
-                >
+                <Text style={styles.preferenceDescription}>
                     {description}
                 </Text>
             </View>
@@ -115,19 +60,6 @@ function PreferenceRow({
     );
 }
 
-/**
- * USER FLOW D1:
- * Configurações de perfil do professor.
- *
- * Inclui dados pessoais, segurança, notificações
- * e preferências de acessibilidade.
- *
- * PROTOTYPE:
- * As preferências são mantidas somente enquanto
- * esta tela permanece montada.
- *
- * Não existe alteração real de senha ou persistência.
- */
 function EducatorProfileScreen({
     name,
     email,
@@ -135,105 +67,58 @@ function EducatorProfileScreen({
     onSave,
 }: EducatorProfileScreenProps) {
     const { width } = useWindowDimensions();
-
     const isCompact = width < 780;
+    const {
+        header,
+        personalInfo,
+        notifications,
+        accessibility,
+        security,
+        actions,
+    } = PROFESSOR_PROFILE_MESSAGES;
 
-    const [displayName, setDisplayName] = useState(name);
-
-    const [displayEmail, setDisplayEmail] = useState(email);
-
-    const [currentPassword, setCurrentPassword] = useState('');
-
-    const [newPassword, setNewPassword] = useState('');
-
-    const [confirmNewPassword, setConfirmNewPassword] = useState('');
-
-    const [profileMessage, setProfileMessage] = useState('');
-
-    const [passwordMessage, setPasswordMessage] = useState('');
-
-    const [newSubmissions, setNewSubmissions] = useState(true);
-
-    const [delayedCorrections, setDelayedCorrections] = useState(true);
-
-    const [approachingDeadlines, setApproachingDeadlines] = useState(true);
-
-    const [weeklySummary, setWeeklySummary] = useState(false);
-
-    const [largeText, setLargeText] = useState(false);
-
-    const [highContrast, setHighContrast] = useState(false);
-
-    const [reduceAnimations, setReduceAnimations] = useState(false);
-
-    const nameIsValid = displayName.trim().length >= 3;
-
-    const emailIsValid =
-        /^[^\s@]+@[^\s@]+.[^\s@]+$/.test(displayEmail.trim());
-
-    const profileIsValid = nameIsValid && emailIsValid;
-
-    const passwordWasStarted =
-        currentPassword.length > 0 ||
-        newPassword.length > 0 ||
-        confirmNewPassword.length > 0;
-
-    const passwordIsValid =
-        currentPassword.length >= 6 &&
-        newPassword.length >= 6 &&
-        newPassword === confirmNewPassword;
-
-    const initials =
-        displayName
-            .trim()
-            .split(' ')
-            .filter(Boolean)
-            .slice(0, 2)
-            .map((part) => part.charAt(0))
-            .join('')
-            .toUpperCase() || 'PR';
-
-    function handleSaveProfile() {
-        setProfileMessage('');
-
-        if (!profileIsValid) {
-            setProfileMessage(
-                'Revise o nome e o e-mail antes de salvar.'
-            );
-            return;
-        }
-
-        onSave({
-            name: displayName.trim(),
-            email: displayEmail.trim(),
-        });
-
-        setProfileMessage('Alterações do perfil salvas.');
-    }
-
-    function handleUpdatePassword() {
-        setPasswordMessage('');
-
-        if (!passwordIsValid) {
-            setPasswordMessage(
-                'Preencha as senhas corretamente. A nova senha deve ter pelo menos 6 caracteres e a confirmação deve ser igual.'
-            );
-            return;
-        }
-
-        setCurrentPassword('');
-        setNewPassword('');
-        setConfirmNewPassword('');
-
-        setPasswordMessage('Senha atualizada no protótipo.');
-    }
+    const {
+        displayName,
+        setDisplayName,
+        displayEmail,
+        setDisplayEmail,
+        currentPassword,
+        setCurrentPassword,
+        newPassword,
+        setNewPassword,
+        confirmNewPassword,
+        setConfirmNewPassword,
+        profileMessage,
+        passwordMessage,
+        newSubmissions,
+        setNewSubmissions,
+        delayedCorrections,
+        setDelayedCorrections,
+        approachingDeadlines,
+        setApproachingDeadlines,
+        weeklySummary,
+        setWeeklySummary,
+        largeText,
+        setLargeText,
+        highContrast,
+        setHighContrast,
+        reduceAnimations,
+        setReduceAnimations,
+        nameIsValid,
+        emailIsValid,
+        profileIsValid,
+        passwordWasStarted,
+        passwordIsValid,
+        initials,
+        handleSaveProfile,
+        handleUpdatePassword,
+    } = useEducatorProfileForm(name, email);
 
     return (
         <ScrollView
             keyboardShouldPersistTaps="handled"
             style={{
-                flex: 1,
-
+                ...styles.page,
                 backgroundColor: highContrast
                     ? theme.white
                     : theme.bgSubtle,
@@ -245,34 +130,23 @@ function EducatorProfileScreen({
             }}
             showsVerticalScrollIndicator={false}
         >
-            <View
-                style={{
-                    width: '100%',
-                    maxWidth: 1120,
-                    alignSelf: 'center',
-                }}
-            >
+            <View style={styles.screenContainer}>
                 <BackButton
-                    label="Dashboard"
+                    label={header.backButton}
                     onPress={onBack}
-                    style={{
-                        marginBottom: 20,
-                    }}
+                    style={styles.backButton}
                 />
 
                 <View
                     style={{
+                        ...styles.contentRow,
                         flexDirection: isCompact ? 'column' : 'row',
-                        alignItems: 'flex-start',
-                        gap: 20,
-                        marginTop: 24,
                     }}
                 >
                     <View
                         style={{
-                            flex: 1.25,
+                            ...styles.contentColumn,
                             width: isCompact ? '100%' : undefined,
-                            gap: 20,
                         }}
                     >
                         {/* Dados pessoais */}
@@ -280,8 +154,8 @@ function EducatorProfileScreen({
                         <AppCard>
                             <SectionHeader
                                 compact
-                                title="Dados pessoais"
-                                subtitle="Informações exibidas no Portal do Professor."
+                                title={personalInfo.title}
+                                subtitle={personalInfo.subtitle}
                                 style={{
                                     marginBottom: 20,
                                 }}
@@ -294,98 +168,44 @@ function EducatorProfileScreen({
                                     gap: 20,
                                 }}
                             >
-                                <View
-                                    style={{
-                                        width: 82,
-                                        height: 82,
-
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-
-                                        borderRadius: 26,
-
-                                        backgroundColor: theme.primary,
-                                    }}
-                                >
-                                    <Text
-                                        style={{
-                                            color: theme.white,
-                                            fontFamily: fonts.headlineBold,
-                                            fontSize: 23,
-                                        }}
-                                    >
+                                <View style={styles.avatar}>
+                                    <Text style={styles.avatarText}>
                                         {initials}
                                     </Text>
                                 </View>
 
-                                <View
-                                    style={{
-                                        flex: 1,
-                                        minWidth: 0,
-                                        gap: 16,
-                                    }}
-                                >
+                                <View style={styles.formColumn}>
                                     <View>
-                                        <Text
-                                            style={{
-                                                marginBottom: 7,
-
-                                                color: theme.textDark,
-                                                fontFamily: fonts.bodyBold,
-                                                fontSize: 13,
-                                            }}
-                                        >
-                                            Nome de exibição
+                                        <Text style={styles.fieldLabel}>
+                                            {personalInfo.displayNameLabel}
                                         </Text>
 
                                         <TextInput
                                             value={displayName}
                                             onChangeText={setDisplayName}
-                                            placeholder="Nome do professor"
+                                            placeholder={personalInfo.displayNamePlaceholder}
                                             placeholderTextColor={
                                                 theme.textFaint
                                             }
                                             style={{
-                                                minHeight: 48,
-                                                paddingHorizontal: 15,
-
-                                                borderWidth: 1,
-                                                borderColor:
-                                                    displayName.length > 0 && !nameIsValid
-                                                        ? theme.danger
-                                                        : theme.border,
-
-                                                borderRadius: borderRadius.lg,
-
-                                                backgroundColor:
-                                                    theme.bgSubtle,
-
-                                                color: theme.textDark,
-
-                                                fontFamily: fonts.bodyRegular,
-
-                                                fontSize: largeText ? 17 : 14,
+                                                ...styles.input,
+                                                ...(displayName.length > 0 && !nameIsValid
+                                                    ? styles.inputError
+                                                    : {}),
+                                                ...(largeText ? styles.inputLargeText : {}),
                                             }}
                                         />
                                     </View>
 
                                     <View>
-                                        <Text
-                                            style={{
-                                                marginBottom: 7,
-
-                                                color: theme.textDark,
-                                                fontFamily: fonts.bodyBold,
-                                                fontSize: 13,
-                                            }}
-                                        >
-                                            E-mail
+                                        <Text style={styles.fieldLabel}>
+                                            {personalInfo.emailLabel}
                                         </Text>
 
                                         <TextInput
                                             value={displayEmail}
                                             onChangeText={setDisplayEmail}
-                                            placeholder="seu@email.com"
+                                            placeholder={personalInfo.displayEmailPlaceholder}
                                             placeholderTextColor={
                                                 theme.textFaint
                                             }
@@ -393,72 +213,31 @@ function EducatorProfileScreen({
                                             autoCapitalize="none"
                                             autoCorrect={false}
                                             style={{
-                                                minHeight: 48,
-                                                paddingHorizontal: 15,
-
-                                                borderWidth: 1,
-                                                borderColor:
-                                                    displayEmail.length > 0 && !emailIsValid
-                                                        ? theme.danger
-                                                        : theme.border,
-
-                                                borderRadius: borderRadius.lg,
-
-                                                backgroundColor:
-                                                    theme.bgSubtle,
-
-                                                color: theme.textDark,
-
-                                                fontFamily: fonts.bodyRegular,
-
-                                                fontSize: largeText ? 17 : 14,
+                                                ...styles.input,
+                                                ...(displayEmail.length > 0 && !emailIsValid
+                                                    ? styles.inputError
+                                                    : {}),
+                                                ...(largeText ? styles.inputLargeText : {}),
                                             }}
                                         />
                                     </View>
                                 </View>
                             </View>
 
-                            <View
-                                style={{
-                                    marginTop: 18,
-                                    padding: 14,
-
-                                    borderRadius: borderRadius.lg,
-
-                                    backgroundColor: theme.bgSoft,
-                                }}
-                            >
-                                <Text
-                                    style={{
-                                        color: theme.textMuted,
-                                        fontFamily: fonts.bodyRegular,
-                                        fontSize: 12,
-                                    }}
-                                >
-                                    Escola
+                            <View style={styles.schoolCard}>
+                                <Text style={styles.schoolLabel}>
+                                    {personalInfo.schoolLabel}
                                 </Text>
 
-                                <Text
-                                    style={{
-                                        marginTop: 3,
-
-                                        color: theme.textDark,
-                                        fontFamily: fonts.bodyBold,
-                                        fontSize: 14,
-                                    }}
-                                >
-                                    Escola Caminho do Saber
+                                <Text style={styles.schoolValue}>
+                                    {personalInfo.schoolValue}
                                 </Text>
                             </View>
 
                             {!!profileMessage && (
                                 <View
                                     style={{
-                                        marginTop: 16,
-                                        padding: 13,
-
-                                        borderRadius: borderRadius.lg,
-
+                                        ...styles.messageContainer,
                                         backgroundColor: profileIsValid
                                             ? theme.successSoft
                                             : theme.dangerSoft,
@@ -466,12 +245,10 @@ function EducatorProfileScreen({
                                 >
                                     <Text
                                         style={{
+                                            ...styles.messageText,
                                             color: profileIsValid
                                                 ? theme.success
                                                 : theme.danger,
-
-                                            fontFamily: fonts.bodyBold,
-                                            fontSize: 12,
                                         }}
                                     >
                                         {profileMessage}
@@ -479,16 +256,10 @@ function EducatorProfileScreen({
                                 </View>
                             )}
 
-                            <View
-                                style={{
-                                    width: '100%',
-                                    alignItems: 'center',
-                                    marginTop: 20,
-                                }}
-                            >
+                            <View style={styles.actionRow}>
                                 <AppButton
-                                    label="Salvar alterações"
-                                    onPress={handleSaveProfile}
+                                    label={actions.save}
+                                    onPress={() => handleSaveProfile(onSave)}
                                     disabled={!profileIsValid}
                                     iconLeft={
                                         <Save
@@ -509,56 +280,44 @@ function EducatorProfileScreen({
                         <AppCard>
                             <SectionHeader
                                 compact
-                                title="Segurança"
-                                subtitle="Atualização simulada da senha de acesso."
+                                title={security.title}
+                                subtitle={security.subtitle}
                                 style={{
                                     marginBottom: 20,
                                 }}
                             />
 
-                            <View
-                                style={{
-                                    gap: 16,
-                                }}
-                            >
+                            <View style={styles.passwordGroup}>
                                 <PasswordInput
-                                    label="Senha atual"
+                                    label={security.currentPasswordLabel}
                                     value={currentPassword}
                                     onChangeText={setCurrentPassword}
-                                    placeholder="Digite a senha atual"
+                                    placeholder={security.currentPasswordPlaceholder}
                                     largeText={largeText}
                                 />
 
                                 <View
                                     style={{
+                                        ...styles.passwordRow,
                                         flexDirection: isCompact ? 'column' : 'row',
-                                        gap: 16,
                                     }}
                                 >
-                                    <View
-                                        style={{
-                                            flex: 1,
-                                        }}
-                                    >
+                                    <View style={styles.passwordColumn}>
                                         <PasswordInput
-                                            label="Nova senha"
+                                            label={security.newPasswordLabel}
                                             value={newPassword}
                                             onChangeText={setNewPassword}
-                                            placeholder="Mínimo 6 caracteres"
+                                            placeholder={security.newPasswordPlaceholder}
                                             largeText={largeText}
                                         />
                                     </View>
 
-                                    <View
-                                        style={{
-                                            flex: 1,
-                                        }}
-                                    >
+                                    <View style={styles.passwordColumn}>
                                         <PasswordInput
-                                            label="Confirmar nova senha"
+                                            label={security.confirmPasswordLabel}
                                             value={confirmNewPassword}
                                             onChangeText={setConfirmNewPassword}
-                                            placeholder="Digite novamente"
+                                            placeholder={security.confirmPasswordPlaceholder}
                                             largeText={largeText}
                                         />
                                     </View>
@@ -568,11 +327,7 @@ function EducatorProfileScreen({
                             {!!passwordMessage && (
                                 <View
                                     style={{
-                                        marginTop: 16,
-                                        padding: 13,
-
-                                        borderRadius: borderRadius.lg,
-
+                                        ...styles.messageContainer,
                                         backgroundColor: passwordIsValid
                                             ? theme.successSoft
                                             : theme.warningSoft,
@@ -595,15 +350,9 @@ function EducatorProfileScreen({
                                 </View>
                             )}
 
-                            <View
-                                style={{
-                                    width: '100%',
-                                    alignItems: 'center',
-                                    marginTop: 20,
-                                }}
-                            >
+                            <View style={styles.actionRow}>
                                 <AppButton
-                                    label="Atualizar senha"
+                                    label={actions.updatePassword}
                                     variant="secondary"
                                     disabled={!passwordWasStarted}
                                     iconLeft={
@@ -624,11 +373,8 @@ function EducatorProfileScreen({
 
                     <View
                         style={{
-                            flex: 1,
-
+                            ...styles.sideColumn,
                             width: isCompact ? '100%' : undefined,
-
-                            gap: 20,
                         }}
                     >
                         {/* Notificações */}
@@ -636,16 +382,16 @@ function EducatorProfileScreen({
                         <AppCard>
                             <SectionHeader
                                 compact
-                                title="Notificações"
-                                subtitle="Escolha os eventos que deseja acompanhar."
+                                title={notifications.title}
+                                subtitle={notifications.subtitle}
                                 style={{
                                     marginBottom: 6,
                                 }}
                             />
 
                             <PreferenceRow
-                                title="Novos envios"
-                                description="Avisar quando um aluno enviar uma resposta."
+                                title={notifications.newSubmissions.title}
+                                description={notifications.newSubmissions.description}
                                 value={newSubmissions}
                                 onValueChange={setNewSubmissions}
                             />
@@ -653,8 +399,8 @@ function EducatorProfileScreen({
                             <Divider />
 
                             <PreferenceRow
-                                title="Correções pendentes"
-                                description="Lembrar quando um envio aguardar por mais de 48 horas."
+                                title={notifications.delayedCorrections.title}
+                                description={notifications.delayedCorrections.description}
                                 value={delayedCorrections}
                                 onValueChange={setDelayedCorrections}
                             />
@@ -662,8 +408,8 @@ function EducatorProfileScreen({
                             <Divider />
 
                             <PreferenceRow
-                                title="Prazos próximos"
-                                description="Avisar sobre atividades próximas da data de entrega."
+                                title={notifications.approachingDeadlines.title}
+                                description={notifications.approachingDeadlines.description}
                                 value={approachingDeadlines}
                                 onValueChange={setApproachingDeadlines}
                             />
@@ -671,8 +417,8 @@ function EducatorProfileScreen({
                             <Divider />
 
                             <PreferenceRow
-                                title="Resumo semanal"
-                                description="Receber um resumo da participação das turmas."
+                                title={notifications.weeklySummary.title}
+                                description={notifications.weeklySummary.description}
                                 value={weeklySummary}
                                 onValueChange={setWeeklySummary}
                             />
@@ -683,16 +429,16 @@ function EducatorProfileScreen({
                         <AppCard>
                             <SectionHeader
                                 compact
-                                title="Acessibilidade"
-                                subtitle="Preferências demonstrativas do protótipo."
+                                title={accessibility.title}
+                                subtitle={accessibility.subtitle}
                                 style={{
                                     marginBottom: 6,
                                 }}
                             />
 
                             <PreferenceRow
-                                title="Fonte ampliada"
-                                description="Aumenta os textos dos campos desta tela."
+                                title={accessibility.largeText.title}
+                                description={accessibility.largeText.description}
                                 value={largeText}
                                 onValueChange={setLargeText}
                             />
@@ -700,8 +446,8 @@ function EducatorProfileScreen({
                             <Divider />
 
                             <PreferenceRow
-                                title="Alto contraste"
-                                description="Aumenta o contraste do fundo desta tela."
+                                title={accessibility.highContrast.title}
+                                description={accessibility.highContrast.description}
                                 value={highContrast}
                                 onValueChange={setHighContrast}
                             />
@@ -709,35 +455,15 @@ function EducatorProfileScreen({
                             <Divider />
 
                             <PreferenceRow
-                                title="Reduzir animações"
-                                description="Preferência registrada somente nesta demonstração."
+                                title={accessibility.reduceAnimations.title}
+                                description={accessibility.reduceAnimations.description}
                                 value={reduceAnimations}
                                 onValueChange={setReduceAnimations}
                             />
 
-                            <View
-                                style={{
-                                    marginTop: 16,
-                                    padding: 13,
-
-                                    borderRadius: borderRadius.lg,
-
-                                    backgroundColor: theme.infoSoft,
-                                }}
-                            >
-                                <Text
-                                    style={{
-                                        color: theme.info,
-
-                                        fontFamily: fonts.bodyRegular,
-
-                                        fontSize: 12,
-                                        lineHeight: 18,
-                                    }}
-                                >
-                                    No produto oficial, estas preferências deverão ser
-                                    aplicadas globalmente e persistidas na conta do
-                                    professor.
+                            <View style={styles.accessibilityNote}>
+                                <Text style={styles.accessibilityNoteText}>
+                                    {accessibility.note}
                                 </Text>
                             </View>
                         </AppCard>
@@ -746,14 +472,6 @@ function EducatorProfileScreen({
             </View>
         </ScrollView>
     );
-}
-
-interface PasswordInputProps {
-    label: string;
-    value: string;
-    onChangeText: (value: string) => void;
-    placeholder: string;
-    largeText: boolean;
 }
 
 function PasswordInput({
@@ -765,16 +483,7 @@ function PasswordInput({
 }: PasswordInputProps) {
     return (
         <View>
-            <Text
-                style={{
-                    marginBottom: 7,
-
-                    color: theme.textDark,
-                    fontFamily: fonts.bodyBold,
-
-                    fontSize: 13,
-                }}
-            >
+            <Text style={styles.passwordInputLabel}>
                 {label}
             </Text>
 
@@ -786,21 +495,8 @@ function PasswordInput({
                 secureTextEntry
                 autoCapitalize="none"
                 style={{
-                    minHeight: 48,
-                    paddingHorizontal: 15,
-
-                    borderWidth: 1,
-                    borderColor: theme.border,
-
-                    borderRadius: borderRadius.lg,
-
-                    backgroundColor: theme.bgSubtle,
-
-                    color: theme.textDark,
-
-                    fontFamily: fonts.bodyRegular,
-
-                    fontSize: largeText ? 17 : 14,
+                    ...styles.passwordInput,
+                    ...(largeText ? styles.passwordInputLargeText : {}),
                 }}
             />
         </View>
@@ -808,14 +504,20 @@ function PasswordInput({
 }
 
 function Divider() {
-    return (
-        <View
-            style={{
-                height: 1,
-                backgroundColor: theme.border,
-            }}
-        />
-    );
+    return <View style={styles.divider} />;
 }
 
-export default function ProfileRoute() { const router = useRouter(); return <ProfessorRouteShell currentDestination="educatorProfile"><EducatorProfileScreen name="Professor" email="professor@caminhodosaber.edu.br" onBack={() => router.back()} onSave={() => undefined} /></ProfessorRouteShell>; }
+export default function ProfileRoute() {
+    const router = useRouter();
+
+    return (
+        <ProfessorRouteShell currentDestination="educatorProfile">
+            <EducatorProfileScreen
+                name="Professor"
+                email="professor@caminhodosaber.edu.br"
+                onBack={() => router.push(PROFESSOR_ROUTES.DASHBOARD as any)}
+                onSave={() => undefined}
+            />
+        </ProfessorRouteShell>
+    );
+}

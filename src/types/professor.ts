@@ -139,36 +139,28 @@ export type NotificationCategory =
   | 'system';
 
 export type NotificationDestination =
-  | {
-    type: 'correctionQueue';
-  }
-  | {
-    type: 'studentProfile';
-    studentId: string;
-  }
-  | {
-    type: 'activityDetail';
-    activityId: string;
-  }
-  | {
-    type: 'reports';
-  }
-  | {
-    type: 'none';
-  };
+  | { type: 'correctionQueue' }
+  | { type: 'studentProfile'; studentId: string }
+  | { type: 'activityDetail'; activityId: string }
+  | { type: 'reports' }
+  | { type: 'none' };
 
 export interface EducatorNotification {
   id: string;
-
   title: string;
   description: string;
   createdAtLabel: string;
-
   category: NotificationCategory;
-
   read: boolean;
-
   destination: NotificationDestination;
+}
+
+export interface EducatorNotificationsHandlers {
+  onMarkAsRead: (notificationId: string) => void;
+  onOpenCorrectionQueue: () => void;
+  onOpenStudent: (studentId: string) => void;
+  onOpenActivity: (activityId: string) => void;
+  onOpenReports: () => void;
 }
 
 export interface EducatorDashboardScreenProps {
@@ -179,6 +171,48 @@ export interface EducatorDashboardScreenProps {
   onOpenReports: () => void;
   pendingCorrectionsCount: number;
   publishedActivitiesCount: number;
+}
+
+export interface DashboardMetricConfig {
+  waitingCorrectionLabel: string;
+  waitingCorrectionHelper: string;
+  publishedActivitiesLabel: string;
+  publishedActivitiesHelper: string;
+  participationLabel: string;
+  participationValue: string;
+  participationHelper: string;
+}
+
+export interface DashboardMetricInput {
+  pendingCorrectionsCount: number;
+  publishedActivitiesCount: number;
+}
+
+export interface EducatorProfileData {
+  name: string;
+  email: string;
+}
+
+export interface EducatorProfileScreenProps {
+  name: string;
+  email: string;
+  onBack: () => void;
+  onSave: (data: EducatorProfileData) => void;
+}
+
+export interface PreferenceRowProps {
+  title: string;
+  description: string;
+  value: boolean;
+  onValueChange: (value: boolean) => void;
+}
+
+export interface PasswordInputProps {
+  label: string;
+  value: string;
+  onChangeText: (value: string) => void;
+  placeholder: string;
+  largeText: boolean;
 }
 
 export interface RecentSubmission {

@@ -14,4 +14,8 @@ export const PROFESSOR_ROUTES = {
         pathname: '/(professor)/atividades/[activityId]',
         params: { activityId },
     }),
+    EDIT_ACTIVITY: (activityId: string) => ({
+        pathname: '/(professor)/[activityId]/editar',
+        params: { activityId },
+    }),
 } as const;

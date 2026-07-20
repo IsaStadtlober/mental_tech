@@ -18,9 +18,13 @@ export const STUDENT_PROFILE_MESSAGES = {
     },
     metrics: {
         completed: 'Concluídas',
+        completedHelper: 'Nos últimos 30 dias',
         pending: 'Pendentes',
+        pendingHelper: 'Missões em aberto',
         revision: 'Em revisão',
+        revisionHelper: 'Respostas devolvidas',
         participation: 'Participação',
+        participationHelper: 'Participação recente',
     },
     sections: {
         history: {
@@ -43,6 +47,13 @@ export const STUDENT_PROFILE_MESSAGES = {
         engaged: 'Em dia',
         attention: 'Precisa de atenção',
         inactive: 'Sem atividade há +7 dias',
+    },
+    hero: {
+        lastActivityPrefix: 'Última atividade:',
+    },
+    pedagogy: {
+        active: 'O aluno mantém participação recorrente, mas ainda possui atividades pendentes. Uma missão individual pode ajudar a retomar o ritmo.',
+        inactive: 'O aluno está há mais de sete dias sem concluir uma atividade. Considere enviar uma nova missão ou verificar se existe alguma dificuldade de acesso.',
     },
     historyStatus: {
         approved: 'Aprovada',

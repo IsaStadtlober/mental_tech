@@ -5,214 +5,19 @@ import MetricCard from '@/components/professor/MetricCard';
 import { ProfessorRouteShell } from '@/components/professor/ProfessorRouteShell';
 import SectionHeader from '@/components/professor/SectionHeader';
 import StatusChip from '@/components/professor/StatusChip';
-import { STUDENT_PROFILE_MESSAGES, STUDENT_PROFILE_STATUS_CONFIG } from '@/constants/professor/students';
+import { STUDENT_HISTORY_BY_ID, STUDENT_PROFILE_DATA } from '@/constants/professor/studentProfileData';
+import { STUDENT_PROFILE_STATUS_CONFIG } from '@/constants/professor/students';
 import { theme } from '@/constants/theme';
+import { useStudentProfile } from '@/hooks/useStudentProfile';
+import { PROFESSOR_ROUTES } from '@/router/professor.routes';
 import { studentsStyles } from '@/styles/professor/students';
+import type { StudentProfileScreenProps } from '@/types/professor';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Send } from 'lucide-react-native';
 import { ScrollView, Text, useWindowDimensions, View } from 'react-native';
 
-type ProfileStatus =
-    | 'engaged'
-    | 'attention'
-    | 'inactive';
-
-interface StudentProfile {
-    id: string;
-    name: string;
-    initials: string;
-    className: string;
-    status: ProfileStatus;
-
-    completedActivities: number;
-    pendingActivities: number;
-    revisionActivities: number;
-
-    participation: string;
-    trailPosition: number;
-    lastActivityAt: string;
-}
-
-interface HistoryItem {
-    id: string;
-    title: string;
-
-    status:
-    | 'approved'
-    | 'pending'
-    | 'revision';
-
-    dateLabel: string;
-    grade?: string;
-}
-
-export interface StudentProfileScreenProps {
-    studentId: string;
-
-    onBack: () => void;
-
-    onCreateActivity: (
-        studentName: string
-    ) => void;
-
-    onOpenCorrectionQueue: () => void;
-}
-
-const students: StudentProfile[] = [
-    {
-        id: 'student-1',
-        name: 'Carlos Lima',
-        initials: 'CL',
-        className: '5º Ano A',
-        status: 'attention',
-
-        completedActivities: 7,
-        pendingActivities: 3,
-        revisionActivities: 1,
-
-        participation: '72%',
-        trailPosition: 7,
-        lastActivityAt: 'há 4 dias',
-    },
-    {
-        id: 'student-2',
-        name: 'Maria Souza',
-        initials: 'MS',
-        className: '5º Ano B',
-        status: 'inactive',
-
-        completedActivities: 3,
-        pendingActivities: 5,
-        revisionActivities: 0,
-
-        participation: '48%',
-        trailPosition: 3,
-        lastActivityAt: 'há 9 dias',
-    },
-    {
-        id: 'student-3',
-        name: 'Ravi Martins',
-        initials: 'RM',
-        className: '5º Ano A',
-        status: 'attention',
-
-        completedActivities: 8,
-        pendingActivities: 2,
-        revisionActivities: 1,
-
-        participation: '81%',
-        trailPosition: 8,
-        lastActivityAt: 'há 3 dias',
-    },
-];
-
-const historyByStudent: Record<
-    string,
-    HistoryItem[]
-> = {
-    'student-1': [
-        {
-            id: 'history-4',
-            title:
-                'Mapa afetivo do bairro',
-            status: 'pending',
-            dateLabel:
-                'Enviada em 13/07/2026',
-        },
-        {
-            id: 'history-2',
-            title: 'Frações no dia a dia',
-            status: 'revision',
-            dateLabel:
-                'Revisão solicitada em 12/07/2026',
-            grade: '6,5',
-        },
-        {
-            id: 'history-3',
-            title:
-                'Leitura e interpretação',
-            status: 'approved',
-            dateLabel:
-                'Concluída em 08/07/2026',
-            grade: '8,0',
-        },
-    ],
-
-    'student-2': [
-        {
-            id: 'history-4',
-            title:
-                'Descobrindo os biomas brasileiros',
-            status: 'pending',
-            dateLabel:
-                'Enviada em 13/07/2026',
-        },
-        {
-            id: 'history-5',
-            title:
-                'Leitura e interpretação',
-            status: 'approved',
-            dateLabel:
-                'Concluída em 05/07/2026',
-            grade: '7,0',
-        },
-    ],
-
-    'student-3': [
-        {
-            id: 'history-6',
-            title:
-                'Descobrindo os biomas brasileiros',
-            status: 'pending',
-            dateLabel:
-                'Enviada em 14/07/2026',
-        },
-        {
-            id: 'history-7',
-            title: 'Frações no dia a dia',
-            status: 'approved',
-            dateLabel:
-                'Concluída em 10/07/2026',
-            grade: '9,0',
-        },
-        {
-            id: 'history-8',
-            title:
-                'Leitura e interpretação',
-            status: 'revision',
-            dateLabel:
-                'Revisão solicitada em 09/07/2026',
-            grade: '7,5',
-        },
-    ],
-};
-
 const profileStatus = STUDENT_PROFILE_STATUS_CONFIG;
 
-const historyStatus = {
-    approved: {
-        label: 'Aprovada',
-        tone: 'success' as const,
-    },
-
-    pending: {
-        label: 'Aguardando correção',
-        tone: 'warning' as const,
-    },
-
-    revision: {
-        label: 'Em revisão',
-        tone: 'info' as const,
-    },
-};
-
-/**
- * USER FLOW P5:
- * Oferece uma visão longitudinal do aluno.
- *
- * PROTOTYPE:
- * Os dados pedagógicos são simulados localmente.
- */
 function StudentProfileScreen({
     studentId,
     onBack,
@@ -224,19 +29,22 @@ function StudentProfileScreen({
     const isCompact = width < 780;
 
     const student =
-        students.find(
+        STUDENT_PROFILE_DATA.find(
             (item) => item.id === studentId
-        ) ?? students[0];
+        ) ?? STUDENT_PROFILE_DATA[0];
 
     const history =
-        historyByStudent[student.id] ?? [];
+        STUDENT_HISTORY_BY_ID[student.id] ?? [];
 
     const status = profileStatus[student.status];
-
-    const trailPercentage = Math.min(
-        student.trailPosition * 10,
-        100
-    );
+    const {
+        metrics,
+        historyStatusConfig,
+        pedagogyMessage,
+        heroMeta,
+        trailPercentage,
+        messages,
+    } = useStudentProfile(student);
 
     return (
         <ScrollView
@@ -250,10 +58,10 @@ function StudentProfileScreen({
         >
             <View style={studentsStyles.screenContainer}>
                 <View style={studentsStyles.topBar}>
-                    <BackButton label={STUDENT_PROFILE_MESSAGES.header.backButton} onPress={onBack} />
+                    <BackButton label={messages.header.backButton} onPress={onBack} />
 
                     <AppButton
-                        label={isCompact ? STUDENT_PROFILE_MESSAGES.header.createActivityButtonCompact : STUDENT_PROFILE_MESSAGES.header.createActivityButton}
+                        label={isCompact ? messages.header.createActivityButtonCompact : messages.header.createActivityButton}
                         iconLeft={
                             <Send
                                 size={17}
@@ -298,8 +106,7 @@ function StudentProfileScreen({
                                 <Text style={studentsStyles.profileMeta}>
                                     {student.className}
                                     {' · '}
-                                    Última atividade:{' '}
-                                    {student.lastActivityAt}
+                                    {heroMeta}
                                 </Text>
 
                                 <StatusChip
@@ -316,43 +123,15 @@ function StudentProfileScreen({
                 </AppCard>
 
                 <View style={studentsStyles.metricsGrid}>
-                    <MetricCard
-                        label={STUDENT_PROFILE_MESSAGES.metrics.completed}
-                        value={
-                            student.completedActivities
-                        }
-                        helper="Nos últimos 30 dias"
-                        tone="success"
-                    />
-
-                    <MetricCard
-                        label={STUDENT_PROFILE_MESSAGES.metrics.pending}
-                        value={
-                            student.pendingActivities
-                        }
-                        helper="Missões em aberto"
-                        tone="warning"
-                    />
-
-                    <MetricCard
-                        label={STUDENT_PROFILE_MESSAGES.metrics.revision}
-                        value={
-                            student.revisionActivities
-                        }
-                        helper="Respostas devolvidas"
-                        tone="info"
-                    />
-
-                    <MetricCard
-                        label={STUDENT_PROFILE_MESSAGES.metrics.participation}
-                        value={student.participation}
-                        helper="Participação recente"
-                        tone={
-                            student.status === 'inactive'
-                                ? 'danger'
-                                : 'primary'
-                        }
-                    />
+                    {metrics.map((metric) => (
+                        <MetricCard
+                            key={metric.label}
+                            label={metric.label}
+                            value={metric.value}
+                            helper={metric.helper}
+                            tone={metric.tone}
+                        />
+                    ))}
                 </View>
 
                 <View style={[studentsStyles.splitLayout, { flexDirection: isCompact ? 'column' : 'row' }]}> 
@@ -360,8 +139,8 @@ function StudentProfileScreen({
                         <AppCard>
                             <SectionHeader
                                 compact
-                                title={STUDENT_PROFILE_MESSAGES.sections.history.title}
-                                subtitle={STUDENT_PROFILE_MESSAGES.sections.history.subtitle}
+                                title={messages.sections.history.title}
+                                subtitle={messages.sections.history.subtitle}
                                 style={{
                                     marginBottom: 18,
                                 }}
@@ -369,10 +148,7 @@ function StudentProfileScreen({
 
                             {history.map(
                                 (item, index) => {
-                                    const itemStatus =
-                                        historyStatus[
-                                        item.status
-                                        ];
+                                    const itemStatus = historyStatusConfig[item.status];
 
                                     return (
                                         <View key={item.id} style={[studentsStyles.historyItem, { borderTopWidth: index === 0 ? 0 : 1 }]}> 
@@ -415,7 +191,7 @@ function StudentProfileScreen({
                                     item.status === 'pending'
                             ) && (
                                     <AppButton
-                                        label={STUDENT_PROFILE_MESSAGES.actions.openCorrections}
+                                        label={messages.actions.openCorrections}
                                         variant="secondary"
                                         onPress={
                                             onOpenCorrectionQueue
@@ -434,8 +210,8 @@ function StudentProfileScreen({
                         <AppCard>
                             <SectionHeader
                                 compact
-                                title={STUDENT_PROFILE_MESSAGES.sections.trail.title}
-                                subtitle={STUDENT_PROFILE_MESSAGES.sections.trail.subtitle}
+                                title={messages.sections.trail.title}
+                                subtitle={messages.sections.trail.subtitle}
                                 style={{
                                     marginBottom: 18,
                                 }}
@@ -462,18 +238,15 @@ function StudentProfileScreen({
                         <AppCard>
                             <SectionHeader
                                 compact
-                                title={STUDENT_PROFILE_MESSAGES.sections.pedagogy.title}
-                                subtitle={STUDENT_PROFILE_MESSAGES.sections.pedagogy.subtitle}
+                                title={messages.sections.pedagogy.title}
+                                subtitle={messages.sections.pedagogy.subtitle}
                                 style={{
                                     marginBottom: 16,
                                 }}
                             />
 
                             <Text style={studentsStyles.pedagogyText}>
-                                {student.status ===
-                                    'inactive'
-                                    ? 'O aluno está há mais de sete dias sem concluir uma atividade. Considere enviar uma nova missão ou verificar se existe alguma dificuldade de acesso.'
-                                    : 'O aluno mantém participação recorrente, mas ainda possui atividades pendentes. Uma missão individual pode ajudar a retomar o ritmo.'}
+                                {pedagogyMessage}
                             </Text>
                         </AppCard>
                     </View>
@@ -492,8 +265,11 @@ export default function StudentRoute() {
             <StudentProfileScreen
                 studentId={studentId}
                 onBack={() => router.back()}
-                onCreateActivity={(studentName) => router.push(({ pathname: '/(professor)/atividades/nova', params: { studentName } } as any))}
-                onOpenCorrectionQueue={() => router.push('/(professor)/correcoes' as any)}
+                onCreateActivity={(studentName) => router.push({
+                    pathname: PROFESSOR_ROUTES.CREATE_ACTIVITY,
+                    params: { studentName },
+                } as any)}
+                onOpenCorrectionQueue={() => router.push(PROFESSOR_ROUTES.CORRECTIONS as any)}
             />
         </ProfessorRouteShell>
     );

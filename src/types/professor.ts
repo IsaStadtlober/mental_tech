@@ -128,6 +128,49 @@ export interface ActivityDetailScreenProps {
   onOpenCorrectionQueue: () => void;
 }
 
+export type StudentProfileStatus = 'engaged' | 'attention' | 'inactive';
+
+export interface StudentProfile {
+  id: string;
+  name: string;
+  initials: string;
+  className: string;
+  status: StudentProfileStatus;
+  completedActivities: number;
+  pendingActivities: number;
+  revisionActivities: number;
+  participation: string;
+  trailPosition: number;
+  lastActivityAt: string;
+}
+
+export interface StudentHistoryItem {
+  id: string;
+  title: string;
+  status: 'approved' | 'pending' | 'revision';
+  dateLabel: string;
+  grade?: string;
+}
+
+export interface StudentProfileScreenProps {
+  studentId: string;
+  onBack: () => void;
+  onCreateActivity: (studentName: string) => void;
+  onOpenCorrectionQueue: () => void;
+}
+
+export interface StudentProfileMetricCardData {
+  label: string;
+  value: number | string;
+  helper: string;
+  tone: 'primary' | 'success' | 'warning' | 'danger' | 'info';
+}
+
+export interface StudentHistoryStatusConfig {
+  label: string;
+  tone: 'success' | 'warning' | 'info';
+}
+
 export interface Submission {
   id: string;
 

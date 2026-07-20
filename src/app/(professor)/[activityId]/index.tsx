@@ -9,6 +9,7 @@ import { ACTIVITY_MESSAGES, ACTIVITY_STATUS_CONFIG } from '@/constants/professor
 import { theme } from '@/constants/theme';
 import { useActivityDetail } from '@/hooks/useActivityDetail';
 import { useProfessorPrototype } from '@/hooks/useProfessorPrototype';
+import { PROFESSOR_ROUTES } from '@/router/professor.routes';
 import { activitiesStyles } from '@/styles/professor/activities';
 import type { ActivityDetailScreenProps } from '@/types/professor';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -209,8 +210,11 @@ export default function ActivityDetailRoute() {
                 <ActivityDetailScreen
                     activity={activity}
                     onBack={() => router.back()}
-                    onEdit={() => router.push(({ pathname: '/[activityId]/editar', params: { activityId } } as any))}
-                    onOpenCorrectionQueue={() => router.push('/correcoes' as any)}
+                    onEdit={() => router.push({
+                        pathname: PROFESSOR_ROUTES.EDIT_ACTIVITY(activityId),
+                        params: { activityId },
+                    } as any)}
+                    onOpenCorrectionQueue={() => router.push(PROFESSOR_ROUTES.CORRECTIONS as any)}
                 />
             ) : (
                 <Text>{ACTIVITY_MESSAGES.detail.notFound}</Text>

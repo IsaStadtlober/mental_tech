@@ -11,6 +11,7 @@ import { theme } from '../constants/theme';
 import { styles } from '../styles';
 import { ChosenRole } from '../types/components';
 
+import { AUTH_ROUTES } from '@/router';
 import { BackgroundScene } from '../components/background/BackgroundScene';
 import { OptionButton } from '../components/roles/OptionButton';
 import { RoleChoiceCard } from '../components/roles/RoleChoiceCard';
@@ -49,9 +50,9 @@ export default function RolesRoute() {
     opacity: educatorProgress.value,
   }));
 
-  const handleStudent = () => router.push('/aluno/login');
-  const handleEducatorLogin = () => router.push('/(auth)/professor/login');
-  const handleSchoolSignup = () => router.push('/escola/cadastro');
+  const handleStudent = () => router.push(AUTH_ROUTES.STUDENT.LOGIN as any);
+  const handleEducatorLogin = () => router.push(AUTH_ROUTES.EDUCATOR.LOGIN as any);
+  const handleSchoolSignup = () => router.push(AUTH_ROUTES.SCHOOL_SIGNUP as any);
 
   const insets = useSafeAreaInsets();
 

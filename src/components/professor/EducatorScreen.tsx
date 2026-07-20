@@ -1,23 +1,23 @@
 import { theme } from '@/constants/theme';
-import React, {
-  type ReactNode,
+import {
+    type ReactNode,
 } from 'react';
 import {
-  type StyleProp,
-  useWindowDimensions,
-  View,
-  type ViewStyle,
+    type StyleProp,
+    useWindowDimensions,
+    View,
+    type ViewStyle,
 } from 'react-native';
-import EducatorHeader, {
-  type HeaderDestination,
-  type HeaderNotificationPreview,
-} from './EducatorHeader';
 import {
-  getHeaderHeight,
-} from '../../constants/professorLayout';
-import {
-  useSafeAreaInsets,
+    useSafeAreaInsets,
 } from 'react-native-safe-area-context';
+import {
+    getHeaderHeight,
+} from '../../constants/professor/prof_Layout';
+import EducatorHeader, {
+    type HeaderDestination,
+    type HeaderNotificationPreview,
+} from './EducatorHeader';
 
 export interface EducatorScreenProps {
   children: ReactNode;

@@ -8,16 +8,17 @@ import { AuthHeader } from "../../../components/Headers";
 import { PrimaryButton } from "../../../components/PrimaryButton";
 import { ScreenShell } from "../../../components/ScreenShell";
 
+import { WIZARD_ROUTES } from '@/router';
 import { EDUCATOR_AUTH_CONSTANTS } from "../../../constants/auth";
 import { useWizardFlow } from "../../../hooks/useWizardFlow";
 import { styles } from "../../../styles";
 import {
-  fetchAddressByCep,
-  fetchCnpjData,
-  isValidCep,
-  isValidCnpj,
-  isValidEmail,
-  sanitizeDigits,
+    fetchAddressByCep,
+    fetchCnpjData,
+    isValidCep,
+    isValidCnpj,
+    isValidEmail,
+    sanitizeDigits,
 } from "../../../utils/auth";
 
 export default function SchoolSignupRoute() {
@@ -158,7 +159,7 @@ export default function SchoolSignupRoute() {
       });
 
       router.push({
-        pathname: "/wizard",
+        pathname: WIZARD_ROUTES.ROOT,
         params: { schoolName: tradeName.trim() },
       });
     } catch (err: any) {

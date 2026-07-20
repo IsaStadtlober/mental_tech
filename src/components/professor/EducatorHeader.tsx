@@ -1,33 +1,33 @@
 import { borderRadius, fonts, theme } from '@/constants/theme';
+import {
+    BarChart3,
+    Bell,
+    BookOpen,
+    CheckSquare2,
+    LayoutDashboard,
+    Menu,
+    UserRound,
+    X,
+} from 'lucide-react-native';
 import React, {
-  useMemo,
-  useState,
+    useMemo,
+    useState,
 } from 'react';
 import {
-  Pressable,
-  Text,
-  useWindowDimensions,
-  View,
+    Pressable,
+    Text,
+    useWindowDimensions,
+    View,
 } from 'react-native';
 import {
-  BarChart3,
-  Bell,
-  BookOpen,
-  CheckSquare2,
-  LayoutDashboard,
-  Menu,
-  UserRound,
-  X,
-} from 'lucide-react-native';
+    useSafeAreaInsets,
+} from 'react-native-safe-area-context';
+import {
+    isCompactWidth,
+    layout,
+} from '../../constants/professor/prof_Layout';
 import DecorativeBubble from './DecorativeBubble';
 import IconButton from './IconButton';
-import {
-  isCompactWidth,
-  layout,
-} from '../../constants/professorLayout';
-import {
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
 
 export type HeaderDestination =
   | 'dashboard'

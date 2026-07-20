@@ -1,8 +1,29 @@
-import { useRouter } from 'expo-router';
+import type {
+    Activity,
+    ActivityStatus,
+} from '@/components/professor/../../types/professor';
+import AppButton from '@/components/professor/AppButton';
+import AppCard from '@/components/professor/AppCard';
+import BackButton from '@/components/professor/BackButton';
+import EmptyState from '@/components/professor/EmptyState';
 import { ProfessorRouteShell } from '@/components/professor/ProfessorRouteShell';
-import { useProfessorPrototype } from '@/hooks/useProfessorPrototype';
+import StatusChip, {
+    type StatusChipTone,
+} from '@/components/professor/StatusChip';
+import {
+    getHorizontalPadding,
+    isCompactWidth,
+} from '@/constants/professor/prof_Layout';
 import { borderRadius, fonts, theme } from '@/constants/theme';
-import React, {
+import { useProfessorPrototype } from '@/hooks/useProfessorPrototype';
+import { useRouter } from 'expo-router';
+import {
+    Edit3,
+    Eye,
+    Plus,
+    Trash2,
+} from 'lucide-react-native';
+import {
     useMemo,
     useState,
 } from 'react';
@@ -14,27 +35,6 @@ import {
     useWindowDimensions,
     View,
 } from 'react-native';
-import {
-    Edit3,
-    Eye,
-    Plus,
-    Trash2,
-} from 'lucide-react-native';
-import AppButton from '@/components/professor/AppButton';
-import AppCard from '@/components/professor/AppCard';
-import BackButton from '@/components/professor/BackButton';
-import EmptyState from '@/components/professor/EmptyState';
-import StatusChip, {
-    type StatusChipTone,
-} from '@/components/professor/StatusChip';
-import {
-    getHorizontalPadding,
-    isCompactWidth,
-} from '@/components/professor/../../constants/professorLayout';
-import type {
-    Activity,
-    ActivityStatus,
-} from '@/components/professor/../../types/professor';
 
 type ActivityFilter =
     | 'all'

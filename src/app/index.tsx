@@ -11,6 +11,7 @@ import { Dots } from '../components/carousel/Dots';
 import { SlideContent } from '../components/carousel/SlideContent';
 import { PrimaryButton } from '../components/PrimaryButton';
 
+import { AUTH_ROUTES } from '@/router';
 import { CAROUSEL_CONFIG, SLIDES } from '../constants/carousel';
 import { theme } from '../constants/theme';
 import { styles } from '../styles';
@@ -29,7 +30,7 @@ export default function CarouselRoute() {
   const isLast = index === SLIDES.length - 1;
 
   const handleFinish = useCallback(() => {
-    router.push('/roles');
+    router.push(AUTH_ROUTES.ROLES as any);
   }, [router]);
 
   useEffect(() => {

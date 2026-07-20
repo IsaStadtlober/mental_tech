@@ -44,11 +44,11 @@ export interface EducatorMetric {
   helper?: string;
 
   tone?:
-    | 'primary'
-    | 'success'
-    | 'warning'
-    | 'danger'
-    | 'info';
+  | 'primary'
+  | 'success'
+  | 'warning'
+  | 'danger'
+  | 'info';
 }
 
 export interface EducatorStudentOption {
@@ -140,22 +140,22 @@ export type NotificationCategory =
 
 export type NotificationDestination =
   | {
-      type: 'correctionQueue';
-    }
+    type: 'correctionQueue';
+  }
   | {
-      type: 'studentProfile';
-      studentId: string;
-    }
+    type: 'studentProfile';
+    studentId: string;
+  }
   | {
-      type: 'activityDetail';
-      activityId: string;
-}
+    type: 'activityDetail';
+    activityId: string;
+  }
   | {
-      type: 'reports';
-    }
+    type: 'reports';
+  }
   | {
-      type: 'none';
-    };
+    type: 'none';
+  };
 
 export interface EducatorNotification {
   id: string;
@@ -169,4 +169,23 @@ export interface EducatorNotification {
   read: boolean;
 
   destination: NotificationDestination;
+}
+
+export interface EducatorDashboardScreenProps {
+  onOpenActivities: () => void;
+  onCreateActivity: () => void;
+  onOpenCorrectionQueue: () => void;
+  onOpenStudent: (studentId: string) => void;
+  onOpenReports: () => void;
+  pendingCorrectionsCount: number;
+  publishedActivitiesCount: number;
+}
+
+export interface RecentSubmission {
+  id: string;
+  initials: string;
+  studentName: string;
+  activityTitle: string;
+  className: string;
+  waitingTime: string;
 }

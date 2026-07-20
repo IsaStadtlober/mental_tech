@@ -2,6 +2,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { PrimaryButton } from '../../../components/PrimaryButton';
 import { SuccessScreen } from '../../../components/SuccessScreen';
 
+import { AUTH_ROUTES } from '@/router';
 import { STUDENT_AUTH_CONSTANTS } from '../../../constants/auth';
 import { WelcomeDoneSearchParams } from '../../../types/auth';
 
@@ -18,7 +19,7 @@ export default function WelcomeDoneRoute() {
       description={STUDENT_AUTH_CONSTANTS.TEXTS.DONE_DESCRIPTION}
       onBack={() => router.back()}
       footer={
-        <PrimaryButton onPress={() => router.replace('/roles' as any)}>
+        <PrimaryButton onPress={() => router.replace(AUTH_ROUTES.ROLES as any)}>
           {STUDENT_AUTH_CONSTANTS.TEXTS.BUTTON_ACCESS_ACCOUNT}
         </PrimaryButton>
       }

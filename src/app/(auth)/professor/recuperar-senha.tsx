@@ -8,6 +8,7 @@ import { AuthHeader } from '../../../components/Headers';
 import { PrimaryButton } from '../../../components/PrimaryButton';
 import { ScreenShell } from '../../../components/ScreenShell';
 
+import { AUTH_ROUTES } from '@/router';
 import { EDUCATOR_AUTH_CONSTANTS } from '../../../constants/auth';
 import { styles } from '../../../styles';
 import { isValidEmail } from '../../../utils/auth';
@@ -19,7 +20,7 @@ export default function ForgotPasswordRoute() {
   const canSend = isValidEmail(email);
 
   const handleSent = () => {
-    router.push('/(auth)/professor/senha-enviada');
+    router.push(AUTH_ROUTES.EDUCATOR.PASSWORD_SENT as any);
   };
 
   return (

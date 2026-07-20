@@ -1,6 +1,16 @@
+import { ScrollView, Text, useWindowDimensions, View } from 'react-native';
+import { useRouter } from 'expo-router';
+import { Plus } from 'lucide-react-native';
 
-import { educatorStyles } from '@/components/professor/../../styles/professor/educatorStyles';
-import type { Student } from '@/components/professor/../../types/professor';
+import { theme } from '@/constants/theme';
+import { useProfessorPrototype } from '@/hooks/useProfessorPrototype';
+import { educatorStyles } from '@/styles/professor/educator';
+import { dashboardStyles as styles } from '@/styles/professor/dashboard';
+import { MOCK_STUDENTS, RECENT_SUBMISSIONS } from '@/constants/professor/dashboard';
+import type { EducatorDashboardScreenProps } from '@/types/professor';
+import { PROFESSOR_ROUTES } from '@/router';
+import { PROFESSOR_DASHBOARD_MESSAGES } from '@/constants/professor/professor';
+
 import AppButton from '@/components/professor/AppButton';
 import AppCard from '@/components/professor/AppCard';
 import MetricCard from '@/components/professor/MetricCard';
@@ -8,104 +18,6 @@ import { ProfessorRouteShell } from '@/components/professor/ProfessorRouteShell'
 import SectionHeader from '@/components/professor/SectionHeader';
 import StatusChip from '@/components/professor/StatusChip';
 import StudentCard from '@/components/professor/StudentCard';
-import { borderRadius, fonts, theme } from '@/constants/theme';
-import { useProfessorPrototype } from '@/hooks/useProfessorPrototype';
-import { useRouter } from 'expo-router';
-import {
-    Plus,
-} from 'lucide-react-native';
-import {
-    ScrollView,
-    Text,
-    useWindowDimensions,
-    View,
-} from 'react-native';
-
-export interface EducatorDashboardScreenProps {
-    onOpenActivities: () => void;
-    onCreateActivity: () => void;
-    onOpenCorrectionQueue: () => void;
-    onOpenStudent: (studentId: string) => void;
-    onOpenReports: () => void;
-    pendingCorrectionsCount: number;
-    publishedActivitiesCount: number;
-}
-
-/**
- * PROTOTYPE:
- * Dados locais usados somente para demonstrar os diferentes
- * estados do Dashboard sem API ou banco de dados.
- */
-const students: Student[] = [
-    {
-        id: 'student-1',
-        name: 'Carlos Lima',
-        initials: 'CL',
-        className: '5º Ano A',
-        engagementStatus: 'attention',
-        completedActivities: 7,
-        pendingActivities: 3,
-        revisionActivities: 1,
-        pendingCorrections: 2,
-        lastActivityAt: 'há 4 dias',
-        trailPosition: 7,
-    },
-    {
-        id: 'student-2',
-        name: 'Maria Souza',
-        initials: 'MS',
-        className: '5º Ano B',
-        engagementStatus: 'inactive',
-        completedActivities: 3,
-        pendingActivities: 5,
-        revisionActivities: 0,
-        pendingCorrections: 0,
-        lastActivityAt: 'há 9 dias',
-        trailPosition: 3,
-    },
-    {
-        id: 'student-3',
-        name: 'Ravi Martins',
-        initials: 'RM',
-        className: '5º Ano A',
-        engagementStatus: 'attention',
-        completedActivities: 8,
-        pendingActivities: 2,
-        revisionActivities: 1,
-        pendingCorrections: 1,
-        lastActivityAt: 'há 3 dias',
-        trailPosition: 8,
-    },
-];
-
-const recentSubmissions = [
-    {
-        id: 'submission-1',
-        initials: 'AC',
-        studentName: 'Ana Clara',
-        activityTitle: 'Descobrindo os biomas brasileiros',
-        className: '5º Ano A',
-        waitingTime: 'Enviado há 1 hora',
-    },
-    {
-        id: 'submission-2',
-        initials: 'LM',
-        studentName: 'Lucas Mendes',
-        activityTitle: 'Frações no dia a dia',
-        className: '5º Ano A',
-        waitingTime: 'Enviado há 2 horas',
-    },
-    {
-        id: 'submission-3',
-        initials: 'RM',
-        studentName: 'Ravi Martins',
-        activityTitle:
-            'Descobrindo os biomas brasileiros',
-        className: '5º Ano A',
-        waitingTime:
-            'Enviado há 4 horas',
-    },
-];
 
 function EducatorDashboardScreen({
     onOpenActivities,
@@ -117,245 +29,154 @@ function EducatorDashboardScreen({
     publishedActivitiesCount,
 }: EducatorDashboardScreenProps) {
     const { width } = useWindowDimensions();
-
     const isCompact = width < 760;
 
     return (
         <ScrollView
             style={educatorStyles.page}
-            contentContainerStyle={{
-                flexGrow: 1,
-            }}
+            contentContainerStyle={{ flexGrow: 1 }}
             showsVerticalScrollIndicator={false}
         >
             <View
                 style={[
                     educatorStyles.screenContainer,
-                    {
-                        paddingHorizontal: isCompact ? 16 : 24,
-                    },
+                    { paddingHorizontal: isCompact ? 16 : 24 },
                 ]}
             >
-
-                <AppCard
-                    style={{
-                        overflow: 'hidden',
-                    }}
-                >
+                {/* Visão Geral */}
+                <AppCard style={styles.overviewCard}>
                     <View
-                        style={{
-                            flexDirection: isCompact
-                                ? 'column'
-                                : 'row',
-
-                            alignItems: isCompact
-                                ? 'stretch'
-                                : 'center',
-
-                            justifyContent:
-                                'space-between',
-
-                            gap: 22,
-                        }}
+                        style={[
+                            styles.overviewContent,
+                            {
+                                flexDirection: isCompact ? 'column' : 'row',
+                                alignItems: isCompact ? 'stretch' : 'center',
+                            },
+                        ]}
                     >
-                        <View
-                            style={{
-                                flex: 1,
-                                minWidth: 0,
-                            }}
-                        >
-                            <Text
-                                style={{
-                                    color:
-                                        theme.primaryLight,
-
-                                    fontFamily:
-                                        fonts.bodyBold,
-
-                                    fontSize: 11,
-                                    letterSpacing: 1.4,
-
-                                    textTransform:
-                                        'uppercase',
-                                }}
-                            >
-                                Visão geral
+                        <View style={styles.overviewTextContainer}>
+                            <Text style={styles.overviewEyebrow}>
+                                {PROFESSOR_DASHBOARD_MESSAGES.overview.eyebrow}
                             </Text>
-
                             <Text
-                                style={{
-                                    marginTop: 8,
-
-                                    color:
-                                        theme.textDark,
-
-                                    fontFamily:
-                                        fonts.headlineBold,
-
-                                    fontSize: isCompact
-                                        ? 25
-                                        : 30,
-
-                                    lineHeight: isCompact
-                                        ? 32
-                                        : 38,
-                                }}
+                                style={[
+                                    styles.overviewTitle,
+                                    {
+                                        fontSize: isCompact ? 25 : 30,
+                                        lineHeight: isCompact ? 32 : 38,
+                                    },
+                                ]}
                             >
-                                Acompanhe suas turmas
+                                {PROFESSOR_DASHBOARD_MESSAGES.overview.title}
                             </Text>
-
-                            <Text
-                                style={{
-                                    maxWidth: 650,
-                                    marginTop: 7,
-
-                                    color:
-                                        theme.textMuted,
-
-                                    fontFamily:
-                                        fonts.bodyRegular,
-
-                                    fontSize: 15,
-                                    lineHeight: 22,
-                                }}
-                            >
-                                Você possui{' '}
-                                {pendingCorrectionsCount}{' '}
-                                {pendingCorrectionsCount === 1
-                                    ? 'envio aguardando correção'
-                                    : 'envios aguardando correção'}{' '}
-                                e pode acompanhar as prioridades
-                                abaixo.
+                            <Text style={styles.overviewDescription}>
+                                {PROFESSOR_DASHBOARD_MESSAGES.overview.description(
+                                    pendingCorrectionsCount
+                                )}
                             </Text>
                         </View>
 
                         <View
-                            style={{
-                                width: isCompact
-                                    ? '100%'
-                                    : undefined,
-
-                                flexDirection: 'row',
-                                alignItems: 'center',
-
-                                justifyContent: isCompact
-                                    ? 'center'
-                                    : 'flex-end',
-
-                                flexWrap: 'wrap',
-                                gap: 10,
-                            }}
+                            style={[
+                                styles.overviewActions,
+                                {
+                                    width: isCompact ? '100%' : undefined,
+                                    justifyContent: isCompact ? 'center' : 'flex-end',
+                                },
+                            ]}
                         >
                             <AppButton
-                                label="Nova missão"
+                                label={PROFESSOR_DASHBOARD_MESSAGES.overview.newMissionButton}
                                 size="large"
                                 onPress={onCreateActivity}
-                                iconLeft={
-                                    <Plus
-                                        size={18}
-                                        strokeWidth={2.4}
-                                        color={
-                                            theme.white
-                                        }
-                                    />
+                                iconLeft={<Plus size={18} strokeWidth={2.4} color={theme.white} />}
+                                accessibilityHint={
+                                    PROFESSOR_DASHBOARD_MESSAGES.overview.newMissionAccessibilityHint
                                 }
-                                accessibilityHint="Abre o formulário para criar uma nova atividade"
                             />
                         </View>
                     </View>
                 </AppCard>
 
                 {/* Métricas prioritárias */}
-
                 <View style={educatorStyles.section}>
                     <SectionHeader
-                        eyebrow="Prioridades"
-                        title="O que precisa de atenção"
-                        subtitle="Indicadores principais das suas turmas."
+                        eyebrow={PROFESSOR_DASHBOARD_MESSAGES.priorities.eyebrow}
+                        title={PROFESSOR_DASHBOARD_MESSAGES.priorities.title}
+                        subtitle={PROFESSOR_DASHBOARD_MESSAGES.priorities.subtitle}
                     />
                 </View>
 
-                <View
-                    style={[
-                        educatorStyles.metricsGrid,
-                        {
-                            marginTop: 16,
-                        },
-                    ]}
-                >
+                <View style={[educatorStyles.metricsGrid, { marginTop: 16 }]}>
                     <MetricCard
-                        label="Aguardando correção"
+                        label={
+                            PROFESSOR_DASHBOARD_MESSAGES.priorities.metrics.waitingCorrection.label
+                        }
                         value={pendingCorrectionsCount}
-                        helper={
-                            pendingCorrectionsCount === 0
-                                ? 'Nenhum envio exige ação agora'
-                                : 'Priorize os envios mais antigos'
-                        }
-                        tone={
-                            pendingCorrectionsCount === 0
-                                ? 'success'
-                                : 'warning'
-                        }
+                        helper={PROFESSOR_DASHBOARD_MESSAGES.priorities.metrics.waitingCorrection.helper(
+                            pendingCorrectionsCount
+                        )}
+                        tone={pendingCorrectionsCount === 0 ? 'success' : 'warning'}
                         onPress={onOpenCorrectionQueue}
                     />
-
                     <MetricCard
-                        label="Sem atividade há +7 dias"
+                        label={PROFESSOR_DASHBOARD_MESSAGES.priorities.metrics.noActivity.label}
                         value={3}
-                        helper="Alunos que podem precisar de apoio"
+                        helper={PROFESSOR_DASHBOARD_MESSAGES.priorities.metrics.noActivity.helper}
                         tone="danger"
                     />
-
                     <MetricCard
-                        label="Atividades publicadas"
-                        value={publishedActivitiesCount}
-                        helper={
-                            publishedActivitiesCount === 1
-                                ? '1 missão disponível para os alunos'
-                                : `${publishedActivitiesCount} missões disponíveis para os alunos`
+                        label={
+                            PROFESSOR_DASHBOARD_MESSAGES.priorities.metrics.publishedActivities.label
                         }
+                        value={publishedActivitiesCount}
+                        helper={PROFESSOR_DASHBOARD_MESSAGES.priorities.metrics.publishedActivities.helper(
+                            publishedActivitiesCount
+                        )}
                         tone="primary"
                         onPress={onOpenActivities}
                     />
-
                     <MetricCard
-                        label="Participação da turma"
-                        value="84%"
-                        helper="Aumento de 6% nos últimos 30 dias"
+                        label={
+                            PROFESSOR_DASHBOARD_MESSAGES.priorities.metrics.participation.label
+                        }
+                        value={
+                            PROFESSOR_DASHBOARD_MESSAGES.priorities.metrics.participation.value
+                        }
+                        helper={
+                            PROFESSOR_DASHBOARD_MESSAGES.priorities.metrics.participation.helper
+                        }
                         tone="success"
                         onPress={onOpenReports}
                     />
                 </View>
 
                 {/* Conteúdo principal em duas colunas */}
-
-                <View
-                    style={[
-                        educatorStyles.contentGrid,
-                        educatorStyles.section,
-                    ]}
-                >
-                    {/* Alunos que precisam de atenção */}
-
+                <View style={[educatorStyles.contentGrid, educatorStyles.section]}>
+                    {/* Alunos em foco */}
                     <View style={educatorStyles.mainColumn}>
                         <AppCard>
                             <SectionHeader
                                 compact
-                                title="Alunos em foco"
-                                subtitle="Alunos que necessitam de intervenção ou feedback."
+                                title={PROFESSOR_DASHBOARD_MESSAGES.studentsInFocus.title}
+                                subtitle={
+                                    PROFESSOR_DASHBOARD_MESSAGES.studentsInFocus.subtitle
+                                }
                                 style={educatorStyles.panelHeaderSpacing}
                                 action={
                                     <AppButton
-                                        label="Ver relatórios"
+                                        label={
+                                            PROFESSOR_DASHBOARD_MESSAGES.studentsInFocus
+                                                .seeReportsButton
+                                        }
                                         variant="ghost"
                                         size="small"
                                         onPress={onOpenReports}
                                     />
                                 }
                             />
-
                             <View style={educatorStyles.stack}>
-                                {students.map((student) => (
+                                {MOCK_STUDENTS.map((student) => (
                                     <StudentCard
                                         key={student.id}
                                         student={student}
@@ -368,36 +189,37 @@ function EducatorDashboardScreen({
                     </View>
 
                     {/* Coluna lateral */}
-
                     <View style={educatorStyles.sideColumn}>
                         <AppCard>
                             <SectionHeader
                                 compact
-                                title="Ações rápidas"
-                                subtitle="Acesse as tarefas mais frequentes."
+                                title={PROFESSOR_DASHBOARD_MESSAGES.quickActions.title}
+                                subtitle={PROFESSOR_DASHBOARD_MESSAGES.quickActions.subtitle}
                                 style={educatorStyles.panelHeaderSpacing}
                             />
-
-                            <View
-                                style={{
-                                    gap: 10,
-                                }}
-                            >
+                            <View style={{ gap: 10 }}>
                                 <AppButton
-                                    label="Abrir fila de correção"
+                                    label={
+                                        PROFESSOR_DASHBOARD_MESSAGES.quickActions
+                                            .openCorrectionQueue
+                                    }
                                     onPress={onOpenCorrectionQueue}
                                     fullWidth
                                 />
-
                                 <AppButton
-                                    label="Gerenciar atividades"
+                                    label={
+                                        PROFESSOR_DASHBOARD_MESSAGES.quickActions
+                                            .manageActivities
+                                    }
                                     onPress={onOpenActivities}
                                     variant="secondary"
                                     fullWidth
                                 />
-
                                 <AppButton
-                                    label="Consultar relatórios"
+                                    label={
+                                        PROFESSOR_DASHBOARD_MESSAGES.quickActions
+                                            .consultReports
+                                    }
                                     onPress={onOpenReports}
                                     variant="ghost"
                                     fullWidth
@@ -408,118 +230,37 @@ function EducatorDashboardScreen({
                         <AppCard>
                             <SectionHeader
                                 compact
-                                title="Resumo das turmas"
-                                subtitle="Participação nos últimos 30 dias."
+                                title={PROFESSOR_DASHBOARD_MESSAGES.classSummary.title}
+                                subtitle={PROFESSOR_DASHBOARD_MESSAGES.classSummary.subtitle}
                                 style={educatorStyles.panelHeaderSpacing}
                             />
-
-                            <View
-                                style={{
-                                    gap: 18,
-                                }}
-                            >
-                                {/* 5º Ano A */}
-
+                            <View style={styles.classSummaryContainer}>
                                 <View>
-                                    <View
-                                        style={{
-                                            flexDirection: 'row',
-                                            justifyContent: 'space-between',
-                                            gap: 12,
-                                        }}
-                                    >
-                                        <Text
-                                            style={{
-                                                color: theme.textDark,
-                                                fontFamily: fonts.bodyBold,
-                                                fontSize: 13,
-                                            }}
-                                        >
-                                            5º Ano A
-                                        </Text>
-
-                                        <Text
-                                            style={{
-                                                color: theme.primary,
-                                                fontFamily: fonts.bodyBold,
-                                                fontSize: 13,
-                                            }}
-                                        >
-                                            88%
-                                        </Text>
+                                    <View style={styles.classSummaryRow}>
+                                        <Text style={styles.classSummaryName}>5º Ano A</Text>
+                                        <Text style={styles.classSummaryValuePrimary}>88%</Text>
                                     </View>
-
-                                    <View
-                                        style={{
-                                            height: 8,
-                                            marginTop: 8,
-                                            overflow: 'hidden',
-                                            borderRadius: borderRadius.pill,
-                                            backgroundColor:
-                                                theme.bgSoft,
-                                        }}
-                                    >
+                                    <View style={styles.progressBarTrack}>
                                         <View
-                                            style={{
-                                                width: '88%',
-                                                height: '100%',
-                                                borderRadius: borderRadius.pill,
-                                                backgroundColor:
-                                                    theme.primary,
-                                            }}
+                                            style={[
+                                                styles.progressBarFillPrimary,
+                                                { width: '88%' },
+                                            ]}
                                         />
                                     </View>
                                 </View>
 
-                                {/* 5º Ano B */}
-
                                 <View>
-                                    <View
-                                        style={{
-                                            flexDirection: 'row',
-                                            justifyContent: 'space-between',
-                                            gap: 12,
-                                        }}
-                                    >
-                                        <Text
-                                            style={{
-                                                color: theme.textDark,
-                                                fontFamily: fonts.bodyBold,
-                                                fontSize: 13,
-                                            }}
-                                        >
-                                            5º Ano B
-                                        </Text>
-
-                                        <Text
-                                            style={{
-                                                color: theme.warning,
-                                                fontFamily: fonts.bodyBold,
-                                                fontSize: 13,
-                                            }}
-                                        >
-                                            76%
-                                        </Text>
+                                    <View style={styles.classSummaryRow}>
+                                        <Text style={styles.classSummaryName}>5º Ano B</Text>
+                                        <Text style={styles.classSummaryValueWarning}>76%</Text>
                                     </View>
-
-                                    <View
-                                        style={{
-                                            height: 8,
-                                            marginTop: 8,
-                                            overflow: 'hidden',
-                                            borderRadius: borderRadius.pill,
-                                            backgroundColor:
-                                                theme.bgSoft,
-                                        }}
-                                    >
+                                    <View style={styles.progressBarTrack}>
                                         <View
-                                            style={{
-                                                width: '76%',
-                                                height: '100%',
-                                                borderRadius: borderRadius.pill,
-                                                backgroundColor:
-                                                    theme.warning,
-                                            }}
+                                            style={[
+                                                styles.progressBarFillWarning,
+                                                { width: '76%' },
+                                            ]}
                                         />
                                     </View>
                                 </View>
@@ -529,16 +270,20 @@ function EducatorDashboardScreen({
                 </View>
 
                 {/* Últimas entregas */}
-
                 <View style={educatorStyles.section}>
                     <AppCard>
                         <SectionHeader
-                            title="Últimas entregas"
-                            subtitle="Trabalhos enviados recentemente que precisam de avaliação."
+                            title={PROFESSOR_DASHBOARD_MESSAGES.recentSubmissions.title}
+                            subtitle={
+                                PROFESSOR_DASHBOARD_MESSAGES.recentSubmissions.subtitle
+                            }
                             style={educatorStyles.panelHeaderSpacing}
                             action={
                                 <AppButton
-                                    label="Ver fila completa"
+                                    label={
+                                        PROFESSOR_DASHBOARD_MESSAGES.recentSubmissions
+                                            .seeFullQueueButton
+                                    }
                                     variant="ghost"
                                     size="small"
                                     onPress={onOpenCorrectionQueue}
@@ -546,131 +291,55 @@ function EducatorDashboardScreen({
                             }
                         />
 
-                        <View
-                            style={{
-                                gap: 4,
-                            }}
-                        >
-                            {recentSubmissions.map(
-                                (submission, index) => (
-                                    <View
-                                        key={submission.id}
-                                        style={{
-                                            flexDirection: isCompact
-                                                ? 'column'
-                                                : 'row',
-
-                                            alignItems: isCompact
-                                                ? 'stretch'
-                                                : 'center',
-
-                                            justifyContent: 'space-between',
-                                            gap: 12,
-
-                                            paddingVertical: 14,
-
-                                            borderTopWidth:
-                                                index === 0 ? 0 : 1,
-
-                                            borderTopColor:
-                                                theme.border,
-                                        }}
-                                    >
-                                        <View
-                                            style={{
-                                                flex: 1,
-                                                minWidth: 0,
-
-                                                flexDirection: 'row',
-                                                alignItems: 'center',
-                                                gap: 12,
-                                            }}
-                                        >
-                                            <View
-                                                style={{
-                                                    width: 40,
-                                                    height: 40,
-                                                    flexShrink: 0,
-
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center',
-
-                                                    borderRadius: 13,
-
-                                                    backgroundColor:
-                                                        theme.bgSoft,
-                                                }}
-                                            >
-                                                <Text
-                                                    style={{
-                                                        color: theme.primary,
-                                                        fontFamily:
-                                                            fonts.headlineBold,
-                                                        fontSize: 13,
-                                                    }}
-                                                >
-                                                    {submission.initials}
-                                                </Text>
-                                            </View>
-
-                                            <View
-                                                style={{
-                                                    flex: 1,
-                                                    minWidth: 0,
-                                                }}
-                                            >
-                                                <Text
-                                                    numberOfLines={1}
-                                                    style={{
-                                                        color: theme.textDark,
-                                                        fontFamily:
-                                                            fonts.bodyBold,
-                                                        fontSize: 14,
-                                                    }}
-                                                >
-                                                    {submission.studentName}
-                                                </Text>
-
-                                                <Text
-                                                    numberOfLines={1}
-                                                    style={{
-                                                        marginTop: 3,
-                                                        color: theme.textMuted,
-                                                        fontFamily:
-                                                            fonts.bodyRegular,
-                                                        fontSize: 12,
-                                                    }}
-                                                >
-                                                    {submission.activityTitle}
-                                                    {' · '}
-                                                    {submission.className}
-                                                </Text>
-                                            </View>
+                        <View style={styles.submissionsContainer}>
+                            {RECENT_SUBMISSIONS.map((submission, index) => (
+                                <View
+                                    key={submission.id}
+                                    style={[
+                                        styles.submissionRow,
+                                        {
+                                            flexDirection: isCompact ? 'column' : 'row',
+                                            alignItems: isCompact ? 'stretch' : 'center',
+                                            borderTopWidth: index === 0 ? 0 : 1,
+                                        },
+                                    ]}
+                                >
+                                    <View style={styles.submissionInfo}>
+                                        <View style={styles.submissionAvatar}>
+                                            <Text style={styles.submissionAvatarText}>
+                                                {submission.initials}
+                                            </Text>
                                         </View>
-
-                                        <View
-                                            style={{
-                                                flexDirection: 'row',
-                                                alignItems: 'center',
-                                                flexWrap: 'wrap',
-                                                gap: 10,
-                                            }}
-                                        >
-                                            <StatusChip
-                                                label={submission.waitingTime}
-                                                tone="info"
-                                            />
-
-                                            <AppButton
-                                                label="Corrigir"
-                                                size="small"
-                                                variant="secondary"
-                                                onPress={onOpenCorrectionQueue}
-                                            />
+                                        <View style={styles.submissionTextContainer}>
+                                            <Text
+                                                numberOfLines={1}
+                                                style={styles.submissionStudentName}
+                                            >
+                                                {submission.studentName}
+                                            </Text>
+                                            <Text
+                                                numberOfLines={1}
+                                                style={styles.submissionActivityTitle}
+                                            >
+                                                {submission.activityTitle} · {submission.className}
+                                            </Text>
                                         </View>
                                     </View>
-                                )
-                            )}
+
+                                    <View style={styles.submissionActions}>
+                                        <StatusChip label={submission.waitingTime} tone="info" />
+                                        <AppButton
+                                            label={
+                                                PROFESSOR_DASHBOARD_MESSAGES.recentSubmissions
+                                                    .correctButton
+                                            }
+                                            size="small"
+                                            variant="secondary"
+                                            onPress={onOpenCorrectionQueue}
+                                        />
+                                    </View>
+                                </View>
+                            ))}
                         </View>
                     </AppCard>
                 </View>
@@ -683,16 +352,26 @@ export default function DashboardRoute() {
     const router = useRouter();
     const { activities, submissions } = useProfessorPrototype();
 
+    const pendingCorrectionsCount = submissions.filter(
+        (item) => item.status === 'pending'
+    ).length;
+
+    const publishedActivitiesCount = activities.filter(
+        (item) => item.status === 'published'
+    ).length;
+
     return (
         <ProfessorRouteShell>
             <EducatorDashboardScreen
-                pendingCorrectionsCount={submissions.filter((item) => item.status === 'pending').length}
-                publishedActivitiesCount={activities.filter((item) => item.status === 'published').length}
-                onOpenActivities={() => router.push('/(professor)/atividades' as any)}
-                onCreateActivity={() => router.push('/(professor)/atividades/nova' as any)}
-                onOpenCorrectionQueue={() => router.push('/(professor)/correcoes' as any)}
-                onOpenStudent={(studentId) => router.push(({ pathname: '/(professor)/alunos/[studentId]', params: { studentId } } as any))}
-                onOpenReports={() => router.push('/(professor)/relatorios' as any)}
+                pendingCorrectionsCount={pendingCorrectionsCount}
+                publishedActivitiesCount={publishedActivitiesCount}
+                onOpenActivities={() => router.push(PROFESSOR_ROUTES.ACTIVITIES as any)}
+                onCreateActivity={() => router.push(PROFESSOR_ROUTES.CREATE_ACTIVITY as any)}
+                onOpenCorrectionQueue={() => router.push(PROFESSOR_ROUTES.CORRECTIONS as any)}
+                onOpenStudent={(studentId) =>
+                    router.push(PROFESSOR_ROUTES.STUDENT_PROFILE(studentId) as any)
+                }
+                onOpenReports={() => router.push(PROFESSOR_ROUTES.REPORTS as any)}
             />
         </ProfessorRouteShell>
     );

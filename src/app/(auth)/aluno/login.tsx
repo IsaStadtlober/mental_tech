@@ -8,6 +8,7 @@ import { AuthHeader } from '../../../components/Headers';
 import { PrimaryButton } from '../../../components/PrimaryButton';
 import { ScreenShell } from '../../../components/ScreenShell';
 
+import { AUTH_ROUTES } from '@/router';
 import { STUDENT_AUTH_CONSTANTS } from '../../../constants/auth';
 import { styles } from '../../../styles';
 import { formatClassCode, formatPin } from '../../../utils/auth';
@@ -23,7 +24,7 @@ export default function StudentLoginRoute() {
     pin.length <= STUDENT_AUTH_CONSTANTS.MAX_PIN_LENGTH;
 
   const handleEnter = () => {
-    router.push('/aluno/nome');
+    router.push(AUTH_ROUTES.STUDENT.NAME as any);
   };
 
   return (

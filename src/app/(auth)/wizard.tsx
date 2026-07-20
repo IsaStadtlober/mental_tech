@@ -1,5 +1,6 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 
+import { AUTH_ROUTES } from '@/router';
 import { WizardDoneScreen } from "../../components/wizard/WizardDoneScreen";
 import { WizardStepClass } from "../../components/wizard/WizardStepClass";
 import { WizardStepStudents } from "../../components/wizard/WizardStepStudents";
@@ -57,7 +58,7 @@ export default function WizardRoute() {
                 teacher,
                 students,
               });
-              router.replace("/(auth)/professor/bem-vindo" as any);
+              router.replace(AUTH_ROUTES.EDUCATOR.WELCOME as any);
             } catch (err) {
               console.error("Falha ao finalizar onboarding:", err);
             }

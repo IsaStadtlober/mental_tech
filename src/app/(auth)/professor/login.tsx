@@ -8,6 +8,7 @@ import { AuthHeader } from '../../../components/Headers';
 import { PrimaryButton } from '../../../components/PrimaryButton';
 import { ScreenShell } from '../../../components/ScreenShell';
 
+import { AUTH_ROUTES, PROFESSOR_ROUTES } from '@/router';
 import { EDUCATOR_AUTH_CONSTANTS } from '../../../constants/auth';
 import { styles } from '../../../styles';
 
@@ -19,7 +20,7 @@ export default function EducatorLoginRoute() {
   const canEnter = email.trim().length > 3 && password.length > 0;
 
   const handleEnter = () => {
-    router.replace('/(professor)/dashboard' as any);
+    router.replace(PROFESSOR_ROUTES.DASHBOARD as any);
   };
 
   return (
@@ -64,7 +65,7 @@ export default function EducatorLoginRoute() {
 
       <View style={styles.loginLinks}>
         <TouchableOpacity
-          onPress={() => router.push('/(auth)/professor/recuperar-senha' as any)}
+          onPress={() => router.push(AUTH_ROUTES.EDUCATOR.FORGOT_PASSWORD as any)}
           activeOpacity={0.75}
         >
           <Text style={styles.linkMuted}>
@@ -76,7 +77,7 @@ export default function EducatorLoginRoute() {
           Ainda não tem uma escola cadastrada?{' '}
           <Text
             style={styles.linkStrong}
-            onPress={() => router.push('/escola/cadastro' as any)}
+            onPress={() => router.push(AUTH_ROUTES.SCHOOL_SIGNUP as any)}
           >
             Cadastre aqui
           </Text>

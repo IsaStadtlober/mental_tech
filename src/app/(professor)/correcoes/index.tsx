@@ -1,7 +1,3 @@
-import {
-    getHorizontalPadding,
-    isCompactWidth,
-} from '@/components/professor/../../constants/professorLayout';
 import type {
     FileType,
     Submission,
@@ -12,6 +8,10 @@ import BackButton from '@/components/professor/BackButton';
 import EmptyState from '@/components/professor/EmptyState';
 import { ProfessorRouteShell } from '@/components/professor/ProfessorRouteShell';
 import StatusChip from '@/components/professor/StatusChip';
+import {
+    getHorizontalPadding,
+    isCompactWidth,
+} from '@/constants/professor/prof_Layout';
 import { borderRadius, fonts, theme } from '@/constants/theme';
 import { useProfessorPrototype } from '@/hooks/useProfessorPrototype';
 import { useRouter } from 'expo-router';

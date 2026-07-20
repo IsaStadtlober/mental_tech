@@ -1,67 +1,22 @@
-import type {
-    Activity,
-    ActivityStatus,
-} from '@/components/professor/../../types/professor';
 import AppButton from '@/components/professor/AppButton';
 import AppCard from '@/components/professor/AppCard';
 import BackButton from '@/components/professor/BackButton';
 import MetricCard from '@/components/professor/MetricCard';
 import { ProfessorRouteShell } from '@/components/professor/ProfessorRouteShell';
 import SectionHeader from '@/components/professor/SectionHeader';
-import StatusChip, {
-    type StatusChipTone,
-} from '@/components/professor/StatusChip';
-import { borderRadius, fonts, theme } from '@/constants/theme';
+import StatusChip from '@/components/professor/StatusChip';
+import { ACTIVITY_MESSAGES, ACTIVITY_STATUS_CONFIG } from '@/constants/professor/activities';
+import { theme } from '@/constants/theme';
+import { useActivityDetail } from '@/hooks/useActivityDetail';
 import { useProfessorPrototype } from '@/hooks/useProfessorPrototype';
+import { activitiesStyles } from '@/styles/professor/activities';
+import type { ActivityDetailScreenProps } from '@/types/professor';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import {
-    Download,
-    Edit3,
-} from 'lucide-react-native';
-import { useState } from 'react';
-import {
-    ScrollView,
-    Text,
-    useWindowDimensions,
-    View,
-} from 'react-native';
+import { Download, Edit3 } from 'lucide-react-native';
+import { ScrollView, Text, useWindowDimensions, View } from 'react-native';
 
-export interface ActivityDetailScreenProps {
-    activity: Activity;
+const statusConfig = ACTIVITY_STATUS_CONFIG;
 
-    onBack: () => void;
-    onEdit: () => void;
-    onOpenCorrectionQueue: () => void;
-}
-
-const statusConfig: Record<
-    ActivityStatus,
-    {
-        label: string;
-        tone: StatusChipTone;
-    }
-> = {
-    published: {
-        label: 'Publicada',
-        tone: 'success',
-    },
-
-    draft: {
-        label: 'Rascunho',
-        tone: 'warning',
-    },
-
-    closed: {
-        label: 'Encerrada',
-        tone: 'neutral',
-    },
-};
-
-/**
- * USER FLOW:
- * Esta tela complementa P2 e concentra o acompanhamento
- * da atividade publicada.
- */
 function ActivityDetailScreen({
     activity,
     onBack,
@@ -71,40 +26,21 @@ function ActivityDetailScreen({
     const { width } = useWindowDimensions();
 
     const isCompact = width < 760;
-
-    const [downloadMessage, setDownloadMessage] = useState('');
-
-    const status =
-        statusConfig[activity.status];
-
-    const pendingCorrections = Math.max(
-        activity.submissionsCount -
-        activity.correctedCount,
-        0
-    );
-
-    const participation =
-        activity.studentsCount > 0
-            ? Math.round(
-                (activity.submissionsCount /
-                    activity.studentsCount) *
-                100
-            )
-            : 0;
-
-    function simulateDownload() {
-        setDownloadMessage(
-            `Download simulado: ${activity.attachment.name}`
-        );
-    }
+    const status = statusConfig[activity.status];
+    const {
+        downloadMessage,
+        pendingCorrections,
+        metrics,
+        configurationRows,
+        headerMeta,
+        attachmentTypeLabel,
+        simulateDownload,
+        messages,
+    } = useActivityDetail(activity);
 
     return (
         <ScrollView
-            style={{
-                flex: 1,
-                backgroundColor:
-                    theme.bgSubtle,
-            }}
+            style={activitiesStyles.page}
             contentContainerStyle={{
                 paddingHorizontal: isCompact ? 16 : 24,
                 paddingTop: 28,
@@ -112,34 +48,12 @@ function ActivityDetailScreen({
             }}
             showsVerticalScrollIndicator={false}
         >
-            <View
-                style={{
-                    width: '100%',
-                    maxWidth: 1180,
-                    alignSelf: 'center',
-                }}
-            >
-                <View
-                    style={{
-                        width: '100%',
-
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-
-                        flexWrap: 'wrap',
-                        gap: 12,
-
-                        marginBottom: 20,
-                    }}
-                >
-                    <BackButton
-                        label="Atividades"
-                        onPress={onBack}
-                    />
+            <View style={activitiesStyles.screenContainer}>
+                <View style={activitiesStyles.topBar}>
+                    <BackButton label={messages.header.detailsBackLabel} onPress={onBack} />
 
                     <AppButton
-                        label="Editar atividade"
+                        label={messages.header.editButton}
                         variant="secondary"
                         iconLeft={
                             <Edit3
@@ -152,154 +66,50 @@ function ActivityDetailScreen({
                 </View>
 
                 <AppCard>
-                    <View
-                        style={{
-                            flexDirection: isCompact
-                                ? 'column'
-                                : 'row',
-
-                            alignItems: isCompact
-                                ? 'stretch'
-                                : 'center',
-
-                            justifyContent:
-                                'space-between',
-
-                            gap: 20,
-                        }}
-                    >
-                        <View
-                            style={{
-                                flex: 1,
-                                minWidth: 0,
-                            }}
-                        >
+                    <View style={[activitiesStyles.detailHero, isCompact ? undefined : { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }]}> 
+                        <View style={activitiesStyles.detailHeroContent}>
                             <StatusChip
                                 label={status.label}
                                 tone={status.tone}
                             />
 
-                            <Text
-                                style={{
-                                    marginTop: 13,
-
-                                    color:
-                                        theme.textDark,
-
-                                    fontFamily:
-                                        fonts.headlineBold,
-
-                                    fontSize: isCompact
-                                        ? 24
-                                        : 29,
-
-                                    lineHeight: isCompact
-                                        ? 31
-                                        : 37,
-                                }}
-                            >
+                            <Text style={[activitiesStyles.detailTitle, { fontSize: isCompact ? 24 : 29, lineHeight: isCompact ? 31 : 37 }]}>
                                 {activity.title}
                             </Text>
 
-                            <Text
-                                style={{
-                                    marginTop: 7,
-
-                                    color:
-                                        theme.textMuted,
-
-                                    fontFamily:
-                                        fonts.bodyRegular,
-
-                                    fontSize: 14,
-                                    lineHeight: 21,
-                                }}
-                            >
+                            <Text style={activitiesStyles.detailSubtitle}>
                                 {activity.className}
                                 {' · '}
-                                {activity.dueDate
-                                    ? `Entrega em ${activity.dueDate}`
-                                    : 'Sem prazo definido'}
+                                {headerMeta}
                             </Text>
                         </View>
                     </View>
                 </AppCard>
 
-                <View
-                    style={{
-                        flexDirection: 'row',
-                        flexWrap: 'wrap',
-                        gap: 16,
-                        marginTop: 20,
-                    }}
-                >
-                    <MetricCard
-                        label="Entregas"
-                        value={`${activity.submissionsCount}/${activity.studentsCount}`}
-                        helper={`${participation}% da turma`}
-                        tone="info"
-                    />
-
-                    <MetricCard
-                        label="Corrigidas"
-                        value={activity.correctedCount}
-                        helper="Respostas já avaliadas"
-                        tone="success"
-                    />
-
-                    <MetricCard
-                        label="Aguardando correção"
-                        value={pendingCorrections}
-                        helper="Envios que precisam de ação"
-                        tone="warning"
-                        onPress={onOpenCorrectionQueue}
-                    />
+                <View style={activitiesStyles.metricsRow}>
+                    {metrics.map((metric) => (
+                        <MetricCard
+                            key={metric.label}
+                            label={metric.label}
+                            value={metric.value}
+                            helper={metric.helper}
+                            tone={metric.tone}
+                            onPress={metric.label === messages.detail.pendingLabel ? onOpenCorrectionQueue : undefined}
+                        />
+                    ))}
                 </View>
 
-                <View
-                    style={{
-                        flexDirection: isCompact
-                            ? 'column'
-                            : 'row',
-
-                        alignItems: 'flex-start',
-
-                        gap: 20,
-                        marginTop: 20,
-                    }}
-                >
-                    <View
-                        style={{
-                            flex: 1.4,
-                            width: isCompact
-                                ? '100%'
-                                : undefined,
-
-                            gap: 20,
-                        }}
-                    >
+                <View style={[activitiesStyles.contentRow, isCompact ? { flexDirection: 'column' } : undefined]}>
+                    <View style={[activitiesStyles.contentColumn, isCompact ? { width: '100%' } : undefined]}>
                         <AppCard>
                             <SectionHeader
                                 compact
-                                title="Instrução da missão"
-                                subtitle="Orientação visível para os alunos."
-                                style={{
-                                    marginBottom: 16,
-                                }}
+                                title={messages.detail.instructionTitle}
+                                subtitle={messages.detail.instructionSubtitle}
+                                style={activitiesStyles.detailSection}
                             />
 
-                            <Text
-                                style={{
-                                    color:
-                                        theme.textDark,
-
-                                    fontFamily:
-                                        fonts.bodyRegular,
-
-                                    fontSize: 15,
-                                    lineHeight: 23,
-                                }}
-                            >
+                            <Text style={activitiesStyles.contentText}>
                                 {activity.instruction}
                             </Text>
                         </AppCard>
@@ -307,69 +117,24 @@ function ActivityDetailScreen({
                         <AppCard>
                             <SectionHeader
                                 compact
-                                title="Material publicado"
-                                subtitle="Arquivo disponibilizado para download."
-                                style={{
-                                    marginBottom: 16,
-                                }}
+                                title={messages.detail.materialTitle}
+                                subtitle={messages.detail.materialSubtitle}
+                                style={activitiesStyles.detailSection}
                             />
 
-                            <View
-                                style={{
-                                    minHeight: 190,
-                                    padding: 24,
-
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-
-                                    borderRadius:
-                                        borderRadius.xl,
-
-                                    backgroundColor:
-                                        theme.bgSubtle,
-                                }}
-                            >
-                                <Text
-                                    style={{
-                                        color:
-                                            theme.primary,
-
-                                        fontFamily:
-                                            fonts.headlineSemibold,
-
-                                        fontSize: 16,
-                                        textAlign: 'center',
-                                    }}
-                                >
+                            <View style={activitiesStyles.attachmentCard}>
+                                <Text style={activitiesStyles.attachmentName}>
                                     {activity.attachment.name}
                                 </Text>
 
-                                <Text
-                                    style={{
-                                        marginTop: 6,
-
-                                        color:
-                                            theme.textMuted,
-
-                                        fontFamily:
-                                            fonts.bodyRegular,
-
-                                        fontSize: 13,
-                                    }}
-                                >
+                                <Text style={activitiesStyles.attachmentType}>
                                     Tipo:{' '}
-                                    {activity.attachment.type.toUpperCase()}
+                                    {attachmentTypeLabel}
                                 </Text>
 
-                                <View
-                                    style={{
-                                        width: '100%',
-                                        alignItems: 'center',
-                                        marginTop: 18,
-                                    }}
-                                >
+                                <View style={activitiesStyles.attachmentActions}>
                                     <AppButton
-                                        label="Baixar arquivo"
+                                        label={messages.actions.download}
                                         variant="secondary"
                                         size="small"
                                         iconLeft={
@@ -383,32 +148,8 @@ function ActivityDetailScreen({
                                 </View>
 
                                 {!!downloadMessage && (
-                                    <View
-                                        style={{
-                                            marginTop: 14,
-                                            paddingHorizontal: 14,
-                                            paddingVertical: 10,
-
-                                            borderRadius:
-                                                borderRadius.lg,
-
-                                            backgroundColor:
-                                                theme.successSoft,
-                                        }}
-                                    >
-                                        <Text
-                                            style={{
-                                                color:
-                                                    theme.success,
-
-                                                fontFamily:
-                                                    fonts.bodyBold,
-
-                                                fontSize: 12,
-                                                lineHeight: 18,
-                                                textAlign: 'center',
-                                            }}
-                                        >
+                                    <View style={activitiesStyles.downloadFeedback}>
+                                        <Text style={activitiesStyles.downloadFeedbackText}>
                                             {downloadMessage}
                                         </Text>
                                     </View>
@@ -417,172 +158,35 @@ function ActivityDetailScreen({
                         </AppCard>
                     </View>
 
-                    <View
-                        style={{
-                            flex: 1,
-                            width: isCompact
-                                ? '100%'
-                                : undefined,
-                        }}
-                    >
+                    <View style={[activitiesStyles.configurationCard, isCompact ? { width: '100%' } : undefined]}>
                         <AppCard>
                             <SectionHeader
                                 compact
-                                title="Configuração"
-                                subtitle="Resumo da publicação."
-                                style={{
-                                    marginBottom: 18,
-                                }}
+                                title={messages.detail.configurationTitle}
+                                subtitle={messages.detail.configurationSubtitle}
+                                style={{ marginBottom: 18 }}
                             />
 
-                            <View
-                                style={{
-                                    gap: 16,
-                                }}
-                            >
-                                <View>
-                                    <Text
-                                        style={{
-                                            color:
-                                                theme.textMuted,
-
-                                            fontFamily:
-                                                fonts.bodyRegular,
-
-                                            fontSize: 12,
-                                        }}
-                                    >
-                                        Destinatários
-                                    </Text>
-
-                                    <Text
-                                        style={{
-                                            marginTop: 3,
-
-                                            color:
-                                                theme.textDark,
-
-                                            fontFamily:
-                                                fonts.bodyBold,
-
-                                            fontSize: 14,
-                                        }}
-                                    >
-                                        {activity.className}
-                                    </Text>
-                                </View>
-
-                                <View>
-                                    <Text
-                                        style={{
-                                            color:
-                                                theme.textMuted,
-
-                                            fontFamily:
-                                                fonts.bodyRegular,
-
-                                            fontSize: 12,
-                                        }}
-                                    >
-                                        Recompensa ao aprovar
-                                    </Text>
-
-                                    <Text
-                                        style={{
-                                            marginTop: 3,
-
-                                            color:
-                                                theme.textDark,
-
-                                            fontFamily:
-                                                fonts.bodyBold,
-
-                                            fontSize: 14,
-                                        }}
-                                    >
-                                        {activity.reward.name}
-                                    </Text>
-                                </View>
-
-                                <View>
-                                    <Text
-                                        style={{
-                                            color:
-                                                theme.textMuted,
-
-                                            fontFamily:
-                                                fonts.bodyRegular,
-
-                                            fontSize: 12,
-                                        }}
-                                    >
-                                        Criada em
-                                    </Text>
-
-                                    <Text
-                                        style={{
-                                            marginTop: 3,
-
-                                            color:
-                                                theme.textDark,
-
-                                            fontFamily:
-                                                fonts.bodyBold,
-
-                                            fontSize: 14,
-                                        }}
-                                    >
-                                        {activity.createdAt}
-                                    </Text>
-                                </View>
-
-                                {activity.publishedAt && (
-                                    <View>
-                                        <Text
-                                            style={{
-                                                color:
-                                                    theme.textMuted,
-
-                                                fontFamily:
-                                                    fonts.bodyRegular,
-
-                                                fontSize: 12,
-                                            }}
-                                        >
-                                            Publicada em
+                            <View style={activitiesStyles.configurationList}>
+                                {configurationRows.map((row) => (
+                                    <View key={row.label}>
+                                        <Text style={activitiesStyles.configurationLabel}>
+                                            {row.label}
                                         </Text>
 
-                                        <Text
-                                            style={{
-                                                marginTop: 3,
-
-                                                color:
-                                                    theme.textDark,
-
-                                                fontFamily:
-                                                    fonts.bodyBold,
-
-                                                fontSize: 14,
-                                            }}
-                                        >
-                                            {
-                                                activity.publishedAt
-                                            }
+                                        <Text style={activitiesStyles.configurationValue}>
+                                            {row.value}
                                         </Text>
                                     </View>
-                                )}
+                                ))}
                             </View>
 
                             {pendingCorrections > 0 && (
                                 <AppButton
-                                    label="Abrir fila de correção"
-                                    onPress={
-                                        onOpenCorrectionQueue
-                                    }
+                                    label={messages.actions.openCorrections}
+                                    onPress={onOpenCorrectionQueue}
                                     fullWidth
-                                    style={{
-                                        marginTop: 22,
-                                    }}
+                                    style={activitiesStyles.configurationButton}
                                 />
                             )}
                         </AppCard>
@@ -609,7 +213,7 @@ export default function ActivityDetailRoute() {
                     onOpenCorrectionQueue={() => router.push('/correcoes' as any)}
                 />
             ) : (
-                <Text>Atividade não encontrada.</Text>
+                <Text>{ACTIVITY_MESSAGES.detail.notFound}</Text>
             )}
         </ProfessorRouteShell>
     );

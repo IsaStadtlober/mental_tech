@@ -4,20 +4,13 @@ import BackButton from '@/components/professor/BackButton';
 import MetricCard from '@/components/professor/MetricCard';
 import { ProfessorRouteShell } from '@/components/professor/ProfessorRouteShell';
 import SectionHeader from '@/components/professor/SectionHeader';
-import StatusChip, {
-    StatusChipTone,
-} from '@/components/professor/StatusChip';
-import { borderRadius, fonts, theme } from '@/constants/theme';
+import StatusChip from '@/components/professor/StatusChip';
+import { STUDENT_PROFILE_MESSAGES, STUDENT_PROFILE_STATUS_CONFIG } from '@/constants/professor/students';
+import { theme } from '@/constants/theme';
+import { studentsStyles } from '@/styles/professor/students';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import {
-    Send,
-} from 'lucide-react-native';
-import {
-    ScrollView,
-    Text,
-    useWindowDimensions,
-    View,
-} from 'react-native';
+import { Send } from 'lucide-react-native';
+import { ScrollView, Text, useWindowDimensions, View } from 'react-native';
 
 type ProfileStatus =
     | 'engaged'
@@ -194,28 +187,7 @@ const historyByStudent: Record<
     ],
 };
 
-const profileStatus: Record<
-    ProfileStatus,
-    {
-        label: string;
-        tone: StatusChipTone;
-    }
-> = {
-    engaged: {
-        label: 'Em dia',
-        tone: 'success',
-    },
-
-    attention: {
-        label: 'Precisa de atenção',
-        tone: 'warning',
-    },
-
-    inactive: {
-        label: 'Sem atividade há +7 dias',
-        tone: 'danger',
-    },
-};
+const profileStatus = STUDENT_PROFILE_STATUS_CONFIG;
 
 const historyStatus = {
     approved: {
@@ -259,8 +231,7 @@ function StudentProfileScreen({
     const history =
         historyByStudent[student.id] ?? [];
 
-    const status =
-        profileStatus[student.status];
+    const status = profileStatus[student.status];
 
     const trailPercentage = Math.min(
         student.trailPosition * 10,
@@ -269,52 +240,20 @@ function StudentProfileScreen({
 
     return (
         <ScrollView
-            style={{
-                flex: 1,
-                backgroundColor:
-                    theme.bgSubtle,
-            }}
+            style={studentsStyles.page}
             contentContainerStyle={{
-                paddingHorizontal: isCompact
-                    ? 16
-                    : 24,
+                paddingHorizontal: isCompact ? 16 : 24,
                 paddingTop: 28,
                 paddingBottom: 64,
             }}
             showsVerticalScrollIndicator={false}
         >
-            <View
-                style={{
-                    width: '100%',
-                    maxWidth: 1180,
-                    alignSelf: 'center',
-                }}
-            >
-                <View
-                    style={{
-                        width: '100%',
-
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-
-                        flexWrap: 'wrap',
-                        gap: 12,
-
-                        marginBottom: 20,
-                    }}
-                >
-                    <BackButton
-                        label="Dashboard"
-                        onPress={onBack}
-                    />
+            <View style={studentsStyles.screenContainer}>
+                <View style={studentsStyles.topBar}>
+                    <BackButton label={STUDENT_PROFILE_MESSAGES.header.backButton} onPress={onBack} />
 
                     <AppButton
-                        label={
-                            isCompact
-                                ? 'Enviar missão'
-                                : 'Enviar missão para este aluno'
-                        }
+                        label={isCompact ? STUDENT_PROFILE_MESSAGES.header.createActivityButtonCompact : STUDENT_PROFILE_MESSAGES.header.createActivityButton}
                         iconLeft={
                             <Send
                                 size={17}
@@ -344,86 +283,19 @@ function StudentProfileScreen({
                             gap: 22,
                         }}
                     >
-                        <View
-                            style={{
-                                flex: 1,
-                                minWidth: 0,
-
-                                flexDirection: 'row',
-                                alignItems: 'center',
-                                gap: 16,
-                            }}
-                        >
-                            <View
-                                style={{
-                                    width: 68,
-                                    height: 68,
-
-                                    flexShrink: 0,
-
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-
-                                    borderRadius: 22,
-
-                                    backgroundColor:
-                                        theme.primary,
-                                }}
-                            >
-                                <Text
-                                    style={{
-                                        color:
-                                            theme.white,
-
-                                        fontFamily:
-                                            fonts.headlineBold,
-
-                                        fontSize: 20,
-                                    }}
-                                >
+                        <View style={studentsStyles.profileHeader}>
+                            <View style={studentsStyles.avatar}>
+                                <Text style={studentsStyles.avatarText}>
                                     {student.initials}
                                 </Text>
                             </View>
 
-                            <View
-                                style={{
-                                    flex: 1,
-                                    minWidth: 0,
-                                }}
-                            >
-                                <Text
-                                    style={{
-                                        color:
-                                            theme.textDark,
-
-                                        fontFamily:
-                                            fonts.headlineBold,
-
-                                        fontSize: isCompact
-                                            ? 24
-                                            : 29,
-
-                                        lineHeight: isCompact
-                                            ? 31
-                                            : 37,
-                                    }}
-                                >
+                            <View style={studentsStyles.profileText}>
+                                <Text style={[studentsStyles.profileName, { fontSize: isCompact ? 24 : 29, lineHeight: isCompact ? 31 : 37 }]}>
                                     {student.name}
                                 </Text>
 
-                                <Text
-                                    style={{
-                                        marginTop: 4,
-
-                                        color:
-                                            theme.textMuted,
-
-                                        fontFamily:
-                                            fonts.bodyRegular,
-
-                                        fontSize: 14,
-                                    }}
-                                >
+                                <Text style={studentsStyles.profileMeta}>
                                     {student.className}
                                     {' · '}
                                     Última atividade:{' '}
@@ -443,16 +315,9 @@ function StudentProfileScreen({
                     </View>
                 </AppCard>
 
-                <View
-                    style={{
-                        flexDirection: 'row',
-                        flexWrap: 'wrap',
-                        gap: 16,
-                        marginTop: 20,
-                    }}
-                >
+                <View style={studentsStyles.metricsGrid}>
                     <MetricCard
-                        label="Concluídas"
+                        label={STUDENT_PROFILE_MESSAGES.metrics.completed}
                         value={
                             student.completedActivities
                         }
@@ -461,7 +326,7 @@ function StudentProfileScreen({
                     />
 
                     <MetricCard
-                        label="Pendentes"
+                        label={STUDENT_PROFILE_MESSAGES.metrics.pending}
                         value={
                             student.pendingActivities
                         }
@@ -470,7 +335,7 @@ function StudentProfileScreen({
                     />
 
                     <MetricCard
-                        label="Em revisão"
+                        label={STUDENT_PROFILE_MESSAGES.metrics.revision}
                         value={
                             student.revisionActivities
                         }
@@ -479,7 +344,7 @@ function StudentProfileScreen({
                     />
 
                     <MetricCard
-                        label="Participação"
+                        label={STUDENT_PROFILE_MESSAGES.metrics.participation}
                         value={student.participation}
                         helper="Participação recente"
                         tone={
@@ -490,32 +355,13 @@ function StudentProfileScreen({
                     />
                 </View>
 
-                <View
-                    style={{
-                        flexDirection: isCompact
-                            ? 'column'
-                            : 'row',
-
-                        alignItems: 'flex-start',
-
-                        gap: 20,
-                        marginTop: 20,
-                    }}
-                >
-                    <View
-                        style={{
-                            flex: 1.4,
-
-                            width: isCompact
-                                ? '100%'
-                                : undefined,
-                        }}
-                    >
+                <View style={[studentsStyles.splitLayout, { flexDirection: isCompact ? 'column' : 'row' }]}> 
+                    <View style={{ flex: 1.4, width: isCompact ? '100%' : undefined }}>
                         <AppCard>
                             <SectionHeader
                                 compact
-                                title="Histórico recente"
-                                subtitle="Atividades e avaliações mais recentes."
+                                title={STUDENT_PROFILE_MESSAGES.sections.history.title}
+                                subtitle={STUDENT_PROFILE_MESSAGES.sections.history.subtitle}
                                 style={{
                                     marginBottom: 18,
                                 }}
@@ -529,71 +375,19 @@ function StudentProfileScreen({
                                         ];
 
                                     return (
-                                        <View
-                                            key={item.id}
-                                            style={{
-                                                paddingVertical: 15,
-
-                                                borderTopWidth:
-                                                    index === 0
-                                                        ? 0
-                                                        : 1,
-
-                                                borderTopColor:
-                                                    theme.border,
-                                            }}
-                                        >
-                                            <View
-                                                style={{
-                                                    flexDirection:
-                                                        isCompact
-                                                            ? 'column'
-                                                            : 'row',
-
-                                                    alignItems:
-                                                        isCompact
-                                                            ? 'stretch'
-                                                            : 'center',
-
-                                                    justifyContent:
-                                                        'space-between',
-
-                                                    gap: 12,
-                                                }}
-                                            >
+                                        <View key={item.id} style={[studentsStyles.historyItem, { borderTopWidth: index === 0 ? 0 : 1 }]}> 
+                                            <View style={[studentsStyles.historyRow, { flexDirection: isCompact ? 'column' : 'row', alignItems: isCompact ? 'stretch' : 'center' }]}> 
                                                 <View
                                                     style={{
                                                         flex: 1,
                                                         minWidth: 0,
                                                     }}
                                                 >
-                                                    <Text
-                                                        style={{
-                                                            color:
-                                                                theme.textDark,
-
-                                                            fontFamily:
-                                                                fonts.bodyBold,
-
-                                                            fontSize: 14,
-                                                        }}
-                                                    >
+                                                    <Text style={studentsStyles.historyTitle}>
                                                         {item.title}
                                                     </Text>
 
-                                                    <Text
-                                                        style={{
-                                                            marginTop: 4,
-
-                                                            color:
-                                                                theme.textMuted,
-
-                                                            fontFamily:
-                                                                fonts.bodyRegular,
-
-                                                            fontSize: 12,
-                                                        }}
-                                                    >
+                                                    <Text style={studentsStyles.historyMeta}>
                                                         {item.dateLabel}
 
                                                         {item.grade
@@ -621,7 +415,7 @@ function StudentProfileScreen({
                                     item.status === 'pending'
                             ) && (
                                     <AppButton
-                                        label="Ver correções pendentes"
+                                        label={STUDENT_PROFILE_MESSAGES.actions.openCorrections}
                                         variant="secondary"
                                         onPress={
                                             onOpenCorrectionQueue
@@ -636,100 +430,31 @@ function StudentProfileScreen({
                         </AppCard>
                     </View>
 
-                    <View
-                        style={{
-                            flex: 1,
-
-                            width: isCompact
-                                ? '100%'
-                                : undefined,
-
-                            gap: 20,
-                        }}
-                    >
+                    <View style={{ flex: 1, width: isCompact ? '100%' : undefined, gap: 20 }}>
                         <AppCard>
                             <SectionHeader
                                 compact
-                                title="Posição na trilha"
-                                subtitle="Progresso atual do explorador."
+                                title={STUDENT_PROFILE_MESSAGES.sections.trail.title}
+                                subtitle={STUDENT_PROFILE_MESSAGES.sections.trail.subtitle}
                                 style={{
                                     marginBottom: 18,
                                 }}
                             />
 
-                            <View
-                                style={{
-                                    padding: 18,
-
-                                    borderRadius:
-                                        borderRadius.xl,
-
-                                    backgroundColor:
-                                        theme.bgSoft,
-                                }}
-                            >
-                                <Text
-                                    style={{
-                                        color:
-                                            theme.primary,
-
-                                        fontFamily:
-                                            fonts.headlineBold,
-
-                                        fontSize: 28,
-                                    }}
-                                >
+                            <View style={studentsStyles.trailCard}>
+                                <Text style={studentsStyles.trailTitle}>
                                     Marco{' '}
                                     {student.trailPosition}
                                 </Text>
 
-                                <Text
-                                    style={{
-                                        marginTop: 5,
-
-                                        color:
-                                            theme.textMuted,
-
-                                        fontFamily:
-                                            fonts.bodyRegular,
-
-                                        fontSize: 13,
-                                        lineHeight: 20,
-                                    }}
-                                >
+                                <Text style={studentsStyles.trailBody}>
                                     O avatar avança conforme as
                                     missões são enviadas e
                                     aprovadas.
                                 </Text>
 
-                                <View
-                                    style={{
-                                        height: 10,
-                                        marginTop: 18,
-
-                                        overflow: 'hidden',
-
-                                        borderRadius:
-                                            borderRadius.pill,
-
-                                        backgroundColor:
-                                            theme.card,
-                                    }}
-                                >
-                                    <View
-                                        style={{
-                                            width:
-                                                `${trailPercentage}%`,
-
-                                            height: '100%',
-
-                                            borderRadius:
-                                                borderRadius.pill,
-
-                                            backgroundColor:
-                                                theme.primary,
-                                        }}
-                                    />
+                                <View style={studentsStyles.trailBarTrack}>
+                                    <View style={[studentsStyles.trailBarFill, { width: `${trailPercentage}%` }]} />
                                 </View>
                             </View>
                         </AppCard>
@@ -737,25 +462,14 @@ function StudentProfileScreen({
                         <AppCard>
                             <SectionHeader
                                 compact
-                                title="Leitura pedagógica"
-                                subtitle="Resumo simulado dos últimos 30 dias."
+                                title={STUDENT_PROFILE_MESSAGES.sections.pedagogy.title}
+                                subtitle={STUDENT_PROFILE_MESSAGES.sections.pedagogy.subtitle}
                                 style={{
                                     marginBottom: 16,
                                 }}
                             />
 
-                            <Text
-                                style={{
-                                    color:
-                                        theme.textMuted,
-
-                                    fontFamily:
-                                        fonts.bodyRegular,
-
-                                    fontSize: 14,
-                                    lineHeight: 22,
-                                }}
-                            >
+                            <Text style={studentsStyles.pedagogyText}>
                                 {student.status ===
                                     'inactive'
                                     ? 'O aluno está há mais de sete dias sem concluir uma atividade. Considere enviar uma nova missão ou verificar se existe alguma dificuldade de acesso.'

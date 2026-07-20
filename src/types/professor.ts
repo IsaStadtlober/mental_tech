@@ -109,6 +109,25 @@ export interface Activity {
   correctedCount: number;
 }
 
+export interface ActivityMetricCardData {
+  label: string;
+  value: number | string;
+  helper: string;
+  tone: 'info' | 'success' | 'warning';
+}
+
+export interface ActivityConfigurationRow {
+  label: string;
+  value: string;
+}
+
+export interface ActivityDetailScreenProps {
+  activity: Activity;
+  onBack: () => void;
+  onEdit: () => void;
+  onOpenCorrectionQueue: () => void;
+}
+
 export interface Submission {
   id: string;
 

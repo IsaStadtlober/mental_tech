@@ -1,44 +1,21 @@
-import type {
-    Activity,
-    ActivityStatus,
-} from '@/components/professor/../../types/professor';
 import AppButton from '@/components/professor/AppButton';
 import AppCard from '@/components/professor/AppCard';
 import BackButton from '@/components/professor/BackButton';
 import EmptyState from '@/components/professor/EmptyState';
 import { ProfessorRouteShell } from '@/components/professor/ProfessorRouteShell';
-import StatusChip, {
-    type StatusChipTone,
-} from '@/components/professor/StatusChip';
-import {
-    getHorizontalPadding,
-    isCompactWidth,
-} from '@/constants/professor/prof_Layout';
+import StatusChip from '@/components/professor/StatusChip';
+import { ACTIVITY_FILTERS, ACTIVITY_MESSAGES, ACTIVITY_STATUS_CONFIG } from '@/constants/professor/activities';
+import { getHorizontalPadding, isCompactWidth } from '@/constants/professor/prof_Layout';
 import { borderRadius, fonts, theme } from '@/constants/theme';
 import { useProfessorPrototype } from '@/hooks/useProfessorPrototype';
+import { activitiesStyles } from '@/styles/professor/activities';
+import type { Activity, ActivityStatus } from '@/types/professor';
 import { useRouter } from 'expo-router';
-import {
-    Edit3,
-    Eye,
-    Plus,
-    Trash2,
-} from 'lucide-react-native';
-import {
-    useMemo,
-    useState,
-} from 'react';
-import {
-    Pressable,
-    ScrollView,
-    Text,
-    TextInput,
-    useWindowDimensions,
-    View,
-} from 'react-native';
+import { Edit3, Eye, Plus, Trash2 } from 'lucide-react-native';
+import { useMemo, useState } from 'react';
+import { Pressable, ScrollView, Text, TextInput, useWindowDimensions, View } from 'react-native';
 
-type ActivityFilter =
-    | 'all'
-    | ActivityStatus;
+type ActivityFilter = 'all' | ActivityStatus;
 
 export interface ActivitiesScreenProps {
     activities: Activity[];
@@ -59,50 +36,8 @@ export interface ActivitiesScreenProps {
     ) => void;
 }
 
-const filterOptions: {
-    value: ActivityFilter;
-    label: string;
-}[] = [
-        {
-            value: 'all',
-            label: 'Todas',
-        },
-        {
-            value: 'published',
-            label: 'Publicadas',
-        },
-        {
-            value: 'draft',
-            label: 'Rascunhos',
-        },
-        {
-            value: 'closed',
-            label: 'Encerradas',
-        },
-    ];
-
-const statusConfig: Record<
-    ActivityStatus,
-    {
-        label: string;
-        tone: StatusChipTone;
-    }
-> = {
-    published: {
-        label: 'Publicada',
-        tone: 'success',
-    },
-
-    draft: {
-        label: 'Rascunho',
-        tone: 'warning',
-    },
-
-    closed: {
-        label: 'Encerrada',
-        tone: 'neutral',
-    },
-};
+const filterOptions = ACTIVITY_FILTERS;
+const statusConfig = ACTIVITY_STATUS_CONFIG;
 
 /**
  * USER FLOW P2:
@@ -206,57 +141,23 @@ function ActivitiesScreen({
     return (
         <ScrollView
             keyboardShouldPersistTaps="handled"
-            style={{
-                flex: 1,
-
-                backgroundColor:
-                    theme.bgSubtle,
-            }}
+            style={activitiesStyles.page}
             contentContainerStyle={{
-                paddingHorizontal:
-                    horizontalPadding,
-
+                paddingHorizontal: horizontalPadding,
                 paddingTop: 28,
                 paddingBottom: 64,
             }}
-            showsVerticalScrollIndicator={
-                false
-            }
+            showsVerticalScrollIndicator={false}
         >
-            <View
-                style={{
-                    width: '100%',
-                    maxWidth: 1280,
-                    alignSelf: 'center',
-                }}
-            >
+            <View style={activitiesStyles.screenContainer}>
                 {/* Navegação contextual e ação principal */}
 
-                <View
-                    style={{
-                        width: '100%',
-
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        justifyContent:
-                            'space-between',
-
-                        flexWrap: 'wrap',
-                        gap: 12,
-
-                        marginBottom: 24,
-                    }}
-                >
-                    <BackButton
-                        label="Dashboard"
-                        onPress={onBack}
-                    />
+                <View style={activitiesStyles.topBar}>
+                    <BackButton label={ACTIVITY_MESSAGES.header.backButton} onPress={onBack} />
 
                     <AppButton
-                        label="Nova missão"
-                        onPress={
-                            onCreateActivity
-                        }
+                        label={ACTIVITY_MESSAGES.header.newActivityButton}
+                        onPress={onCreateActivity}
                         iconLeft={
                             <Plus
                                 size={18}
@@ -271,129 +172,30 @@ function ActivitiesScreen({
 
                 {/* Identificação da tela */}
 
-                <View
-                    style={{
-                        marginBottom: 20,
-                    }}
-                >
-                    <Text
-                        style={{
-                            color:
-                                theme.textDark,
+                <View style={activitiesStyles.headerSection}>
+                    <Text style={[activitiesStyles.title, { fontSize: isCompact ? 25 : 30, lineHeight: isCompact ? 32 : 38 }]}> {ACTIVITY_MESSAGES.header.title} </Text>
 
-                            fontFamily:
-                                fonts.headlineBold,
-
-                            fontSize: isCompact
-                                ? 25
-                                : 30,
-
-                            lineHeight: isCompact
-                                ? 32
-                                : 38,
-                        }}
-                    >
-                        Atividades
-                    </Text>
-
-                    <Text
-                        style={{
-                            maxWidth: 720,
-
-                            marginTop: 6,
-
-                            color:
-                                theme.textMuted,
-
-                            fontFamily:
-                                fonts.bodyRegular,
-
-                            fontSize: 14,
-                            lineHeight: 21,
-                        }}
-                    >
-                        Crie, publique e acompanhe
-                        as missões das suas turmas.
-                    </Text>
+                    <Text style={activitiesStyles.subtitle}>{ACTIVITY_MESSAGES.header.subtitle}</Text>
                 </View>
 
                 {/* Busca e filtros */}
 
-                <AppCard>
-                    <Text
-                        style={{
-                            marginBottom: 8,
-
-                            color:
-                                theme.textDark,
-
-                            fontFamily:
-                                fonts.bodyBold,
-
-                            fontSize: 13,
-                        }}
-                    >
-                        Pesquisar atividade
-                    </Text>
+                <AppCard style={activitiesStyles.filterCard}>
+                    <Text style={activitiesStyles.fieldLabel}>{ACTIVITY_MESSAGES.search.label}</Text>
 
                     <TextInput
-                        accessibilityLabel="Pesquisar atividade"
+                        accessibilityLabel={ACTIVITY_MESSAGES.search.label}
                         value={query}
                         onChangeText={setQuery}
-                        placeholder="Digite o título ou a turma"
-                        placeholderTextColor={
-                            theme.textFaint
-                        }
+                        placeholder={ACTIVITY_MESSAGES.search.placeholder}
+                        placeholderTextColor={theme.textFaint}
                         autoCorrect={false}
-                        style={{
-                            minHeight: 48,
-
-                            paddingHorizontal: 15,
-
-                            borderWidth: 1,
-                            borderColor:
-                                theme.border,
-
-                            borderRadius:
-                                borderRadius.lg,
-
-                            backgroundColor:
-                                theme.bgSubtle,
-
-                            color:
-                                theme.textDark,
-
-                            fontFamily:
-                                fonts.bodyRegular,
-
-                            fontSize: 14,
-                        }}
+                        style={activitiesStyles.textInput}
                     />
 
-                    <Text
-                        style={{
-                            marginTop: 18,
-                            marginBottom: 9,
+                    <Text style={[activitiesStyles.fieldLabel, { marginTop: 18, marginBottom: 9 }]}>{ACTIVITY_MESSAGES.filters.label}</Text>
 
-                            color:
-                                theme.textDark,
-
-                            fontFamily:
-                                fonts.bodyBold,
-
-                            fontSize: 13,
-                        }}
-                    >
-                        Filtrar por status
-                    </Text>
-
-                    <View
-                        style={{
-                            flexDirection: 'row',
-                            flexWrap: 'wrap',
-                            gap: 8,
-                        }}
-                    >
+                    <View style={activitiesStyles.filterList}>
                         {filterOptions.map(
                             (option) => {
                                 const active =
@@ -414,46 +216,17 @@ function ActivitiesScreen({
                                         }
                                         style={({ pressed }) => ({
                                             minHeight: 40,
-
                                             paddingHorizontal: 13,
-
                                             alignItems: 'center',
-                                            justifyContent:
-                                                'center',
-
+                                            justifyContent: 'center',
                                             borderWidth: 1,
-
-                                            borderColor: active
-                                                ? theme.primary
-                                                : theme.border,
-
-                                            borderRadius:
-                                                borderRadius.pill,
-
-                                            backgroundColor:
-                                                active
-                                                    ? theme.primary
-                                                    : theme.card,
-
-                                            opacity: pressed
-                                                ? 0.82
-                                                : 1,
+                                            borderColor: active ? theme.primary : theme.border,
+                                            borderRadius: borderRadius.pill,
+                                            backgroundColor: active ? theme.primary : theme.card,
+                                            opacity: pressed ? 0.82 : 1,
                                         })}
                                     >
-                                        <Text
-                                            style={{
-                                                color: active
-                                                    ? theme.white
-                                                    : theme.textMuted,
-
-                                                fontFamily:
-                                                    fonts.bodyBold,
-
-                                                fontSize: 12,
-                                            }}
-                                        >
-                                            {option.label}
-                                        </Text>
+                                        <Text style={[activitiesStyles.filterChipText, active && activitiesStyles.filterChipTextActive]}>{option.label}</Text>
                                     </Pressable>
                                 );
                             }

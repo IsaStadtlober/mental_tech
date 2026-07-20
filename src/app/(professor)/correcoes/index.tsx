@@ -1,35 +1,19 @@
-import type {
-    FileType,
-    Submission,
-} from '@/components/professor/../../types/professor';
 import AppButton from '@/components/professor/AppButton';
 import AppCard from '@/components/professor/AppCard';
 import BackButton from '@/components/professor/BackButton';
 import EmptyState from '@/components/professor/EmptyState';
 import { ProfessorRouteShell } from '@/components/professor/ProfessorRouteShell';
 import StatusChip from '@/components/professor/StatusChip';
-import {
-    getHorizontalPadding,
-    isCompactWidth,
-} from '@/constants/professor/prof_Layout';
+import { CORRECTION_CLASS_FILTERS, CORRECTION_MESSAGES, FILE_TYPE_LABELS } from '@/constants/professor/corrections';
+import { getHorizontalPadding, isCompactWidth } from '@/constants/professor/prof_Layout';
 import { borderRadius, fonts, theme } from '@/constants/theme';
 import { useProfessorPrototype } from '@/hooks/useProfessorPrototype';
+import { correctionsStyles } from '@/styles/professor/corrections';
+import type { Submission } from '@/types/professor';
 import { useRouter } from 'expo-router';
-import {
-    CheckSquare2,
-} from 'lucide-react-native';
-import {
-    useMemo,
-    useState,
-} from 'react';
-import {
-    Pressable,
-    ScrollView,
-    Text,
-    TextInput,
-    useWindowDimensions,
-    View,
-} from 'react-native';
+import { CheckSquare2 } from 'lucide-react-native';
+import { useMemo, useState } from 'react';
+import { Pressable, ScrollView, Text, TextInput, useWindowDimensions, View } from 'react-native';
 
 export interface CorrectionQueueScreenProps {
     submissions: Submission[];
@@ -46,32 +30,8 @@ type ClassFilter =
     | '5º Ano A'
     | '5º Ano B';
 
-const classFilters: {
-    value: ClassFilter;
-    label: string;
-}[] = [
-        {
-            value: 'all',
-            label: 'Todas as turmas',
-        },
-        {
-            value: '5º Ano A',
-            label: '5º Ano A',
-        },
-        {
-            value: '5º Ano B',
-            label: '5º Ano B',
-        },
-    ];
-
-const fileTypeLabels: Record<
-    FileType,
-    string
-> = {
-    pdf: 'PDF',
-    doc: 'Word',
-    image: 'Imagem',
-};
+const classFilters = CORRECTION_CLASS_FILTERS;
+const fileTypeLabels = FILE_TYPE_LABELS;
 
 function CorrectionQueueScreen({
     submissions,
@@ -145,52 +105,21 @@ function CorrectionQueueScreen({
     return (
         <ScrollView
             keyboardShouldPersistTaps="handled"
-            style={{
-                flex: 1,
-
-                backgroundColor:
-                    theme.bgSubtle,
-            }}
+            style={correctionsStyles.page}
             contentContainerStyle={{
-                paddingHorizontal:
-                    horizontalPadding,
-
+                paddingHorizontal: horizontalPadding,
                 paddingTop: 28,
                 paddingBottom: 64,
             }}
-            showsVerticalScrollIndicator={
-                false
-            }
+            showsVerticalScrollIndicator={false}
         >
-            <View
-                style={{
-                    width: '100%',
-                    maxWidth: 1180,
-                    alignSelf: 'center',
-                }}
-            >
+            <View style={correctionsStyles.screenContainer}>
                 {/*
           Conforme a regra escolhida:
           pendências à esquerda e voltar à direita.
         */}
-                <View
-                    style={{
-                        width: '100%',
-
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-
-                        flexWrap: 'wrap',
-                        gap: 12,
-
-                        marginBottom: 24,
-                    }}
-                >
-                    <BackButton
-                        label="Dashboard"
-                        onPress={onBack}
-                    />
+                <View style={correctionsStyles.topBar}>
+                    <BackButton label={CORRECTION_MESSAGES.header.backButton} onPress={onBack} />
 
                     <StatusChip
                         label={pendingLabel}
@@ -205,131 +134,31 @@ function CorrectionQueueScreen({
 
                 {/* Identificação da tela */}
 
-                <View
-                    style={{
-                        marginBottom: 20,
-                    }}
-                >
-                    <Text
-                        style={{
-                            color:
-                                theme.textDark,
-
-                            fontFamily:
-                                fonts.headlineBold,
-
-                            fontSize: isCompact
-                                ? 25
-                                : 30,
-
-                            lineHeight: isCompact
-                                ? 32
-                                : 38,
-                        }}
-                    >
-                        Fila de correção
-                    </Text>
-
-                    <Text
-                        style={{
-                            maxWidth: 720,
-
-                            marginTop: 6,
-
-                            color:
-                                theme.textMuted,
-
-                            fontFamily:
-                                fonts.bodyRegular,
-
-                            fontSize: 14,
-                            lineHeight: 21,
-                        }}
-                    >
-                        Priorize os envios mais
-                        antigos e acompanhe as
-                        atividades que precisam de
-                        avaliação.
-                    </Text>
+                <View style={correctionsStyles.headerSection}>
+                    <Text style={[correctionsStyles.title, { fontSize: isCompact ? 25 : 30, lineHeight: isCompact ? 32 : 38 }]}>{CORRECTION_MESSAGES.header.title}</Text>
+                    <Text style={correctionsStyles.subtitle}>{CORRECTION_MESSAGES.header.subtitle}</Text>
                 </View>
 
                 {/* Busca e filtros */}
 
-                <AppCard>
-                    <Text
-                        style={{
-                            marginBottom: 8,
-
-                            color:
-                                theme.textDark,
-
-                            fontFamily:
-                                fonts.bodyBold,
-
-                            fontSize: 13,
-                        }}
-                    >
-                        Pesquisar na fila
-                    </Text>
+                <AppCard style={correctionsStyles.filterCard}>
+                    <Text style={correctionsStyles.fieldLabel}>{CORRECTION_MESSAGES.search.label}</Text>
 
                     <TextInput
-                        accessibilityLabel="Pesquisar na fila de correção"
+                        accessibilityLabel={CORRECTION_MESSAGES.search.label}
                         value={query}
                         onChangeText={setQuery}
-                        placeholder="Nome do aluno ou atividade"
+                        placeholder={CORRECTION_MESSAGES.search.placeholder}
                         placeholderTextColor={
                             theme.textFaint
                         }
                         autoCorrect={false}
-                        style={{
-                            minHeight: 48,
-
-                            paddingHorizontal: 15,
-
-                            borderWidth: 1,
-                            borderColor:
-                                theme.border,
-
-                            borderRadius:
-                                borderRadius.lg,
-
-                            backgroundColor:
-                                theme.bgSubtle,
-
-                            color:
-                                theme.textDark,
-
-                            fontFamily:
-                                fonts.bodyRegular,
-
-                            fontSize: 14,
-                        }}
+                        style={correctionsStyles.textInput}
                     />
 
-                    <Text
-                        style={{
-                            marginTop: 18,
-                            marginBottom: 9,
+                    <Text style={[correctionsStyles.fieldLabel, { marginTop: 18, marginBottom: 9 }]}>{CORRECTION_MESSAGES.filters.label}</Text>
 
-                            color:
-                                theme.textDark,
-
-                            fontFamily:
-                                fonts.bodyBold,
-
-                            fontSize: 13,
-                        }}
-                    >
-                        Filtrar por turma
-                    </Text>
-
-                    <View
-                        style={{
-                            flexDirection: 'row',
-                            flexWrap: 'wrap',
-                            gap: 8,
-                        }}
-                    >
+                    <View style={correctionsStyles.filterList}>
                         {classFilters.map(
                             (option) => {
                                 const active =
@@ -350,44 +179,17 @@ function CorrectionQueueScreen({
                                         }
                                         style={({ pressed }) => ({
                                             minHeight: 40,
-
                                             paddingHorizontal: 13,
-
                                             alignItems: 'center',
-                                            justifyContent:
-                                                'center',
-
+                                            justifyContent: 'center',
                                             borderWidth: 1,
-
-                                            borderColor: active
-                                                ? theme.primary
-                                                : theme.border,
-
-                                            borderRadius:
-                                                borderRadius.pill,
-
-                                            backgroundColor:
-                                                active
-                                                    ? theme.primary
-                                                    : theme.card,
-
-                                            opacity: pressed
-                                                ? 0.82
-                                                : 1,
+                                            borderColor: active ? theme.primary : theme.border,
+                                            borderRadius: borderRadius.pill,
+                                            backgroundColor: active ? theme.primary : theme.card,
+                                            opacity: pressed ? 0.82 : 1,
                                         })}
                                     >
-                                        <Text
-                                            style={{
-                                                color: active
-                                                    ? theme.white
-                                                    : theme.textMuted,
-
-                                                fontFamily:
-                                                    fonts.bodyBold,
-
-                                                fontSize: 12,
-                                            }}
-                                        >
+                                        <Text style={[correctionsStyles.filterChipText, active && correctionsStyles.filterChipTextActive]}>
                                             {option.label}
                                         </Text>
                                     </Pressable>
@@ -399,26 +201,7 @@ function CorrectionQueueScreen({
 
                 {/* Resultado da busca */}
 
-                <Text
-                    style={{
-                        marginTop: 24,
-                        marginBottom: 14,
-
-                        color:
-                            theme.textDark,
-
-                        fontFamily:
-                            fonts.headlineSemibold,
-
-                        fontSize: 17,
-                    }}
-                >
-                    {pendingSubmissions.length}{' '}
-                    {pendingSubmissions.length ===
-                        1
-                        ? 'envio aguardando'
-                        : 'envios aguardando'}
-                </Text>
+                <Text style={correctionsStyles.countText}>{pendingSubmissions.length}{' '}{pendingSubmissions.length === 1 ? CORRECTION_MESSAGES.count.one : CORRECTION_MESSAGES.count.many}</Text>
 
                 {pendingSubmissions.length ===
                     0 ? (
@@ -429,11 +212,7 @@ function CorrectionQueueScreen({
                         />
                     </AppCard>
                 ) : (
-                    <View
-                        style={{
-                            gap: 14,
-                        }}
-                    >
+                    <View style={correctionsStyles.listStack}>
                         {pendingSubmissions.map(
                             (
                                 submission,
@@ -475,40 +254,8 @@ function CorrectionQueueScreen({
                                                 gap: 13,
                                             }}
                                         >
-                                            <View
-                                                style={{
-                                                    width: 46,
-                                                    height: 46,
-
-                                                    flexShrink: 0,
-
-                                                    alignItems:
-                                                        'center',
-
-                                                    justifyContent:
-                                                        'center',
-
-                                                    borderRadius: 15,
-
-                                                    backgroundColor:
-                                                        index === 0
-                                                            ? theme.warningSoft
-                                                            : theme.bgSoft,
-                                                }}
-                                            >
-                                                <Text
-                                                    style={{
-                                                        color:
-                                                            index === 0
-                                                                ? theme.warning
-                                                                : theme.primary,
-
-                                                        fontFamily:
-                                                            fonts.headlineBold,
-
-                                                        fontSize: 14,
-                                                    }}
-                                                >
+                                            <View style={[correctionsStyles.avatar, { backgroundColor: index === 0 ? theme.warningSoft : theme.bgSoft }]}> 
+                                                <Text style={{ color: index === 0 ? theme.warning : theme.primary, fontFamily: fonts.headlineBold, fontSize: 14 }}>
                                                     {submission.studentInitials ??
                                                         submission.studentName
                                                             .split(' ')
@@ -527,12 +274,7 @@ function CorrectionQueueScreen({
                                                 </Text>
                                             </View>
 
-                                            <View
-                                                style={{
-                                                    flex: 1,
-                                                    minWidth: 0,
-                                                }}
-                                            >
+                                            <View style={correctionsStyles.submissionMeta}>
                                                 <View
                                                     style={{
                                                         flexDirection:
@@ -547,17 +289,7 @@ function CorrectionQueueScreen({
                                                         gap: 8,
                                                     }}
                                                 >
-                                                    <Text
-                                                        style={{
-                                                            color:
-                                                                theme.textDark,
-
-                                                            fontFamily:
-                                                                fonts.headlineSemibold,
-
-                                                            fontSize: 16,
-                                                        }}
-                                                    >
+                                                    <Text style={correctionsStyles.submissionTitle}>
                                                         {
                                                             submission.studentName
                                                         }
@@ -571,20 +303,7 @@ function CorrectionQueueScreen({
                                                     )}
                                                 </View>
 
-                                                <Text
-                                                    numberOfLines={1}
-                                                    style={{
-                                                        marginTop: 5,
-
-                                                        color:
-                                                            theme.textMuted,
-
-                                                        fontFamily:
-                                                            fonts.bodyRegular,
-
-                                                        fontSize: 13,
-                                                    }}
-                                                >
+                                                <Text numberOfLines={1} style={correctionsStyles.submissionSubtitle}>
                                                     {
                                                         submission.activityTitle
                                                     }
@@ -594,22 +313,7 @@ function CorrectionQueueScreen({
                                                     }
                                                 </Text>
 
-                                                <View
-                                                    style={{
-                                                        marginTop: 10,
-
-                                                        flexDirection:
-                                                            'row',
-
-                                                        alignItems:
-                                                            'center',
-
-                                                        flexWrap:
-                                                            'wrap',
-
-                                                        gap: 8,
-                                                    }}
-                                                >
+                                                <View style={correctionsStyles.chipsRow}>
                                                     <StatusChip
                                                         label={
                                                             submission.waitingTimeLabel
@@ -633,20 +337,7 @@ function CorrectionQueueScreen({
                                                         tone="neutral"
                                                     />
 
-                                                    <Text
-                                                        numberOfLines={1}
-                                                        style={{
-                                                            flexShrink: 1,
-
-                                                            color:
-                                                                theme.textFaint,
-
-                                                            fontFamily:
-                                                                fonts.bodyRegular,
-
-                                                            fontSize: 12,
-                                                        }}
-                                                    >
+                                                    <Text numberOfLines={1} style={correctionsStyles.attachmentText}>
                                                         {
                                                             submission
                                                                 .attachment
@@ -658,7 +349,7 @@ function CorrectionQueueScreen({
                                         </View>
 
                                         <AppButton
-                                            label="Corrigir"
+                                            label={CORRECTION_MESSAGES.actions.correct}
                                             onPress={() =>
                                                 onOpenSubmission(
                                                     submission.id

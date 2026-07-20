@@ -183,3 +183,102 @@ export const PROFESSOR_PROFILE_MESSAGES = {
         dashboard: 'Dashboard',
     },
 };
+
+// Constantes dos relatórios
+export const PROFESSOR_REPORTS_MESSAGES = {
+    header: {
+        title: 'Relatórios',
+        subtitle: 'Acompanhe participação, desempenho e evolução das turmas.',
+        backButton: 'Dashboard',
+    },
+    overview: {
+        periodLabel: 'Últimos ',
+    },
+    filters: {
+        modeLabel: 'Tipo de relatório',
+        periodLabel: 'Período',
+    },
+    metrics: {
+        participation: {
+            label: 'Participação',
+        },
+        completed: {
+            label: 'Concluídas',
+            helper: 'Atividades finalizadas',
+        },
+        revision: {
+            label: 'Em revisão',
+            helper: 'Respostas devolvidas',
+        },
+        published: {
+            label: 'Publicadas',
+            helper: 'Atividades disponíveis para os alunos',
+        },
+        pending: {
+            label: 'Pendentes',
+            helper: 'Atividades em aberto',
+        },
+        average: {
+            label: 'Média',
+            helper: 'Desempenho recente',
+        },
+    },
+    sections: {
+        classParticipation: {
+            title: 'Participação por turma',
+            subtitle: 'Comparativo dos últimos ',
+        },
+        attention: {
+            title: 'Pontos de atenção',
+            subtitle: 'Alunos com menor participação.',
+        },
+        studentEvolution: {
+            title: 'Evolução de ',
+            subtitle: 'Resumo individual dos últimos ',
+        },
+    },
+    actions: {
+        share: 'Compartilhar',
+        export: 'Exportar',
+        shareSuccess: 'Compartilhamento simulado: o link seguro do relatório seria disponibilizado.',
+        exportSuccess: 'Exportação simulada: o relatório seria gerada em PDF.',
+    },
+};
+
+export const REPORT_MODES = [
+    { value: 'class' as const, label: 'Visão da turma' },
+    { value: 'individual' as const, label: 'Visão individual' },
+];
+
+export const REPORT_PERIODS = [
+    { value: '7' as const, label: '7 dias' },
+    { value: '30' as const, label: '30 dias' },
+    { value: '90' as const, label: '90 dias' },
+];
+
+export const REPORT_STUDENTS = [
+    {
+        id: 'student-1',
+        name: 'Carlos Lima',
+        participation: 72,
+        completed: 7,
+        pending: 3,
+        average: '7,4',
+    },
+    {
+        id: 'student-2',
+        name: 'Maria Souza',
+        participation: 48,
+        completed: 3,
+        pending: 5,
+        average: '6,8',
+    },
+    {
+        id: 'student-3',
+        name: 'Ravi Martins',
+        participation: 81,
+        completed: 8,
+        pending: 2,
+        average: '8,7',
+    },
+];

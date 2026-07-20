@@ -4,289 +4,107 @@ import BackButton from '@/components/professor/BackButton';
 import MetricCard from '@/components/professor/MetricCard';
 import { ProfessorRouteShell } from '@/components/professor/ProfessorRouteShell';
 import SectionHeader from '@/components/professor/SectionHeader';
-import { borderRadius, fonts, theme } from '@/constants/theme';
+import { PROFESSOR_REPORTS_MESSAGES } from '@/constants/professor/professor';
+import { theme } from '@/constants/theme';
 import { useRouter } from 'expo-router';
+import { Download, Share2, } from 'lucide-react-native';
 import {
-    Download,
-    Share2,
-} from 'lucide-react-native';
-import { useState } from 'react';
-import {
-    Pressable,
-    ScrollView,
-    Text,
-    useWindowDimensions,
-    View,
+    Pressable, ScrollView, Text, useWindowDimensions, View,
 } from 'react-native';
 
-type ReportMode =
-    | 'class'
-    | 'individual';
-
-type ReportPeriod =
-    | '7'
-    | '30'
-    | '90';
-
-export interface ReportsScreenProps {
-    onBack: () => void;
-}
-
-const reportModes: {
-    value: ReportMode;
-    label: string;
-}[] = [
-        {
-            value: 'class',
-            label: 'Visão da turma',
-        },
-        {
-            value: 'individual',
-            label: 'Visão individual',
-        },
-    ];
-
-const reportPeriods: {
-    value: ReportPeriod;
-    label: string;
-}[] = [
-        {
-            value: '7',
-            label: '7 dias',
-        },
-        {
-            value: '30',
-            label: '30 dias',
-        },
-        {
-            value: '90',
-            label: '90 dias',
-        },
-    ];
-
-const students = [
-    {
-        id: 'student-1',
-        name: 'Carlos Lima',
-        participation: 72,
-        completed: 7,
-        pending: 3,
-        average: '7,4',
-    },
-    {
-        id: 'student-2',
-        name: 'Maria Souza',
-        participation: 48,
-        completed: 3,
-        pending: 5,
-        average: '6,8',
-    },
-    {
-        id: 'student-3',
-        name: 'Ravi Martins',
-        participation: 81,
-        completed: 8,
-        pending: 2,
-        average: '8,7',
-    },
-];
+import { useEducatorReports } from '@/hooks/useEducatorReports';
+import { useProfessorPrototype } from '@/hooks/useProfessorPrototype';
+import { reportsStyles as styles } from '@/styles/professor/reports';
+import type { ReportsScreenProps } from '@/types/professor';
 
 function ReportsScreen({
     onBack,
 }: ReportsScreenProps) {
     const { width } = useWindowDimensions();
-
     const isCompact = width < 780;
 
-    const [mode, setMode] =
-        useState<ReportMode>('class');
+    const { activities, submissions } = useProfessorPrototype();
+    const {
+        mode,
+        setMode,
+        period,
+        setPeriod,
+        selectedStudentId,
+        setSelectedStudentId,
+        shareMessage,
+        exportMessage,
+        messages,
+        reportModes,
+        reportPeriods,
+        summary,
+        simulateShare,
+        simulateExport,
+    } = useEducatorReports(activities, submissions);
 
-    const [period, setPeriod] =
-        useState<ReportPeriod>('30');
-
-    const [selectedStudentId, setSelectedStudentId] =
-        useState('student-1');
-
-    const [shareMessage, setShareMessage] = useState('');
-    const [exportMessage, setExportMessage] = useState('');
-
-    const selectedStudent =
-        students.find(
-            (student) =>
-                student.id ===
-                selectedStudentId
-        ) ?? students[0];
-
-    function simulateShare() {
-        setExportMessage('');
-
-        setShareMessage(
-            'Compartilhamento simulado: o link seguro do relatório seria disponibilizado.'
-        );
-    }
-
-    function simulateExport() {
-        setShareMessage('');
-
-        setExportMessage(
-            'Exportação simulada: o relatório seria gerado em PDF.'
-        );
-    }
+    const selectedStudent = summary.students.find((student) => student.id === selectedStudentId) ?? summary.students[0];
 
     return (
         <ScrollView
-            style={{
-                flex: 1,
-                backgroundColor:
-                    theme.bgSubtle,
-            }}
+            style={styles.page}
             contentContainerStyle={{
-                paddingHorizontal: isCompact
-                    ? 16
-                    : 24,
+                paddingHorizontal: isCompact ? 16 : 24,
                 paddingTop: 28,
                 paddingBottom: 64,
             }}
             showsVerticalScrollIndicator={false}
         >
-            <View
-                style={{
-                    width: '100%',
-                    maxWidth: 1180,
-                    alignSelf: 'center',
-                }}
-            >
-                <View
-                    style={{
-                        width: '100%',
-
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-
-                        flexWrap: 'wrap',
-                        gap: 12,
-
-                        marginBottom: 24,
-                    }}
-                >
+            <View style={styles.screenContainer}>
+                <View style={styles.topBar}>
                     <BackButton
-                        label="Dashboard"
+                        label={PROFESSOR_REPORTS_MESSAGES.header.backButton}
                         onPress={onBack}
                     />
 
-                    <View
-                        style={{
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            justifyContent: 'flex-end',
-
-                            flexWrap: 'wrap',
-                            gap: 8,
-                        }}
-                    >
+                    <View style={styles.headerActions}>
                         <AppButton
-                            label="Compartilhar"
+                            label={messages.actions.share}
                             variant="ghost"
                             size="small"
-                            iconLeft={
-                                <Share2
-                                    size={17}
-                                    color={
-                                        theme.primary
-                                    }
-                                />
-                            }
+                            iconLeft={<Share2 size={17} color={theme.primary} />}
                             onPress={simulateShare}
                         />
 
                         <AppButton
-                            label="Exportar"
+                            label={messages.actions.export}
                             variant="secondary"
                             size="small"
-                            iconLeft={
-                                <Download
-                                    size={17}
-                                    color={
-                                        theme.primary
-                                    }
-                                />
-                            }
+                            iconLeft={<Download size={17} color={theme.primary} />}
                             onPress={simulateExport}
                         />
                     </View>
                 </View>
 
-                <View
-                    style={{
-                        marginBottom: 20,
-                    }}
-                >
+                <View style={styles.headerSection}>
                     <Text
-                        style={{
-                            color:
-                                theme.textDark,
-
-                            fontFamily:
-                                fonts.headlineBold,
-
-                            fontSize: isCompact
-                                ? 25
-                                : 30,
-
-                            lineHeight: isCompact
-                                ? 32
-                                : 38,
-                        }}
+                        style={[
+                            styles.title,
+                            {
+                                fontSize: isCompact ? 25 : 30,
+                                lineHeight: isCompact ? 32 : 38,
+                            },
+                        ]}
                     >
-                        Relatórios
+                        {messages.header.title}
                     </Text>
 
-                    <Text
-                        style={{
-                            maxWidth: 720,
-                            marginTop: 6,
-
-                            color:
-                                theme.textMuted,
-
-                            fontFamily:
-                                fonts.bodyRegular,
-
-                            fontSize: 14,
-                            lineHeight: 21,
-                        }}
-                    >
-                        Acompanhe participação, desempenho e evolução das turmas.
+                    <Text style={styles.subtitle}>
+                        {messages.header.subtitle}
                     </Text>
                 </View>
 
                 {!!exportMessage && (
                     <View
-                        style={{
-                            marginBottom: 18,
-                            paddingHorizontal: 14,
-                            paddingVertical: 11,
-
-                            borderRadius:
-                                borderRadius.lg,
-
-                            backgroundColor:
-                                theme.successSoft,
-                        }}
+                        style={[
+                            styles.messageBanner,
+                            { backgroundColor: theme.successSoft },
+                        ]}
                     >
-                        <Text
-                            style={{
-                                color:
-                                    theme.success,
-
-                                fontFamily:
-                                    fonts.bodyBold,
-
-                                fontSize: 12,
-                                lineHeight: 18,
-                            }}
-                        >
+                        <Text style={[styles.messageText, { color: theme.success }]}>
                             {exportMessage}
                         </Text>
                     </View>
@@ -294,479 +112,170 @@ function ReportsScreen({
 
                 {!!shareMessage && (
                     <View
-                        style={{
-                            marginBottom: 18,
-                            paddingHorizontal: 14,
-                            paddingVertical: 11,
-
-                            borderRadius:
-                                borderRadius.lg,
-
-                            backgroundColor:
-                                theme.infoSoft,
-                        }}
+                        style={[
+                            styles.messageBanner,
+                            { backgroundColor: theme.infoSoft },
+                        ]}
                     >
-                        <Text
-                            style={{
-                                color:
-                                    theme.info,
-
-                                fontFamily:
-                                    fonts.bodyBold,
-
-                                fontSize: 12,
-                                lineHeight: 18,
-                            }}
-                        >
+                        <Text style={[styles.messageText, { color: theme.info }]}>
                             {shareMessage}
                         </Text>
                     </View>
                 )}
 
-                <AppCard
-                    style={{
-                        marginTop: 24,
-                    }}
-                >
-                    <Text
-                        style={{
-                            marginBottom: 9,
+                <AppCard style={styles.filtersCard}>
+                    <Text style={styles.sectionLabel}>{messages.filters.modeLabel}</Text>
 
-                            color:
-                                theme.textDark,
+                    <View style={styles.filterList}>
+                        {reportModes.map((option) => {
+                            const active = mode === option.value;
 
-                            fontFamily:
-                                fonts.bodyBold,
-
-                            fontSize: 13,
-                        }}
-                    >
-                        Tipo de relatório
-                    </Text>
-
-                    <View
-                        style={{
-                            flexDirection: 'row',
-                            flexWrap: 'wrap',
-                            gap: 8,
-                        }}
-                    >
-                        {reportModes.map(
-                            (option) => {
-                                const active =
-                                    mode === option.value;
-
-                                return (
-                                    <Pressable
-                                        key={option.value}
-                                        onPress={() =>
-                                            setMode(option.value)
-                                        }
-                                        style={({ pressed }) => ({
-                                            paddingHorizontal: 14,
-                                            paddingVertical: 9,
-
-                                            borderWidth: 1,
-                                            borderColor: active
-                                                ? theme.primary
-                                                : theme.border,
-
-                                            borderRadius:
-                                                borderRadius.pill,
-
-                                            backgroundColor:
-                                                active
-                                                    ? theme.primary
-                                                    : theme.card,
-
-                                            opacity: pressed
-                                                ? 0.82
-                                                : 1,
-                                        })}
+                            return (
+                                <Pressable
+                                    key={option.value}
+                                    onPress={() => setMode(option.value)}
+                                    style={({ pressed }) => [
+                                        styles.filterChip,
+                                        active && styles.filterChipActive,
+                                        { opacity: pressed ? 0.82 : 1 },
+                                    ]}
+                                >
+                                    <Text
+                                        style={[
+                                            styles.filterChipText,
+                                            active && styles.filterChipTextActive,
+                                        ]}
                                     >
-                                        <Text
-                                            style={{
-                                                color: active
-                                                    ? theme.white
-                                                    : theme.textMuted,
-
-                                                fontFamily:
-                                                    fonts.bodyBold,
-
-                                                fontSize: 12,
-                                            }}
-                                        >
-                                            {option.label}
-                                        </Text>
-                                    </Pressable>
-                                );
-                            }
-                        )}
+                                        {option.label}
+                                    </Text>
+                                </Pressable>
+                            );
+                        })}
                     </View>
 
-                    <Text
-                        style={{
-                            marginTop: 18,
-                            marginBottom: 9,
+                    <Text style={[styles.sectionLabel, { marginTop: 18 }]}>{messages.filters.periodLabel}</Text>
 
-                            color:
-                                theme.textDark,
+                    <View style={styles.filterList}>
+                        {reportPeriods.map((option) => {
+                            const active = period === option.value;
 
-                            fontFamily:
-                                fonts.bodyBold,
-
-                            fontSize: 13,
-                        }}
-                    >
-                        Período
-                    </Text>
-
-                    <View
-                        style={{
-                            flexDirection: 'row',
-                            flexWrap: 'wrap',
-                            gap: 8,
-                        }}
-                    >
-                        {reportPeriods.map(
-                            (option) => {
-                                const active =
-                                    period ===
-                                    option.value;
-
-                                return (
-                                    <Pressable
-                                        key={option.value}
-                                        onPress={() =>
-                                            setPeriod(
-                                                option.value
-                                            )
-                                        }
-                                        style={({ pressed }) => ({
-                                            paddingHorizontal: 13,
-                                            paddingVertical: 8,
-
-                                            borderWidth: 1,
-                                            borderColor: active
-                                                ? theme.info
-                                                : theme.border,
-
-                                            borderRadius:
-                                                borderRadius.pill,
-
-                                            backgroundColor:
-                                                active
-                                                    ? theme.infoSoft
-                                                    : theme.card,
-
-                                            opacity: pressed
-                                                ? 0.82
-                                                : 1,
-                                        })}
+                            return (
+                                <Pressable
+                                    key={option.value}
+                                    onPress={() => setPeriod(option.value)}
+                                    style={({ pressed }) => [
+                                        styles.periodChip,
+                                        active && styles.periodChipActive,
+                                        { opacity: pressed ? 0.82 : 1 },
+                                    ]}
+                                >
+                                    <Text
+                                        style={[
+                                            styles.periodChipText,
+                                            active && styles.periodChipTextActive,
+                                        ]}
                                     >
-                                        <Text
-                                            style={{
-                                                color: active
-                                                    ? theme.info
-                                                    : theme.textMuted,
-
-                                                fontFamily:
-                                                    fonts.bodyBold,
-
-                                                fontSize: 12,
-                                            }}
-                                        >
-                                            {option.label}
-                                        </Text>
-                                    </Pressable>
-                                );
-                            }
-                        )}
+                                        {option.label}
+                                    </Text>
+                                </Pressable>
+                            );
+                        })}
                     </View>
                 </AppCard>
 
                 {mode === 'class' ? (
                     <>
-                        <View
-                            style={{
-                                flexDirection: 'row',
-                                flexWrap: 'wrap',
-                                gap: 16,
-                                marginTop: 20,
-                            }}
-                        >
+                        <View style={styles.metricsGrid}>
                             <MetricCard
-                                label="Participação geral"
-                                value="84%"
-                                helper={`Últimos ${period} dias`}
+                                label={messages.metrics.participation.label}
+                                value={summary.participation}
+                                helper={`${messages.overview.periodLabel}${period} dias`}
                                 tone="success"
                             />
 
                             <MetricCard
-                                label="Atividades concluídas"
-                                value={86}
-                                helper="Somando as duas turmas"
+                                label={messages.metrics.completed.label}
+                                value={summary.completedActivities}
+                                helper={messages.metrics.completed.helper}
                                 tone="primary"
                             />
 
                             <MetricCard
-                                label="Em revisão"
-                                value={5}
-                                helper="Respostas devolvidas"
+                                label={messages.metrics.revision.label}
+                                value={summary.revisionCount}
+                                helper={messages.metrics.revision.helper}
                                 tone="warning"
                             />
 
                             <MetricCard
-                                label="Média geral"
-                                value="8,1"
-                                helper="Desempenho consolidado"
+                                label={messages.metrics.average.label}
+                                value={summary.average}
+                                helper={messages.metrics.average.helper}
                                 tone="info"
                             />
                         </View>
 
-                        <View
-                            style={{
-                                flexDirection: isCompact
-                                    ? 'column'
-                                    : 'row',
-
-                                alignItems: 'flex-start',
-
-                                gap: 20,
-                                marginTop: 20,
-                            }}
-                        >
-                            <View
-                                style={{
-                                    flex: 1.25,
-                                    width: isCompact
-                                        ? '100%'
-                                        : undefined,
-                                }}
-                            >
+                        <View style={styles.splitLayout}>
+                            <View style={[styles.splitPanel, { flexBasis: isCompact ? '100%' : 620 }]}>
                                 <AppCard>
                                     <SectionHeader
                                         compact
-                                        title="Participação por turma"
-                                        subtitle={`Comparativo dos últimos ${period} dias.`}
-                                        style={{
-                                            marginBottom: 20,
-                                        }}
+                                        title={messages.sections.classParticipation.title}
+                                        subtitle={`${messages.sections.classParticipation.subtitle}${period} dias.`}
+                                        style={{ marginBottom: 20 }}
                                     />
 
-                                    <View
-                                        style={{
-                                            gap: 22,
-                                        }}
-                                    >
-                                        {[
-                                            {
-                                                label:
-                                                    '5º Ano A',
-                                                value: 88,
-                                                color:
-                                                    theme.primary,
-                                            },
-                                            {
-                                                label:
-                                                    '5º Ano B',
-                                                value: 76,
-                                                color:
-                                                    theme.warning,
-                                            },
-                                        ].map(
-                                            (classItem) => (
-                                                <View
-                                                    key={
-                                                        classItem.label
-                                                    }
-                                                >
-                                                    <View
-                                                        style={{
-                                                            flexDirection:
-                                                                'row',
+                                    <View style={styles.panelContent}>
+                                        {summary.classParticipation.map((classItem) => (
+                                            <View key={classItem.label}>
+                                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', gap: 12 }}>
+                                                    <Text style={{ color: theme.textDark, fontFamily: 'Quicksand_700Bold', fontSize: 14 }}>
+                                                        {classItem.label}
+                                                    </Text>
 
-                                                            justifyContent:
-                                                                'space-between',
-
-                                                            gap: 12,
-                                                        }}
-                                                    >
-                                                        <Text
-                                                            style={{
-                                                                color:
-                                                                    theme.textDark,
-
-                                                                fontFamily:
-                                                                    fonts.bodyBold,
-
-                                                                fontSize: 14,
-                                                            }}
-                                                        >
-                                                            {
-                                                                classItem.label
-                                                            }
-                                                        </Text>
-
-                                                        <Text
-                                                            style={{
-                                                                color:
-                                                                    classItem.color,
-
-                                                                fontFamily:
-                                                                    fonts.bodyBold,
-
-                                                                fontSize: 14,
-                                                            }}
-                                                        >
-                                                            {
-                                                                classItem.value
-                                                            }
-                                                            %
-                                                        </Text>
-                                                    </View>
-
-                                                    <View
-                                                        style={{
-                                                            height: 12,
-                                                            marginTop: 9,
-
-                                                            overflow:
-                                                                'hidden',
-
-                                                            borderRadius:
-                                                                borderRadius.pill,
-
-                                                            backgroundColor:
-                                                                theme.bgSoft,
-                                                        }}
-                                                    >
-                                                        <View
-                                                            style={{
-                                                                width: `${classItem.value}%`,
-                                                                height: '100%',
-
-                                                                borderRadius:
-                                                                    borderRadius.pill,
-
-                                                                backgroundColor:
-                                                                    classItem.color,
-                                                            }}
-                                                        />
-                                                    </View>
+                                                    <Text style={{ color: classItem.color, fontFamily: 'Quicksand_700Bold', fontSize: 14 }}>
+                                                        {classItem.value}%
+                                                    </Text>
                                                 </View>
-                                            )
-                                        )}
+
+                                                <View style={{ height: 12, marginTop: 9, overflow: 'hidden', borderRadius: 999, backgroundColor: theme.bgSoft }}>
+                                                    <View style={{ width: `${classItem.value}%`, height: '100%', borderRadius: 999, backgroundColor: classItem.color }} />
+                                                </View>
+                                            </View>
+                                        ))}
                                     </View>
                                 </AppCard>
                             </View>
 
-                            <View
-                                style={{
-                                    flex: 1,
-                                    width: isCompact
-                                        ? '100%'
-                                        : undefined,
-                                }}
-                            >
+                            <View style={[styles.splitPanel, { flexBasis: isCompact ? '100%' : 320 }]}>
                                 <AppCard>
                                     <SectionHeader
                                         compact
-                                        title="Pontos de atenção"
-                                        subtitle="Alunos com menor participação."
-                                        style={{
-                                            marginBottom: 17,
-                                        }}
+                                        title={messages.sections.attention.title}
+                                        subtitle={messages.sections.attention.subtitle}
+                                        style={{ marginBottom: 17 }}
                                     />
 
-                                    <View
-                                        style={{
-                                            gap: 12,
-                                        }}
-                                    >
-                                        <View
-                                            style={{
-                                                padding: 14,
-
-                                                borderRadius:
-                                                    borderRadius.lg,
-
-                                                backgroundColor:
-                                                    theme.dangerSoft,
-                                            }}
-                                        >
-                                            <Text
-                                                style={{
-                                                    color:
-                                                        theme.danger,
-
-                                                    fontFamily:
-                                                        fonts.bodyBold,
-
-                                                    fontSize: 13,
-                                                }}
+                                    <View style={styles.attentionList}>
+                                        {summary.attentionStudents.map((student) => (
+                                            <View
+                                                key={student.name}
+                                                style={[
+                                                    styles.attentionItem,
+                                                    {
+                                                        backgroundColor: student.tone === 'danger' ? theme.dangerSoft : theme.warningSoft,
+                                                    },
+                                                ]}
                                             >
-                                                Maria Souza
-                                            </Text>
+                                                <Text style={[styles.attentionTitle, { color: student.tone === 'danger' ? theme.danger : theme.warning }]}>
+                                                    {student.name}
+                                                </Text>
 
-                                            <Text
-                                                style={{
-                                                    marginTop: 4,
-
-                                                    color:
-                                                        theme.textMuted,
-
-                                                    fontFamily:
-                                                        fonts.bodyRegular,
-
-                                                    fontSize: 12,
-                                                }}
-                                            >
-                                                48% de participação
-                                            </Text>
-                                        </View>
-
-                                        <View
-                                            style={{
-                                                padding: 14,
-
-                                                borderRadius:
-                                                    borderRadius.lg,
-
-                                                backgroundColor:
-                                                    theme.warningSoft,
-                                            }}
-                                        >
-                                            <Text
-                                                style={{
-                                                    color:
-                                                        theme.warning,
-
-                                                    fontFamily:
-                                                        fonts.bodyBold,
-
-                                                    fontSize: 13,
-                                                }}
-                                            >
-                                                Carlos Lima
-                                            </Text>
-
-                                            <Text
-                                                style={{
-                                                    marginTop: 4,
-
-                                                    color:
-                                                        theme.textMuted,
-
-                                                    fontFamily:
-                                                        fonts.bodyRegular,
-
-                                                    fontSize: 12,
-                                                }}
-                                            >
-                                                72% de participação
-                                            </Text>
-                                        </View>
+                                                <Text style={styles.attentionDescription}>
+                                                    {student.participation}% de participação
+                                                </Text>
+                                            </View>
+                                        ))}
                                     </View>
                                 </AppCard>
                             </View>
@@ -774,220 +283,83 @@ function ReportsScreen({
                     </>
                 ) : (
                     <>
-                        <AppCard
-                            style={{
-                                marginTop: 20,
-                            }}
-                        >
-                            <Text
-                                style={{
-                                    marginBottom: 9,
+                        <AppCard style={styles.studentSelectorCard}>
+                            <Text style={styles.sectionLabel}>Selecionar aluno</Text>
 
-                                    color:
-                                        theme.textDark,
+                            <View style={styles.filterList}>
+                                {summary.students.map((student) => {
+                                    const active = selectedStudentId === student.id;
 
-                                    fontFamily:
-                                        fonts.bodyBold,
-
-                                    fontSize: 13,
-                                }}
-                            >
-                                Selecionar aluno
-                            </Text>
-
-                            <View
-                                style={{
-                                    flexDirection: 'row',
-                                    flexWrap: 'wrap',
-                                    gap: 8,
-                                }}
-                            >
-                                {students.map(
-                                    (student) => {
-                                        const active =
-                                            selectedStudentId ===
-                                            student.id;
-
-                                        return (
-                                            <Pressable
-                                                key={student.id}
-                                                onPress={() =>
-                                                    setSelectedStudentId(
-                                                        student.id
-                                                    )
-                                                }
-                                                style={({ pressed }) => ({
-                                                    paddingHorizontal: 13,
-                                                    paddingVertical: 9,
-
-                                                    borderWidth: 1,
-                                                    borderColor: active
-                                                        ? theme.primary
-                                                        : theme.border,
-
-                                                    borderRadius:
-                                                        borderRadius.pill,
-
-                                                    backgroundColor:
-                                                        active
-                                                            ? theme.primary
-                                                            : theme.card,
-
-                                                    opacity: pressed
-                                                        ? 0.82
-                                                        : 1,
-                                                })}
+                                    return (
+                                        <Pressable
+                                            key={student.id}
+                                            onPress={() => setSelectedStudentId(student.id)}
+                                            style={({ pressed }) => [
+                                                styles.filterChip,
+                                                active && styles.filterChipActive,
+                                                { opacity: pressed ? 0.82 : 1 },
+                                            ]}
+                                        >
+                                            <Text
+                                                style={[
+                                                    styles.filterChipText,
+                                                    active && styles.filterChipTextActive,
+                                                ]}
                                             >
-                                                <Text
-                                                    style={{
-                                                        color: active
-                                                            ? theme.white
-                                                            : theme.textMuted,
-
-                                                        fontFamily:
-                                                            fonts.bodyBold,
-
-                                                        fontSize: 12,
-                                                    }}
-                                                >
-                                                    {student.name}
-                                                </Text>
-                                            </Pressable>
-                                        );
-                                    }
-                                )}
+                                                {student.name}
+                                            </Text>
+                                        </Pressable>
+                                    );
+                                })}
                             </View>
                         </AppCard>
 
-                        <View
-                            style={{
-                                flexDirection: 'row',
-                                flexWrap: 'wrap',
-                                gap: 16,
-                                marginTop: 20,
-                            }}
-                        >
+                        <View style={styles.metricsGrid}>
                             <MetricCard
-                                label="Participação"
+                                label={messages.metrics.participation.label}
                                 value={`${selectedStudent.participation}%`}
-                                helper={`Últimos ${period} dias`}
-                                tone={
-                                    selectedStudent.participation <
-                                        60
-                                        ? 'danger'
-                                        : 'success'
-                                }
+                                helper={`${messages.overview.periodLabel}${period} dias`}
+                                tone={selectedStudent.participation < 60 ? 'danger' : 'success'}
                             />
 
                             <MetricCard
-                                label="Concluídas"
-                                value={
-                                    selectedStudent.completed
-                                }
-                                helper="Atividades finalizadas"
+                                label={messages.metrics.completed.label}
+                                value={selectedStudent.completed}
+                                helper={messages.metrics.completed.helper}
                                 tone="primary"
                             />
 
                             <MetricCard
-                                label="Pendentes"
-                                value={
-                                    selectedStudent.pending
-                                }
-                                helper="Atividades em aberto"
+                                label={messages.metrics.pending.label}
+                                value={selectedStudent.pending}
+                                helper={messages.metrics.pending.helper}
                                 tone="warning"
                             />
 
                             <MetricCard
-                                label="Média"
-                                value={
-                                    selectedStudent.average
-                                }
-                                helper="Desempenho recente"
+                                label={messages.metrics.average.label}
+                                value={selectedStudent.average}
+                                helper={messages.metrics.average.helper}
                                 tone="info"
                             />
                         </View>
 
-                        <AppCard
-                            style={{
-                                marginTop: 20,
-                            }}
-                        >
+                        <AppCard style={styles.evolutionCard}>
                             <SectionHeader
                                 compact
-                                title={`Evolução de ${selectedStudent.name}`}
-                                subtitle={`Resumo individual dos últimos ${period} dias.`}
-                                style={{
-                                    marginBottom: 18,
-                                }}
+                                title={`${messages.sections.studentEvolution.title}${selectedStudent.name}`}
+                                subtitle={`${messages.sections.studentEvolution.subtitle}${period} dias.`}
+                                style={{ marginBottom: 18 }}
                             />
 
-                            <View
-                                style={{
-                                    height: 160,
-                                    flexDirection: 'row',
-                                    alignItems: 'flex-end',
-                                    gap: 16,
+                            <View style={styles.chartContainer}>
+                                {[42, 58, 51, 71, 78, 84].map((value, index) => (
+                                    <View key={`${value}-${index}`} style={styles.chartBarColumn}>
+                                        <Text style={styles.chartBarValue}>{value}%</Text>
 
-                                    paddingHorizontal: 12,
-                                    paddingTop: 20,
-
-                                    borderRadius:
-                                        borderRadius.xl,
-
-                                    backgroundColor:
-                                        theme.bgSubtle,
-                                }}
-                            >
-                                {[42, 58, 51, 71, 78, 84].map(
-                                    (value, index) => (
-                                        <View
-                                            key={`${value}-${index}`}
-                                            style={{
-                                                flex: 1,
-
-                                                alignItems:
-                                                    'center',
-
-                                                justifyContent:
-                                                    'flex-end',
-                                            }}
-                                        >
-                                            <Text
-                                                style={{
-                                                    marginBottom: 6,
-
-                                                    color:
-                                                        theme.textMuted,
-
-                                                    fontFamily:
-                                                        fonts.bodyRegular,
-
-                                                    fontSize: 10,
-                                                }}
-                                            >
-                                                {value}%
-                                            </Text>
-
-                                            <View
-                                                style={{
-                                                    width: '100%',
-                                                    maxWidth: 64,
-
-                                                    height: `${value}%`,
-
-                                                    borderTopLeftRadius:
-                                                        8,
-
-                                                    borderTopRightRadius:
-                                                        8,
-
-                                                    backgroundColor:
-                                                        theme.primary,
-                                                }}
-                                            />
-                                        </View>
-                                    )
-                                )}
+                                        <View style={[styles.chartBar, { height: `${value}%` }]} />
+                                    </View>
+                                ))}
                             </View>
                         </AppCard>
                     </>
@@ -997,4 +369,9 @@ function ReportsScreen({
     );
 }
 
-export default function ReportsRoute() { const router = useRouter(); return <ProfessorRouteShell currentDestination="reports"><ReportsScreen onBack={() => router.back()} /></ProfessorRouteShell>; }
+export default function ReportsRoute() {
+    const router = useRouter();
+    return <ProfessorRouteShell currentDestination="reports">
+        <ReportsScreen onBack={() => router.back()} />
+    </ProfessorRouteShell>;
+}

@@ -16,7 +16,6 @@ export default function WizardRoute() {
     setClassDetails,
     setTeacherData,
     setStudents,
-    goBack,
     setStep,
   } = useWizardFlow();
 
@@ -36,20 +35,20 @@ export default function WizardRoute() {
       return (
         <WizardStepTeacher
           classDetails={classDetails}
-          onBack={() => goBack(1)}
+          onBack={() => setStep(1)}
           onNext={(email) => setTeacherData({ email })}
           onSkip={() => setStep(3)}
         />
       );
     case 3:
       return (
-        <WizardStepStudents onBack={() => goBack(2)} onFinish={setStudents} />
+        <WizardStepStudents onBack={() => setStep(2)} onFinish={setStudents} />
       );
     case 4:
       return (
         <WizardDoneScreen
           studentsCount={students.length}
-          onBack={() => goBack(3)}
+          onBack={() => setStep(3)}
           onGoDashboard={async () => {
             try {
               await finalizeSchoolOnboarding({
@@ -58,7 +57,7 @@ export default function WizardRoute() {
                 teacher,
                 students,
               });
-              router.replace("/professor/bem-vindo");
+              router.replace("/(auth)/professor/bem-vindo" as any);
             } catch (err) {
               console.error("Falha ao finalizar onboarding:", err);
             }

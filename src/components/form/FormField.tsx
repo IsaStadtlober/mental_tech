@@ -24,48 +24,9 @@ export function FormField({
   const [isFocused, setIsFocused] = useState(false);
   const p = inputPresets[preset];
   const wrapStyle = useFadeUp(80, 380);
-    return (
-        <Animated.View style={[styles.fieldWrap, wrapStyle]}>
-            {!!label && (
-                <Text style={[styles.inputLabel, { fontSize: p.labelSize }]}>
-                    {label}
-                </Text>
-            )}
-
-            <TextInput
-                value={value}
-                onChangeText={onChangeText}
-                placeholder={placeholder}
-                placeholderTextColor={theme.placeholder}
-                keyboardType={keyboardType}
-                secureTextEntry={secureTextEntry}
-                maxLength={maxLength}
-                editable={editable}
-                onFocus={() => setIsFocused(true)}
-                onBlur={() => setIsFocused(false)}
-                style={[
-                    styles.input,
-                    {
-                        paddingVertical: p.py,
-                        paddingHorizontal: p.px,
-                        fontSize: p.fontSize,
-                        backgroundColor: p.bg,
-                        borderRadius: p.radius,
-                        borderColor: error
-                            ? theme.danger
-                            : isFocused
-                                ? p.activeBorder
-                                : theme.transparent,
-                        textAlign: center ? 'center' : 'left',
-                        opacity: editable ? 1 : 0.7,
-                    },
-                ]}
-            />
-        </Animated.View>
-    );
 
   return (
-    <Animated.View style={[{ gap: 6 }, wrapStyle]}>
+    <Animated.View style={[styles.fieldWrap, wrapStyle]}>
       {!!label && (
         <Text style={[styles.inputLabel, { fontSize: p.labelSize }]}>
           {label}
@@ -76,7 +37,7 @@ export function FormField({
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
-        placeholderTextColor="#9CA3AF"
+        placeholderTextColor={theme.placeholder}
         keyboardType={keyboardType}
         secureTextEntry={secureTextEntry}
         maxLength={maxLength}
@@ -98,7 +59,7 @@ export function FormField({
               ? theme.danger
               : isFocused
                 ? p.activeBorder
-                : "transparent",
+                : theme.transparent,
             textAlign: center ? "center" : "left",
             opacity: editable ? 1 : 0.7,
           },

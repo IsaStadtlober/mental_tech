@@ -19,7 +19,7 @@ export default function EducatorLoginRoute() {
   const canEnter = email.trim().length > 3 && password.length > 0;
 
   const handleEnter = () => {
-    router.replace('/professor/bem-vindo');
+    router.replace('/(professor)/dashboard' as any);
   };
 
   return (
@@ -64,7 +64,7 @@ export default function EducatorLoginRoute() {
 
       <View style={styles.loginLinks}>
         <TouchableOpacity
-          onPress={() => router.push('/professor/recuperar-senha')}
+          onPress={() => router.push('/(auth)/professor/recuperar-senha' as any)}
           activeOpacity={0.75}
         >
           <Text style={styles.linkMuted}>
@@ -72,11 +72,11 @@ export default function EducatorLoginRoute() {
           </Text>
         </TouchableOpacity>
 
-        <Text style={styles.linkMuted}>
+          <Text style={styles.linkMuted}>
           Ainda não tem uma escola cadastrada?{' '}
           <Text
             style={styles.linkStrong}
-            onPress={() => router.push('/escola/cadastro')}
+            onPress={() => router.push('/escola/cadastro' as any)}
           >
             Cadastre aqui
           </Text>

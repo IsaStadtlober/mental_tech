@@ -1,4 +1,4 @@
-import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from "react";
 
 import type {
   ClassData,
@@ -16,6 +16,7 @@ interface WizardFlowContextValue {
   setClassDetails: (classDetails: ClassData) => void;
   setTeacherData: (teacher: TeacherData) => void;
   setStudents: (students: StudentData[]) => void;
+  goBack: (step: WizardStepType) => void;
   resetWizard: () => void;
 }
 
@@ -49,11 +50,11 @@ const initialState: WizardFlowState = {
 export function WizardFlowProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<WizardFlowState>(initialState);
 
-  const setStep = (step: WizardStepType) => {
+  const setStep = useCallback((step: WizardStepType) => {
     setState((current) => ({ ...current, step }));
-  };
+  }, []);
 
-  const setSchoolData = (payload: Partial<SchoolOnboardingData>) => {
+  const setSchoolData = useCallback((payload: Partial<SchoolOnboardingData>) => {
     setState((current) => ({
       ...current,
       school: {
@@ -61,21 +62,25 @@ export function WizardFlowProvider({ children }: { children: ReactNode }) {
         ...payload,
       },
     }));
-  };
+  }, []);
 
-  const setClassDetails = (classDetails: ClassData) => {
+  const setClassDetails = useCallback((classDetails: ClassData) => {
     setState((current) => ({ ...current, classDetails, step: 2 }));
-  };
+  }, []);
 
-  const setTeacherData = (teacher: TeacherData) => {
+  const setTeacherData = useCallback((teacher: TeacherData) => {
     setState((current) => ({ ...current, teacher, step: 3 }));
-  };
+  }, []);
 
-  const setStudents = (students: StudentData[]) => {
+  const setStudents = useCallback((students: StudentData[]) => {
     setState((current) => ({ ...current, students, step: 4 }));
-  };
+  }, []);
 
-  const resetWizard = () => setState(initialState);
+  const goBack = useCallback((step: WizardStepType) => {
+    setStep(step);
+  }, [setStep]);
+
+  const resetWizard = useCallback(() => setState(initialState), []);
 
   const value = useMemo(
     () => ({
@@ -85,12 +90,12 @@ export function WizardFlowProvider({ children }: { children: ReactNode }) {
       setClassDetails,
       setTeacherData,
       setStudents,
+      goBack,
       resetWizard,
     }),
-    [state],
+    [state, setStep, setSchoolData, setClassDetails, setTeacherData, setStudents, goBack, resetWizard],
   );
 
-// Correto: Usando a anotação de ponto para acessar o Provider do seu Contexto
 return (
   <WizardFlowContext.Provider value={value}>
     {children}

@@ -19,7 +19,7 @@ export default function ForgotPasswordRoute() {
   const canSend = isValidEmail(email);
 
   const handleSent = () => {
-    router.push('/professor/senha-enviada');
+    router.push('/(auth)/professor/senha-enviada');
   };
 
   return (

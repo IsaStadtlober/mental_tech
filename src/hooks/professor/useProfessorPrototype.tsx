@@ -1,5 +1,5 @@
-import type { ActivityFormData } from '@/components/professor/ActivityForm';
 import type { Activity, EducatorNotification, EducatorStudentOption, Submission } from '@/types/professor';
+import type { ActivityFormData } from '@/types/professor/activityForm';
 import { createContext, type ReactNode, useContext, useMemo, useState } from 'react';
 
 const students: EducatorStudentOption[] = [

@@ -1,24 +1,7 @@
-import { borderRadius, fonts, theme } from '@/constants/theme';
-import {
-  type StyleProp,
-  Text,
-  View,
-  type ViewStyle,
-} from 'react-native';
-
-export type StatusChipTone =
-  | 'neutral'
-  | 'success'
-  | 'warning'
-  | 'danger'
-  | 'info';
-
-export interface StatusChipProps {
-  label: string;
-  tone?: StatusChipTone;
-  dot?: boolean;
-  style?: StyleProp<ViewStyle>;
-}
+import { statusChipStyles } from '@/styles/professor/statusChip';
+import type { StatusChipProps } from '@/types/professor/statusChip';
+import { getStatusChipToneConfig } from '@/utils/professor/statusChip';
+import { Text, View } from 'react-native';
 
 export default function StatusChip({
   label,
@@ -26,81 +9,21 @@ export default function StatusChip({
   dot = false,
   style,
 }: StatusChipProps) {
-  const tones = {
-    neutral: {
-      background: theme.bgSubtle,
-      foreground: theme.textMuted,
-    },
-
-    success: {
-      background: theme.successSoft,
-      foreground: theme.success,
-    },
-
-    warning: {
-      background: theme.warningSoft,
-      foreground: theme.warning,
-    },
-
-    danger: {
-      background: theme.dangerSoft,
-      foreground: theme.danger,
-    },
-
-    info: {
-      background: theme.infoSoft,
-      foreground: theme.info,
-    },
-  } as const;
-
-  const selectedTone = tones[tone];
+  const selectedTone = getStatusChipToneConfig(tone);
 
   return (
     <View
       accessibilityRole="text"
       accessibilityLabel={`Status: ${label}`}
       style={[
-        {
-          alignSelf: 'flex-start',
-
-          flexDirection: 'row',
-          alignItems: 'center',
-          gap: 6,
-
-          paddingHorizontal: 10,
-          paddingVertical: 6,
-
-          borderRadius: borderRadius.pill,
-          backgroundColor:
-            selectedTone.background,
-        },
+        statusChipStyles.container,
+        { backgroundColor: selectedTone.background },
         style,
       ]}
     >
-      {dot && (
-        <View
-          style={{
-            width: 7,
-            height: 7,
+      {dot && <View style={[statusChipStyles.dot, { backgroundColor: selectedTone.foreground }]} />}
 
-            borderRadius: 4,
-
-            backgroundColor:
-              selectedTone.foreground,
-          }}
-        />
-      )}
-
-      <Text
-        style={{
-          color: selectedTone.foreground,
-
-          fontFamily: fonts.bodyBold,
-          fontSize: 12,
-        }}
-      >
-        {label}
-      </Text>
+      <Text style={[statusChipStyles.label, { color: selectedTone.foreground }]}>{label}</Text>
     </View>
   );
 }

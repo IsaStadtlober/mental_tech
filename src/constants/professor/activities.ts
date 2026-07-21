@@ -1,4 +1,4 @@
-import type { StatusChipTone } from '@/components/professor/StatusChip';
+import type { StatusChipTone } from '@/types/professor/statusChip';
 import type { ActivityStatus } from '@/types/professor';
 
 export type ActivityFilter = 'all' | ActivityStatus;

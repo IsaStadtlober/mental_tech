@@ -1,4 +1,4 @@
-import type { StatusChipTone } from '@/components/professor/StatusChip';
+import type { StatusChipTone } from '@/types/professor/statusChip';
 import { theme } from '@/constants/theme';
 import type { NotificationCategory } from '@/types/professor';
 

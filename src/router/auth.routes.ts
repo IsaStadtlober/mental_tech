@@ -12,6 +12,7 @@ export const AUTH_ROUTES = {
 
     EDUCATOR: {
         LOGIN: '/(auth)/professor/login',
+        ACTIVATION: '/(auth)/professor/ativacao-conta',
         WELCOME: '/(auth)/professor/bem-vindo',
         FORGOT_PASSWORD: '/(auth)/professor/recuperar-senha',
         PASSWORD_SENT: '/(auth)/professor/senha-enviada',

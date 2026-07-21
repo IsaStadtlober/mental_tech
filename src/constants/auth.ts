@@ -82,6 +82,8 @@ export const EDUCATOR_AUTH_CONSTANTS = {
       "Informe seu e-mail para receber as instruções de recuperação.",
     RECOVERY_HELPER:
       "Enviaremos um link para redefinir sua senha. Verifique também a caixa de spam ou lixo eletrônico.",
+    ACTIVATION_TITLE: "Ative sua conta de professor",
+    ACTIVATION_SUBTITLE: "Defina seus dados de acesso para entrar no Portal do Professor.",
     WELCOME_TITLE: "Bem-vindo de volta! Sua turma já está te esperando.",
     SENT_TITLE: "Verifique sua caixa de entrada",
     SENT_DESCRIPTION:
@@ -92,6 +94,7 @@ export const EDUCATOR_AUTH_CONSTANTS = {
     BUTTON_ENTER: "Entrar",
     BUTTON_CONTINUE: "Continuar cadastro",
     BUTTON_SEND_LINK: "Enviar link",
+    ACTIVATION_BUTTON: "Ativar conta e acessar",
   },
 };
 
@@ -236,6 +239,8 @@ export const PASSWORD_CONSTANTS = {
   TEXTS: {
     LOGIN_TITLE: "Entrar como Educador",
     LOGIN_SUBTITLE: "Use o e-mail e senha da sua conta de Professor ou Escola.",
+    ACTIVATION_TITLE: "Ative sua conta de professor",
+    ACTIVATION_SUBTITLE: "Defina seus dados de acesso para entrar no Portal do Professor.",
     SIGNUP_TITLE: "Cadastre sua Escola",
     SIGNUP_SUBTITLE:
       "Vamos criar o espaço da sua instituição para gerenciar turmas, professores e alunos.",
@@ -254,5 +259,6 @@ export const PASSWORD_CONSTANTS = {
     BUTTON_ENTER: "Entrar",
     BUTTON_CONTINUE: "Continuar cadastro",
     BUTTON_SEND_LINK: "Enviar link",
+    ACTIVATION_BUTTON: "Ativar conta e acessar",
   },
 };

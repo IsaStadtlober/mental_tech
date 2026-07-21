@@ -17,4 +17,12 @@ export type WizardSearchParams = {
     schoolName: string;
 };
 
+export type EducatorActivationData = {
+    name: string;
+    email: string;
+    password: string;
+    confirmPassword: string;
+};
+
 export type { WizardStepType } from './wizard';
+

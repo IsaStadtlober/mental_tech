@@ -213,4 +213,30 @@ export const authStyles = StyleSheet.create({
         color: theme.textMuted,
         textAlign: 'center',
     },
+    inviteCard: {
+        padding: spacing.lg,
+        borderRadius: borderRadius.button,
+        backgroundColor: theme.bgSoft,
+        borderWidth: 1,
+        borderColor: theme.primarySoft,
+    },
+    inviteStack: {
+        flexDirection: 'column',
+        gap: spacing.md,
+        marginTop: spacing.md,
+    },
+    inviteItem: {
+        width: '100%',
+    },
+    inviteLabel: {
+        color: theme.textMuted,
+        fontFamily: fonts.bodyRegular,
+        fontSize: 12,
+    },
+    inviteValue: {
+        marginTop: 6,
+        color: theme.textDark,
+        fontFamily: fonts.bodyBold,
+        fontSize: 14,
+    },
 });

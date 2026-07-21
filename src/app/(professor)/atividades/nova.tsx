@@ -1,7 +1,8 @@
-import { useLocalSearchParams, useRouter } from 'expo-router';
 import ActivityFormScreen from '@/components/professor/ActivityForm';
 import { ProfessorRouteShell } from '@/components/professor/ProfessorRouteShell';
-import { useProfessorPrototype } from '@/hooks/useProfessorPrototype';
+import { useProfessorPrototype } from '@/hooks/professor/useProfessorPrototype';
+import { PROFESSOR_ROUTES } from '@/router/professor.routes';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 
 export default function NewActivityRoute() {
     const router = useRouter();
@@ -16,7 +17,7 @@ export default function NewActivityRoute() {
                 onBack={() => router.back()}
                 onSave={(data) => {
                     saveActivity(data);
-                    router.replace('/(professor)/atividades' as any);
+                    router.replace(PROFESSOR_ROUTES.ACTIVITIES);
                 }}
             />
         </ProfessorRouteShell>

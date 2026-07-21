@@ -1,5 +1,5 @@
 import { ACTIVITY_MESSAGES } from '@/constants/professor/activities';
-import type { Activity, ActivityConfigurationRow, ActivityMetricCardData } from '@/types/professor';
+import type { Activity, ActivityConfigurationRow, ActivityFilter, ActivityMetricCardData } from '@/types/professor';
 
 export function getPendingCorrectionsCount(activity: Activity): number {
     return Math.max(activity.submissionsCount - activity.correctedCount, 0);
@@ -79,4 +79,43 @@ export function getAttachmentTypeLabel(activity: Activity): string {
 
 export function getDownloadMessage(activity: Activity): string {
     return `Download simulado: ${activity.attachment.name}`;
+}
+
+export function getFilteredActivities({
+    activities,
+    query,
+    filter,
+}: {
+    activities: Activity[];
+    query: string;
+    filter: ActivityFilter;
+}): Activity[] {
+    const normalizedQuery = query.trim().toLowerCase();
+
+    return activities.filter((activity) => {
+        const matchesFilter = filter === 'all' || activity.status === filter;
+        const matchesQuery =
+            !normalizedQuery ||
+            activity.title.toLowerCase().includes(normalizedQuery) ||
+            activity.className.toLowerCase().includes(normalizedQuery);
+
+        return matchesFilter && matchesQuery;
+    });
+}
+
+export function getActivityCountLabel(count: number): string {
+    return count === 1 ? ACTIVITY_MESSAGES.count.one : ACTIVITY_MESSAGES.count.many;
+}
+
+export function getActivityEmptyStateConfig(query: string, filter: ActivityFilter) {
+    const hasQuery = Boolean(query.trim());
+    const isDefaultFilter = filter === 'all';
+
+    return {
+        title: ACTIVITY_MESSAGES.emptyState.title,
+        description: hasQuery || !isDefaultFilter
+            ? ACTIVITY_MESSAGES.emptyState.description
+            : ACTIVITY_MESSAGES.emptyState.descriptionFallback,
+        actionLabel: !hasQuery && isDefaultFilter ? ACTIVITY_MESSAGES.emptyState.actionLabel : undefined,
+    };
 }

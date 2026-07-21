@@ -11,7 +11,7 @@ export const PROFESSOR_ROUTES = {
         params: { studentId },
     }),
     ACTIVITY_DETAIL: (activityId: string) => ({
-        pathname: '/(professor)/atividades/[activityId]',
+        pathname: '/(professor)/[activityId]',
         params: { activityId },
     }),
     EDIT_ACTIVITY: (activityId: string) => ({

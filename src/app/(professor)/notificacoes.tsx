@@ -8,8 +8,8 @@ import {
 import { getHorizontalPadding, isCompactWidth } from '@/constants/professor/prof_Layout';
 import { PROFESSOR_NOTIFICATIONS_MESSAGES } from '@/constants/professor/professor';
 import { theme } from '@/constants/theme';
-import { useEducatorNotifications } from '@/hooks/useEducatorNotifications';
-import { useProfessorPrototype } from '@/hooks/useProfessorPrototype';
+import { useEducatorNotifications } from '@/hooks/professor/useEducatorNotifications';
+import { useProfessorPrototype } from '@/hooks/professor/useProfessorPrototype';
 import { PROFESSOR_ROUTES } from '@/router';
 import { notificationsStyles as styles } from '@/styles/professor/notifications';
 import type { EducatorNotification } from '@/types/professor';

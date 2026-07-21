@@ -12,8 +12,8 @@ import {
     Pressable, ScrollView, Text, useWindowDimensions, View,
 } from 'react-native';
 
-import { useEducatorReports } from '@/hooks/useEducatorReports';
-import { useProfessorPrototype } from '@/hooks/useProfessorPrototype';
+import { useEducatorReports } from '@/hooks/professor/useEducatorReports';
+import { useProfessorPrototype } from '@/hooks/professor/useProfessorPrototype';
 import { reportsStyles as styles } from '@/styles/professor/reports';
 import type { ReportsScreenProps } from '@/types/professor';
 

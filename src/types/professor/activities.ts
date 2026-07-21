@@ -49,3 +49,14 @@ export interface ActivityDetailScreenProps {
     onEdit: () => void;
     onOpenCorrectionQueue: () => void;
 }
+
+export type ActivityFilter = 'all' | ActivityStatus;
+
+export interface ActivitiesScreenProps {
+    activities: Activity[];
+    onBack: () => void;
+    onCreateActivity: () => void;
+    onOpenActivity: (activityId: string) => void;
+    onEditActivity: (activityId: string) => void;
+    onDeleteActivity: (activityId: string) => void;
+}

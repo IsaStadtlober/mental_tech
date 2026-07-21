@@ -4,49 +4,20 @@ import BackButton from '@/components/professor/BackButton';
 import EmptyState from '@/components/professor/EmptyState';
 import { ProfessorRouteShell } from '@/components/professor/ProfessorRouteShell';
 import StatusChip from '@/components/professor/StatusChip';
-import { ACTIVITY_FILTERS, ACTIVITY_MESSAGES, ACTIVITY_STATUS_CONFIG } from '@/constants/professor/activities';
+import { ACTIVITY_FILTERS } from '@/constants/professor/activities';
 import { getHorizontalPadding, isCompactWidth } from '@/constants/professor/prof_Layout';
-import { borderRadius, fonts, theme } from '@/constants/theme';
-import { useProfessorPrototype } from '@/hooks/useProfessorPrototype';
+import { theme } from '@/constants/theme';
+import { useActivitiesScreen } from '@/hooks/professor/useActivitiesScreen';
+import { useProfessorPrototype } from '@/hooks/professor/useProfessorPrototype';
+import { PROFESSOR_ROUTES } from '@/router/professor.routes';
 import { activitiesStyles } from '@/styles/professor/activities';
-import type { Activity, ActivityStatus } from '@/types/professor';
+import type { ActivitiesScreenProps } from '@/types/professor';
 import { useRouter } from 'expo-router';
 import { Edit3, Eye, Plus, Trash2 } from 'lucide-react-native';
-import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, Text, TextInput, useWindowDimensions, View } from 'react-native';
 
-type ActivityFilter = 'all' | ActivityStatus;
-
-export interface ActivitiesScreenProps {
-    activities: Activity[];
-
-    onBack: () => void;
-    onCreateActivity: () => void;
-
-    onOpenActivity: (
-        activityId: string
-    ) => void;
-
-    onEditActivity: (
-        activityId: string
-    ) => void;
-
-    onDeleteActivity: (
-        activityId: string
-    ) => void;
-}
-
 const filterOptions = ACTIVITY_FILTERS;
-const statusConfig = ACTIVITY_STATUS_CONFIG;
 
-/**
- * USER FLOW P2:
- * Centraliza as atividades criadas pelo professor.
- *
- * PROTOTYPE:
- * Busca, filtros, criação, edição e exclusão operam
- * somente sobre o estado local do App.tsx.
- */
 function ActivitiesScreen({
     activities,
     onBack,
@@ -64,99 +35,40 @@ function ActivitiesScreen({
     const horizontalPadding =
         getHorizontalPadding(width);
 
-    const [query, setQuery] =
-        useState('');
-
-    const [filter, setFilter] =
-        useState<ActivityFilter>('all');
-
-    const [
+    const {
+        query,
+        setQuery,
+        filter,
+        setFilter,
         activityPendingDeletion,
-        setActivityPendingDeletion,
-    ] = useState<Activity | null>(
-        null
-    );
-
-    const filteredActivities =
-        useMemo(() => {
-            const normalizedQuery =
-                query.trim().toLowerCase();
-
-            return activities.filter(
-                (activity) => {
-                    const matchesFilter =
-                        filter === 'all' ||
-                        activity.status ===
-                        filter;
-
-                    const matchesQuery =
-                        !normalizedQuery ||
-                        activity.title
-                            .toLowerCase()
-                            .includes(
-                                normalizedQuery
-                            ) ||
-                        activity.className
-                            .toLowerCase()
-                            .includes(
-                                normalizedQuery
-                            );
-
-                    return (
-                        matchesFilter &&
-                        matchesQuery
-                    );
-                }
-            );
-        }, [
-            activities,
-            filter,
-            query,
-        ]);
-
-    function requestActivityDeletion(
-        activity: Activity
-    ) {
-        setActivityPendingDeletion(
-            activity
-        );
-    }
-
-    function cancelActivityDeletion() {
-        setActivityPendingDeletion(null);
-    }
-
-    function confirmActivityDeletion() {
-        if (!activityPendingDeletion) {
-            return;
-        }
-
-        const activityId =
-            activityPendingDeletion.id;
-
-        setActivityPendingDeletion(null);
-
-        onDeleteActivity(activityId);
-    }
+        filteredActivities,
+        countLabel,
+        emptyStateConfig,
+        messages,
+        statusConfig,
+        requestActivityDeletion,
+        cancelActivityDeletion,
+        confirmActivityDeletion,
+        getPendingCorrectionsCount,
+    } = useActivitiesScreen(activities);
     return (
         <ScrollView
             keyboardShouldPersistTaps="handled"
             style={activitiesStyles.page}
-            contentContainerStyle={{
-                paddingHorizontal: horizontalPadding,
-                paddingTop: 28,
-                paddingBottom: 64,
-            }}
+            contentContainerStyle={[
+                activitiesStyles.contentContainer,
+                { paddingHorizontal: horizontalPadding },
+            ]}
             showsVerticalScrollIndicator={false}
         >
             <View style={activitiesStyles.screenContainer}>
                 {/* Navegação contextual e ação principal */}
 
                 <View style={activitiesStyles.topBar}>
-                    <BackButton label={ACTIVITY_MESSAGES.header.backButton} onPress={onBack} />
+                    <BackButton label={messages.header.backButton} onPress={onBack} />
 
                     <AppButton
-                        label={ACTIVITY_MESSAGES.header.newActivityButton}
+                        label={messages.header.newActivityButton}
                         onPress={onCreateActivity}
                         iconLeft={
                             <Plus
@@ -173,27 +85,27 @@ function ActivitiesScreen({
                 {/* Identificação da tela */}
 
                 <View style={activitiesStyles.headerSection}>
-                    <Text style={[activitiesStyles.title, { fontSize: isCompact ? 25 : 30, lineHeight: isCompact ? 32 : 38 }]}> {ACTIVITY_MESSAGES.header.title} </Text>
+                    <Text style={[activitiesStyles.title, isCompact ? activitiesStyles.titleCompact : activitiesStyles.titleExpanded]}> {messages.header.title} </Text>
 
-                    <Text style={activitiesStyles.subtitle}>{ACTIVITY_MESSAGES.header.subtitle}</Text>
+                    <Text style={activitiesStyles.subtitle}>{messages.header.subtitle}</Text>
                 </View>
 
                 {/* Busca e filtros */}
 
                 <AppCard style={activitiesStyles.filterCard}>
-                    <Text style={activitiesStyles.fieldLabel}>{ACTIVITY_MESSAGES.search.label}</Text>
+                    <Text style={activitiesStyles.fieldLabel}>{messages.search.label}</Text>
 
                     <TextInput
-                        accessibilityLabel={ACTIVITY_MESSAGES.search.label}
+                        accessibilityLabel={messages.search.label}
                         value={query}
                         onChangeText={setQuery}
-                        placeholder={ACTIVITY_MESSAGES.search.placeholder}
+                        placeholder={messages.search.placeholder}
                         placeholderTextColor={theme.textFaint}
                         autoCorrect={false}
                         style={activitiesStyles.textInput}
                     />
 
-                    <Text style={[activitiesStyles.fieldLabel, { marginTop: 18, marginBottom: 9 }]}>{ACTIVITY_MESSAGES.filters.label}</Text>
+                    <Text style={[activitiesStyles.fieldLabel, { marginTop: 18, marginBottom: 9 }]}>{messages.filters.label}</Text>
 
                     <View style={activitiesStyles.filterList}>
                         {filterOptions.map(
@@ -214,17 +126,11 @@ function ActivitiesScreen({
                                                 option.value
                                             )
                                         }
-                                        style={({ pressed }) => ({
-                                            minHeight: 40,
-                                            paddingHorizontal: 13,
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            borderWidth: 1,
-                                            borderColor: active ? theme.primary : theme.border,
-                                            borderRadius: borderRadius.pill,
-                                            backgroundColor: active ? theme.primary : theme.card,
-                                            opacity: pressed ? 0.82 : 1,
-                                        })}
+                                        style={({ pressed }) => [
+                                            activitiesStyles.filterChipButton,
+                                            active && activitiesStyles.filterChipButtonActive,
+                                            pressed && activitiesStyles.filterChipButtonPressed,
+                                        ]}
                                     >
                                         <Text style={[activitiesStyles.filterChipText, active && activitiesStyles.filterChipTextActive]}>{option.label}</Text>
                                     </Pressable>
@@ -236,25 +142,9 @@ function ActivitiesScreen({
 
                 {/* Contagem */}
 
-                <Text
-                    style={{
-                        marginTop: 24,
-                        marginBottom: 14,
-
-                        color:
-                            theme.textDark,
-
-                        fontFamily:
-                            fonts.headlineSemibold,
-
-                        fontSize: 17,
-                    }}
-                >
+                <Text style={activitiesStyles.countText}>
                     {filteredActivities.length}{' '}
-                    {filteredActivities.length ===
-                        1
-                        ? 'atividade encontrada'
-                        : 'atividades encontradas'}
+                    {countLabel}
                 </Text>
 
                 {/* Lista */}
@@ -263,33 +153,14 @@ function ActivitiesScreen({
                     0 ? (
                     <AppCard>
                         <EmptyState
-                            title="Nenhuma atividade encontrada"
-                            description={
-                                query.trim() ||
-                                    filter !== 'all'
-                                    ? 'Ajuste a pesquisa ou os filtros para visualizar outras missões.'
-                                    : 'Crie uma missão para começar a acompanhar as atividades da turma.'
-                            }
-                            actionLabel={
-                                !query.trim() &&
-                                    filter === 'all'
-                                    ? 'Criar missão'
-                                    : undefined
-                            }
-                            onAction={
-                                !query.trim() &&
-                                    filter === 'all'
-                                    ? onCreateActivity
-                                    : undefined
-                            }
+                            title={emptyStateConfig.title}
+                            description={emptyStateConfig.description}
+                            actionLabel={emptyStateConfig.actionLabel}
+                            onAction={!query.trim() && filter === 'all' ? onCreateActivity : undefined}
                         />
                     </AppCard>
                 ) : (
-                    <View
-                        style={{
-                            gap: 14,
-                        }}
-                    >
+                    <View style={activitiesStyles.activityList}>
                         {filteredActivities.map(
                             (activity) => {
                                 const status =
@@ -297,14 +168,7 @@ function ActivitiesScreen({
                                     activity.status
                                     ];
 
-                                const pending =
-                                    Math.max(
-                                        activity
-                                            .submissionsCount -
-                                        activity
-                                            .correctedCount,
-                                        0
-                                    );
+                                const pending = getPendingCorrectionsCount(activity);
 
                                 return (
                                     <AppCard
@@ -312,57 +176,14 @@ function ActivitiesScreen({
                                         elevated={false}
                                     >
                                         <View
-                                            style={{
-                                                flexDirection:
-                                                    isCompact
-                                                        ? 'column'
-                                                        : 'row',
-
-                                                alignItems:
-                                                    isCompact
-                                                        ? 'stretch'
-                                                        : 'center',
-
-                                                justifyContent:
-                                                    'space-between',
-
-                                                gap: 18,
-                                            }}
+                                            style={[
+                                                activitiesStyles.activityCardContent,
+                                                isCompact ? activitiesStyles.activityCardContentColumnCompact : activitiesStyles.activityCardContentRowCompact,
+                                            ]}
                                         >
-                                            <View
-                                                style={{
-                                                    flex: 1,
-                                                    minWidth: 0,
-                                                }}
-                                            >
-                                                <View
-                                                    style={{
-                                                        flexDirection:
-                                                            'row',
-
-                                                        alignItems:
-                                                            'center',
-
-                                                        flexWrap:
-                                                            'wrap',
-
-                                                        gap: 10,
-                                                    }}
-                                                >
-                                                    <Text
-                                                        style={{
-                                                            flexShrink: 1,
-
-                                                            color:
-                                                                theme.textDark,
-
-                                                            fontFamily:
-                                                                fonts.headlineSemibold,
-
-                                                            fontSize: 17,
-                                                            lineHeight: 23,
-                                                        }}
-                                                    >
+                                            <View style={activitiesStyles.activityCardContentColumn}>
+                                                <View style={activitiesStyles.activityHeader}>
+                                                    <Text style={activitiesStyles.activityTitle}>
                                                         {activity.title}
                                                     </Text>
 
@@ -376,20 +197,7 @@ function ActivitiesScreen({
                                                     />
                                                 </View>
 
-                                                <Text
-                                                    style={{
-                                                        marginTop: 8,
-
-                                                        color:
-                                                            theme.textMuted,
-
-                                                        fontFamily:
-                                                            fonts.bodyRegular,
-
-                                                        fontSize: 13,
-                                                        lineHeight: 19,
-                                                    }}
-                                                >
+                                                <Text style={activitiesStyles.activityMeta}>
                                                     {
                                                         activity.className
                                                     }
@@ -405,19 +213,7 @@ function ActivitiesScreen({
                                                     }
                                                 </Text>
 
-                                                <View
-                                                    style={{
-                                                        marginTop: 12,
-
-                                                        flexDirection:
-                                                            'row',
-
-                                                        flexWrap:
-                                                            'wrap',
-
-                                                        gap: 8,
-                                                    }}
-                                                >
+                                                <View style={activitiesStyles.statusRow}>
                                                     <StatusChip
                                                         label={`${activity.submissionsCount}/${activity.studentsCount} entregaram`}
                                                         tone="info"
@@ -437,22 +233,9 @@ function ActivitiesScreen({
                                                 </View>
                                             </View>
 
-                                            <View
-                                                style={{
-                                                    flexDirection:
-                                                        'row',
-
-                                                    alignItems:
-                                                        'center',
-
-                                                    flexWrap:
-                                                        'wrap',
-
-                                                    gap: 8,
-                                                }}
-                                            >
+                                            <View style={activitiesStyles.actionRow}>
                                                 <AppButton
-                                                    label="Detalhes"
+                                                    label={messages.actions.details}
                                                     size="small"
                                                     variant="secondary"
                                                     iconLeft={
@@ -471,7 +254,7 @@ function ActivitiesScreen({
                                                 />
 
                                                 <AppButton
-                                                    label="Editar"
+                                                    label={messages.actions.edit}
                                                     size="small"
                                                     variant="ghost"
                                                     iconLeft={
@@ -490,7 +273,7 @@ function ActivitiesScreen({
                                                 />
 
                                                 <AppButton
-                                                    label="Excluir"
+                                                    label={messages.actions.delete}
                                                     size="small"
                                                     variant="danger"
                                                     iconLeft={
@@ -521,87 +304,27 @@ function ActivitiesScreen({
                 {!!activityPendingDeletion && (
                     <AppCard
                         elevated={false}
-                        style={{
-                            marginTop: 20,
-
-                            borderColor:
-                                theme.danger,
-
-                            backgroundColor:
-                                theme.dangerSoft,
-                        }}
+                        style={activitiesStyles.deleteCard}
                     >
                         <View
-                            style={{
-                                flexDirection:
-                                    isCompact
-                                        ? 'column'
-                                        : 'row',
-
-                                alignItems:
-                                    isCompact
-                                        ? 'stretch'
-                                        : 'center',
-
-                                justifyContent:
-                                    'space-between',
-
-                                gap: 18,
-                            }}
+                            style={[
+                                activitiesStyles.deleteContent,
+                                isCompact ? activitiesStyles.deleteContentCompact : null,
+                            ]}
                         >
-                            <View
-                                style={{
-                                    flex: 1,
-                                    minWidth: 0,
-                                }}
-                            >
-                                <Text
-                                    style={{
-                                        color:
-                                            theme.danger,
-
-                                        fontFamily:
-                                            fonts.headlineSemibold,
-
-                                        fontSize: 16,
-                                    }}
-                                >
-                                    Excluir esta atividade?
+                            <View style={activitiesStyles.activityCardContentColumn}>
+                                <Text style={activitiesStyles.deleteTitle}>
+                                    {messages.deleteDialog.title}
                                 </Text>
 
-                                <Text
-                                    style={{
-                                        marginTop: 5,
-
-                                        color:
-                                            theme.textMuted,
-
-                                        fontFamily:
-                                            fonts.bodyRegular,
-
-                                        fontSize: 13,
-                                        lineHeight: 19,
-                                    }}
-                                >
-                                    A atividade “
-                                    {
-                                        activityPendingDeletion.title
-                                    }
-                                    ” será removida do
-                                    protótipo.
+                                <Text style={activitiesStyles.deleteDescription}>
+                                    {messages.deleteDialog.description.replace('{title}', activityPendingDeletion.title)}
                                 </Text>
                             </View>
 
-                            <View
-                                style={{
-                                    flexDirection: 'row',
-                                    alignItems: 'center',
-                                    flexWrap: 'wrap',
-                                    gap: 10,
-                                }}
-                            >
+                            <View style={activitiesStyles.deleteContentRow}>
                                 <AppButton
-                                    label="Cancelar"
+                                    label={messages.deleteDialog.cancel}
                                     variant="secondary"
                                     size="small"
                                     onPress={
@@ -610,7 +333,7 @@ function ActivitiesScreen({
                                 />
 
                                 <AppButton
-                                    label="Confirmar exclusão"
+                                    label={messages.deleteDialog.confirm}
                                     variant="danger"
                                     size="small"
                                     iconLeft={
@@ -621,9 +344,7 @@ function ActivitiesScreen({
                                             }
                                         />
                                     }
-                                    onPress={
-                                        confirmActivityDeletion
-                                    }
+                                    onPress={() => confirmActivityDeletion(onDeleteActivity)}
                                 />
                             </View>
                         </View>
@@ -643,9 +364,9 @@ export default function ActivitiesRoute() {
             <ActivitiesScreen
                 activities={activities}
                 onBack={() => router.back()}
-                onCreateActivity={() => router.push('/(professor)/atividades/nova' as any)}
-                onOpenActivity={(activityId) => router.push(({ pathname: '/(professor)/[activityId]', params: { activityId } } as any))}
-                onEditActivity={(activityId) => router.push(({ pathname: '/(professor)/[activityId]/editar', params: { activityId } } as any))}
+                onCreateActivity={() => router.push(PROFESSOR_ROUTES.CREATE_ACTIVITY)}
+                onOpenActivity={(activityId) => router.push(PROFESSOR_ROUTES.ACTIVITY_DETAIL(activityId) as any)}
+                onEditActivity={(activityId) => router.push(PROFESSOR_ROUTES.EDIT_ACTIVITY(activityId) as any)}
                 onDeleteActivity={deleteActivity}
             />
         </ProfessorRouteShell>

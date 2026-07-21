@@ -7,8 +7,8 @@ import SectionHeader from '@/components/professor/SectionHeader';
 import StatusChip from '@/components/professor/StatusChip';
 import { ACTIVITY_MESSAGES, ACTIVITY_STATUS_CONFIG } from '@/constants/professor/activities';
 import { theme } from '@/constants/theme';
-import { useActivityDetail } from '@/hooks/useActivityDetail';
-import { useProfessorPrototype } from '@/hooks/useProfessorPrototype';
+import { useActivityDetail } from '@/hooks/professor/useActivityDetail';
+import { useProfessorPrototype } from '@/hooks/professor/useProfessorPrototype';
 import { PROFESSOR_ROUTES } from '@/router/professor.routes';
 import { activitiesStyles } from '@/styles/professor/activities';
 import type { ActivityDetailScreenProps } from '@/types/professor';
@@ -210,10 +210,7 @@ export default function ActivityDetailRoute() {
                 <ActivityDetailScreen
                     activity={activity}
                     onBack={() => router.back()}
-                    onEdit={() => router.push({
-                        pathname: PROFESSOR_ROUTES.EDIT_ACTIVITY(activityId),
-                        params: { activityId },
-                    } as any)}
+                    onEdit={() => router.push(PROFESSOR_ROUTES.EDIT_ACTIVITY(activityId) as any)}
                     onOpenCorrectionQueue={() => router.push(PROFESSOR_ROUTES.CORRECTIONS as any)}
                 />
             ) : (

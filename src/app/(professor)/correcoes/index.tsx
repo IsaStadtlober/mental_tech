@@ -7,7 +7,7 @@ import StatusChip from '@/components/professor/StatusChip';
 import { CORRECTION_CLASS_FILTERS, CORRECTION_MESSAGES, FILE_TYPE_LABELS } from '@/constants/professor/corrections';
 import { getHorizontalPadding, isCompactWidth } from '@/constants/professor/prof_Layout';
 import { borderRadius, fonts, theme } from '@/constants/theme';
-import { useProfessorPrototype } from '@/hooks/useProfessorPrototype';
+import { useProfessorPrototype } from '@/hooks/professor/useProfessorPrototype';
 import { correctionsStyles } from '@/styles/professor/corrections';
 import type { Submission } from '@/types/professor';
 import { useRouter } from 'expo-router';

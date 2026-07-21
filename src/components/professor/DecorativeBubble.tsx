@@ -1,5 +1,4 @@
 import { theme } from '@/constants/theme';
-import React from 'react';
 import {
   type StyleProp,
   View,

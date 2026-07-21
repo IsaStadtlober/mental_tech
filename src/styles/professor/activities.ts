@@ -27,6 +27,14 @@ export const activitiesStyles = StyleSheet.create({
         color: theme.textDark,
         fontFamily: fonts.headlineBold,
     },
+    titleCompact: {
+        fontSize: 25,
+        lineHeight: 32,
+    },
+    titleExpanded: {
+        fontSize: 30,
+        lineHeight: 38,
+    },
     subtitle: {
         maxWidth: 720,
         marginTop: 6,
@@ -82,6 +90,27 @@ export const activitiesStyles = StyleSheet.create({
     filterChipTextActive: {
         color: theme.white,
     },
+    filterChipButton: {
+        minHeight: 40,
+        paddingHorizontal: 13,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderWidth: 1,
+        borderColor: theme.border,
+        borderRadius: borderRadius.pill,
+        backgroundColor: theme.card,
+    },
+    filterChipButtonActive: {
+        borderColor: theme.primary,
+        backgroundColor: theme.primary,
+    },
+    filterChipButtonPressed: {
+        opacity: 0.82,
+    },
+    contentContainer: {
+        paddingTop: 28,
+        paddingBottom: 64,
+    },
     countText: {
         marginTop: 24,
         marginBottom: 14,
@@ -94,6 +123,24 @@ export const activitiesStyles = StyleSheet.create({
     },
     activityCard: {
         gap: 18,
+    },
+    activityCardContent: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: 18,
+    },
+    activityCardContentColumn: {
+        flex: 1,
+        minWidth: 0,
+    },
+    activityCardContentColumnCompact: {
+        flexDirection: 'column',
+        alignItems: 'stretch',
+    },
+    activityCardContentRowCompact: {
+        flexDirection: 'row',
+        alignItems: 'center',
     },
     activityHeader: {
         flexDirection: 'row',
@@ -137,6 +184,16 @@ export const activitiesStyles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         gap: 18,
+    },
+    deleteContentCompact: {
+        flexDirection: 'column',
+        alignItems: 'stretch',
+    },
+    deleteContentRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+        gap: 10,
     },
     deleteTitle: {
         color: theme.danger,

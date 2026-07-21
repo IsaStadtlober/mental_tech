@@ -5,7 +5,7 @@ import { ProfessorRouteShell } from '@/components/professor/ProfessorRouteShell'
 import SectionHeader from '@/components/professor/SectionHeader';
 import StatusChip from '@/components/professor/StatusChip';
 import { borderRadius, fonts, theme } from '@/constants/theme';
-import { useProfessorPrototype } from '@/hooks/useProfessorPrototype';
+import { useProfessorPrototype } from '@/hooks/professor/useProfessorPrototype';
 import type {
     Reward,
     Submission,

@@ -5,7 +5,7 @@ import { ProfessorRouteShell } from '@/components/professor/ProfessorRouteShell'
 import SectionHeader from '@/components/professor/SectionHeader';
 import { PROFESSOR_PROFILE_MESSAGES } from '@/constants/professor/professor';
 import { fonts, theme } from '@/constants/theme';
-import { useEducatorProfileForm } from '@/hooks/useEducatorProfile';
+import { useEducatorProfileForm } from '@/hooks/professor/useEducatorProfile';
 import { PROFESSOR_ROUTES } from '@/router';
 import { profileStyles as styles } from '@/styles/professor/perfil';
 import type {

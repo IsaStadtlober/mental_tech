@@ -1,8 +1,8 @@
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Text } from 'react-native';
 import ActivityFormScreen from '@/components/professor/ActivityForm';
 import { ProfessorRouteShell } from '@/components/professor/ProfessorRouteShell';
-import { useProfessorPrototype } from '@/hooks/useProfessorPrototype';
+import { useProfessorPrototype } from '@/hooks/professor/useProfessorPrototype';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Text } from 'react-native';
 
 export default function EditActivityRoute() {
     const router = useRouter();

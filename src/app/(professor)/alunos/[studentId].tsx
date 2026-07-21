@@ -8,7 +8,7 @@ import StatusChip from '@/components/professor/StatusChip';
 import { STUDENT_HISTORY_BY_ID, STUDENT_PROFILE_DATA } from '@/constants/professor/studentProfileData';
 import { STUDENT_PROFILE_STATUS_CONFIG } from '@/constants/professor/students';
 import { theme } from '@/constants/theme';
-import { useStudentProfile } from '@/hooks/useStudentProfile';
+import { useStudentProfile } from '@/hooks/professor/useStudentProfile';
 import { PROFESSOR_ROUTES } from '@/router/professor.routes';
 import { studentsStyles } from '@/styles/professor/students';
 import type { StudentProfileScreenProps } from '@/types/professor';

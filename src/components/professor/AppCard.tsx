@@ -1,5 +1,4 @@
 import { borderRadius, theme } from '@/constants/theme';
-import React from 'react';
 import {
   Pressable,
   type StyleProp,

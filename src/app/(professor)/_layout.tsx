@@ -1,5 +1,5 @@
+import { ProfessorPrototypeProvider } from '@/hooks/professor/useProfessorPrototype';
 import { Stack } from 'expo-router';
-import { ProfessorPrototypeProvider } from '@/hooks/useProfessorPrototype';
 
 export default function ProfessorLayout() {
     return (

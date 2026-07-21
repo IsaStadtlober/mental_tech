@@ -1,14 +1,6 @@
 import { borderRadius, fonts, theme } from '@/constants/theme';
-import React from 'react';
-import {
-  Pressable,
-  type StyleProp,
-  Text,
-  type ViewStyle,
-} from 'react-native';
-import {
-  ChevronLeft,
-} from 'lucide-react-native';
+import { Pressable, type StyleProp, Text, type ViewStyle } from 'react-native';
+import { ChevronLeft } from 'lucide-react-native';
 
 export interface BackButtonProps {
   label: string;

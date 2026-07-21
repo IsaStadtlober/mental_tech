@@ -14,6 +14,10 @@ export const PROFESSOR_ROUTES = {
         pathname: '/(professor)/[activityId]',
         params: { activityId },
     }),
+    SUBMISSION_DETAIL: (submissionId: string) => ({
+        pathname: '/(professor)/correcoes/[submissionId]',
+        params: { submissionId },
+    }),
     EDIT_ACTIVITY: (activityId: string) => ({
         pathname: '/(professor)/[activityId]/editar',
         params: { activityId },

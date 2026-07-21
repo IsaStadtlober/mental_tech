@@ -4,59 +4,18 @@ import BackButton from '@/components/professor/BackButton';
 import { ProfessorRouteShell } from '@/components/professor/ProfessorRouteShell';
 import SectionHeader from '@/components/professor/SectionHeader';
 import StatusChip from '@/components/professor/StatusChip';
-import { borderRadius, fonts, theme } from '@/constants/theme';
+import { CORRECTION_MESSAGES } from '@/constants/professor/corrections';
+import { theme } from '@/constants/theme';
 import { useProfessorPrototype } from '@/hooks/professor/useProfessorPrototype';
-import type {
-    Reward,
-    Submission,
-} from '@/types/professor';
+import { PROFESSOR_ROUTES } from '@/router/professor.routes';
+import { correctionsStyles } from '@/styles/professor/corrections';
+import type { CorrectionScreenProps } from '@/types/professor/corrections';
+import { getAttachmentTypeLabel } from '@/utils/corrections';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import {
-    Download,
-} from 'lucide-react-native';
+import { Download } from 'lucide-react-native';
 import { useState } from 'react';
-import {
-    Pressable,
-    ScrollView,
-    Text,
-    TextInput,
-    useWindowDimensions,
-    View,
-} from 'react-native';
+import { Pressable, ScrollView, Text, TextInput, useWindowDimensions, View } from 'react-native';
 
-type CorrectionDecision =
-    | 'approved'
-    | 'revision';
-
-interface CorrectionResult {
-    decision: CorrectionDecision;
-    grade: string;
-    comment: string;
-    revisionFeedback: string;
-    reward: Reward;
-}
-
-export interface CorrectionScreenProps {
-    submission: Submission;
-    reward: Reward;
-
-    onBack: () => void;
-
-    onConfirm: (
-        submissionId: string,
-        result: CorrectionResult
-    ) => void;
-}
-
-/**
- * USER FLOW P4:
- * A correção permite aprovar ou solicitar revisão.
- *
- * Aprovação libera somente o asset configurado.
- * Nenhuma moeda é entregue durante a correção.
- *
- * Se o professor solicitar revisão, o feedback é obrigatório.
- */
 function CorrectionScreen({
     submission,
     reward,
@@ -67,26 +26,12 @@ function CorrectionScreen({
 
     const isCompact = width < 800;
 
-    const [decision, setDecision] =
-        useState<CorrectionDecision>(
-            'approved'
-        );
+    const [decision, setDecision] = useState<'approved' | 'revision'>('approved');
 
-    const [grade, setGrade] =
-        useState('');
-
-    const [comment, setComment] =
-        useState('');
-
-    const [
-        revisionFeedback,
-        setRevisionFeedback,
-    ] = useState('');
-
-    const [
-        downloadMessage,
-        setDownloadMessage,
-    ] = useState('');
+    const [grade, setGrade] = useState('');
+    const [comment, setComment] = useState('');
+    const [revisionFeedback, setRevisionFeedback] = useState('');
+    const [downloadMessage, setDownloadMessage] = useState('');
 
     function simulateDownload() {
         setDownloadMessage(
@@ -94,13 +39,8 @@ function CorrectionScreen({
         );
     }
 
-    const revisionIsValid =
-        decision !== 'revision' ||
-        revisionFeedback.trim().length >=
-        5;
-
-    const canConfirm =
-        revisionIsValid;
+    const revisionIsValid = decision !== 'revision' || revisionFeedback.trim().length >= 5;
+    const canConfirm = revisionIsValid;
 
     function handleConfirm() {
         if (!canConfirm) {
@@ -117,61 +57,29 @@ function CorrectionScreen({
         });
     }
 
+    const messages = CORRECTION_MESSAGES;
+    const attachmentTypeLabel = getAttachmentTypeLabel(submission.attachment.type);
+
     return (
         <ScrollView
-            style={{
-                flex: 1,
-                backgroundColor:
-                    theme.bgSubtle,
-            }}
-            contentContainerStyle={{
-                paddingHorizontal: isCompact
-                    ? 16
-                    : 24,
-                paddingTop: 28,
-                paddingBottom: 64,
-            }}
+            style={correctionsStyles.page}
+            contentContainerStyle={[
+                correctionsStyles.contentContainer,
+                { paddingHorizontal: isCompact ? 16 : 24 },
+            ]}
             showsVerticalScrollIndicator={false}
         >
-            <View
-                style={{
-                    width: '100%',
-                    maxWidth: 1180,
-                    alignSelf: 'center',
-                }}
-            >
+            <View style={correctionsStyles.screenContainer}>
                 <BackButton
-                    label="Fila de correção"
+                    label={messages.header.detailBackLabel}
                     onPress={onBack}
-                    style={{
-                        marginBottom: 20,
-                    }}
+                    style={{ marginBottom: 20 }}
                 />
 
-                <View
-                    style={{
-                        marginTop: 24,
-
-                        flexDirection: isCompact
-                            ? 'column'
-                            : 'row',
-
-                        alignItems: 'flex-start',
-                        gap: 20,
-                    }}
-                >
+                <View style={[correctionsStyles.detailLayout, isCompact ? correctionsStyles.detailLayoutCompact : undefined]}>
                     {/* Coluna da entrega */}
 
-                    <View
-                        style={{
-                            flex: 1.25,
-                            width: isCompact
-                                ? '100%'
-                                : undefined,
-
-                            gap: 20,
-                        }}
-                    >
+                    <View style={[correctionsStyles.detailMainColumn, isCompact ? correctionsStyles.detailMainColumnCompact : undefined]}>
                         <AppCard>
                             <SectionHeader
                                 compact
@@ -198,15 +106,7 @@ function CorrectionScreen({
                                 />
 
                                 <StatusChip
-                                    label={
-                                        submission.attachment.type ===
-                                            'image'
-                                            ? 'Imagem'
-                                            : submission.attachment.type ===
-                                                'doc'
-                                                ? 'Word'
-                                                : 'PDF'
-                                    }
+                                    label={attachmentTypeLabel}
                                     tone="info"
                                 />
                             </View>
@@ -215,111 +115,36 @@ function CorrectionScreen({
                         <AppCard>
                             <SectionHeader
                                 compact
-                                title="Arquivo enviado"
-                                subtitle="Visualizador universal representado no protótipo."
+                                title={messages.detail.attachmentTitle}
+                                subtitle={messages.detail.attachmentSubtitle}
                                 style={{
                                     marginBottom: 16,
                                 }}
                             />
 
-                            <View
-                                style={{
-                                    minHeight: 390,
-                                    padding: 28,
-
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-
-                                    borderRadius:
-                                        borderRadius.xl,
-
-                                    borderWidth: 1,
-                                    borderColor:
-                                        theme.border,
-
-                                    backgroundColor:
-                                        theme.bgSubtle,
-                                }}
-                            >
-                                <View
-                                    style={{
-                                        width: 76,
-                                        height: 76,
-
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-
-                                        borderRadius: 24,
-
-                                        backgroundColor:
-                                            theme.bgSoft,
-                                    }}
-                                >
-                                    <Text
-                                        style={{
-                                            color:
-                                                theme.primary,
-
-                                            fontFamily:
-                                                fonts.headlineBold,
-
-                                            fontSize: 18,
-                                        }}
-                                    >
+                            <View style={correctionsStyles.attachmentPreview}>
+                                <View style={correctionsStyles.attachmentBadge}>
+                                    <Text style={correctionsStyles.attachmentBadgeText}>
                                         {submission.attachment.type.toUpperCase()}
                                     </Text>
                                 </View>
 
-                                <Text
-                                    style={{
-                                        marginTop: 18,
-
-                                        color:
-                                            theme.textDark,
-
-                                        fontFamily:
-                                            fonts.headlineSemibold,
-
-                                        fontSize: 16,
-                                        textAlign: 'center',
-                                    }}
-                                >
+                                <Text style={correctionsStyles.attachmentName}>
                                     {
                                         submission.attachment
                                             .name
                                     }
                                 </Text>
 
-                                <Text
-                                    style={{
-                                        maxWidth: 460,
-                                        marginTop: 8,
-
-                                        color:
-                                            theme.textMuted,
-
-                                        fontFamily:
-                                            fonts.bodyRegular,
-
-                                        fontSize: 13,
-                                        lineHeight: 20,
-                                        textAlign: 'center',
-                                    }}
-                                >
+                                <Text style={correctionsStyles.attachmentHint}>
                                     No produto real, esta área
                                     receberá o visualizador de
                                     imagem, PDF ou documento.
                                 </Text>
 
-                                <View
-                                    style={{
-                                        width: '100%',
-                                        alignItems: 'center',
-                                        marginTop: 20,
-                                    }}
-                                >
+                                <View style={correctionsStyles.attachmentActions}>
                                     <AppButton
-                                        label="Baixar resposta"
+                                        label={messages.actions.download}
                                         variant="secondary"
                                         size="small"
                                         iconLeft={
@@ -333,32 +158,8 @@ function CorrectionScreen({
                                 </View>
 
                                 {!!downloadMessage && (
-                                    <View
-                                        style={{
-                                            marginTop: 14,
-                                            paddingHorizontal: 14,
-                                            paddingVertical: 10,
-
-                                            borderRadius:
-                                                borderRadius.lg,
-
-                                            backgroundColor:
-                                                theme.successSoft,
-                                        }}
-                                    >
-                                        <Text
-                                            style={{
-                                                color:
-                                                    theme.success,
-
-                                                fontFamily:
-                                                    fonts.bodyBold,
-
-                                                fontSize: 12,
-                                                lineHeight: 18,
-                                                textAlign: 'center',
-                                            }}
-                                        >
+                                    <View style={correctionsStyles.downloadFeedback}>
+                                        <Text style={correctionsStyles.downloadFeedbackText}>
                                             {downloadMessage}
                                         </Text>
                                     </View>
@@ -369,34 +170,18 @@ function CorrectionScreen({
 
                     {/* Coluna de avaliação */}
 
-                    <View
-                        style={{
-                            flex: 1,
-                            width: isCompact
-                                ? '100%'
-                                : undefined,
-                        }}
-                    >
+                    <View style={[correctionsStyles.detailEvaluationColumn, isCompact ? correctionsStyles.detailEvaluationColumnCompact : undefined]}>
                         <AppCard>
                             <SectionHeader
                                 compact
-                                title="Resultado da avaliação"
-                                subtitle="Escolha entre aprovar ou devolver para revisão."
+                                title={messages.detail.evaluationTitle}
+                                subtitle={messages.detail.evaluationSubtitle}
                                 style={{
                                     marginBottom: 18,
                                 }}
                             />
 
-                            <View
-                                style={{
-                                    flexDirection:
-                                        isCompact
-                                            ? 'column'
-                                            : 'row',
-
-                                    gap: 10,
-                                }}
-                            >
+                            <View style={[correctionsStyles.choiceRow, isCompact ? correctionsStyles.choiceRowCompact : undefined]}>
                                 <Pressable
                                     accessibilityRole="button"
                                     accessibilityState={{
@@ -407,64 +192,17 @@ function CorrectionScreen({
                                     onPress={() =>
                                         setDecision('approved')
                                     }
-                                    style={({ pressed }) => ({
-                                        flex: 1,
-                                        minHeight: 72,
-                                        padding: 14,
-
-                                        justifyContent: 'center',
-
-                                        borderWidth: 2,
-                                        borderColor:
-                                            decision ===
-                                                'approved'
-                                                ? theme.success
-                                                : theme.border,
-
-                                        borderRadius:
-                                            borderRadius.lg,
-
-                                        backgroundColor:
-                                            decision ===
-                                                'approved'
-                                                ? theme.successSoft
-                                                : theme.card,
-
-                                        opacity: pressed
-                                            ? 0.84
-                                            : 1,
-                                    })}
+                                    style={({ pressed }) => [
+                                        correctionsStyles.choiceOption,
+                                        decision === 'approved' ? correctionsStyles.choiceOptionActive : correctionsStyles.choiceOptionInactive,
+                                        pressed && correctionsStyles.choiceOptionPressed,
+                                    ]}
                                 >
-                                    <Text
-                                        style={{
-                                            color:
-                                                decision ===
-                                                    'approved'
-                                                    ? theme.success
-                                                    : theme.textDark,
-
-                                            fontFamily:
-                                                fonts.headlineSemibold,
-
-                                            fontSize: 14,
-                                        }}
-                                    >
-                                        Aprovar
+                                    <Text style={decision === 'approved' ? correctionsStyles.choiceTitleActive : correctionsStyles.choiceTitle}>
+                                        {messages.detail.approve}
                                     </Text>
 
-                                    <Text
-                                        style={{
-                                            marginTop: 4,
-
-                                            color:
-                                                theme.textMuted,
-
-                                            fontFamily:
-                                                fonts.bodyRegular,
-
-                                            fontSize: 12,
-                                        }}
-                                    >
+                                    <Text style={correctionsStyles.choiceSubtitle}>
                                         Conclui a missão
                                     </Text>
                                 </Pressable>
@@ -479,245 +217,75 @@ function CorrectionScreen({
                                     onPress={() =>
                                         setDecision('revision')
                                     }
-                                    style={({ pressed }) => ({
-                                        flex: 1,
-                                        minHeight: 72,
-                                        padding: 14,
-
-                                        justifyContent: 'center',
-
-                                        borderWidth: 2,
-                                        borderColor:
-                                            decision ===
-                                                'revision'
-                                                ? theme.warning
-                                                : theme.border,
-
-                                        borderRadius:
-                                            borderRadius.lg,
-
-                                        backgroundColor:
-                                            decision ===
-                                                'revision'
-                                                ? theme.warningSoft
-                                                : theme.card,
-
-                                        opacity: pressed
-                                            ? 0.84
-                                            : 1,
-                                    })}
+                                    style={({ pressed }) => [
+                                        correctionsStyles.choiceOption,
+                                        decision === 'revision' ? correctionsStyles.choiceOptionActiveRevision : correctionsStyles.choiceOptionInactive,
+                                        pressed && correctionsStyles.choiceOptionPressed,
+                                    ]}
                                 >
-                                    <Text
-                                        style={{
-                                            color:
-                                                decision ===
-                                                    'revision'
-                                                    ? theme.warning
-                                                    : theme.textDark,
-
-                                            fontFamily:
-                                                fonts.headlineSemibold,
-
-                                            fontSize: 14,
-                                        }}
-                                    >
-                                        Solicitar revisão
+                                    <Text style={decision === 'revision' ? correctionsStyles.choiceTitleActiveRevision : correctionsStyles.choiceTitle}>
+                                        {messages.detail.requestRevision}
                                     </Text>
 
-                                    <Text
-                                        style={{
-                                            marginTop: 4,
-
-                                            color:
-                                                theme.textMuted,
-
-                                            fontFamily:
-                                                fonts.bodyRegular,
-
-                                            fontSize: 12,
-                                        }}
-                                    >
+                                    <Text style={correctionsStyles.choiceSubtitle}>
                                         Devolve ao aluno
                                     </Text>
                                 </Pressable>
                             </View>
 
-                            <Text
-                                style={{
-                                    marginTop: 20,
-                                    marginBottom: 7,
-
-                                    color:
-                                        theme.textDark,
-
-                                    fontFamily:
-                                        fonts.bodyBold,
-
-                                    fontSize: 13,
-                                }}
-                            >
-                                Nota
-                            </Text>
+                            <Text style={correctionsStyles.fieldLabel}>{messages.detail.gradeLabel}</Text>
 
                             <TextInput
                                 value={grade}
                                 onChangeText={setGrade}
-                                placeholder="Ex: 8,5"
+                                placeholder={messages.detail.gradePlaceholder}
                                 placeholderTextColor={
                                     theme.textFaint
                                 }
                                 maxLength={5}
-                                style={{
-                                    minHeight: 48,
-                                    paddingHorizontal: 15,
-
-                                    borderWidth: 1,
-                                    borderColor:
-                                        theme.border,
-
-                                    borderRadius:
-                                        borderRadius.lg,
-
-                                    backgroundColor:
-                                        theme.bgSubtle,
-
-                                    color:
-                                        theme.textDark,
-
-                                    fontFamily:
-                                        fonts.bodyRegular,
-
-                                    fontSize: 14,
-                                }}
+                                style={correctionsStyles.textInput}
                             />
 
-                            <Text
-                                style={{
-                                    marginTop: 18,
-                                    marginBottom: 7,
-
-                                    color:
-                                        theme.textDark,
-
-                                    fontFamily:
-                                        fonts.bodyBold,
-
-                                    fontSize: 13,
-                                }}
-                            >
-                                Comentário geral
-                            </Text>
+                            <Text style={[correctionsStyles.fieldLabel, { marginTop: 18, marginBottom: 7 }]}>{messages.detail.commentLabel}</Text>
 
                             <TextInput
                                 value={comment}
                                 onChangeText={setComment}
-                                placeholder="Escreva uma observação para o aluno"
+                                placeholder={messages.detail.placeholder}
                                 placeholderTextColor={
                                     theme.textFaint
                                 }
                                 multiline
                                 maxLength={200}
                                 textAlignVertical="top"
-                                style={{
-                                    minHeight: 96,
-                                    paddingHorizontal: 15,
-                                    paddingVertical: 13,
-
-                                    borderWidth: 1,
-                                    borderColor:
-                                        theme.border,
-
-                                    borderRadius:
-                                        borderRadius.lg,
-
-                                    backgroundColor:
-                                        theme.bgSubtle,
-
-                                    color:
-                                        theme.textDark,
-
-                                    fontFamily:
-                                        fonts.bodyRegular,
-
-                                    fontSize: 14,
-                                }}
+                                style={correctionsStyles.textArea}
                             />
 
                             {decision === 'revision' && (
                                 <>
-                                    <Text
-                                        style={{
-                                            marginTop: 18,
-                                            marginBottom: 7,
-
-                                            color:
-                                                theme.textDark,
-
-                                            fontFamily:
-                                                fonts.bodyBold,
-
-                                            fontSize: 13,
-                                        }}
-                                    >
-                                        Feedback para revisão *
-                                    </Text>
+                                    <Text style={[correctionsStyles.fieldLabel, { marginTop: 18, marginBottom: 7 }]}>{messages.detail.revisionLabel} *</Text>
 
                                     <TextInput
                                         value={revisionFeedback}
                                         onChangeText={
                                             setRevisionFeedback
                                         }
-                                        placeholder="Explique claramente o que precisa ser corrigido"
+                                        placeholder={messages.detail.revisionPlaceholder}
                                         placeholderTextColor={
                                             theme.textFaint
                                         }
                                         multiline
                                         maxLength={200}
                                         textAlignVertical="top"
-                                        style={{
-                                            minHeight: 105,
-                                            paddingHorizontal: 15,
-                                            paddingVertical: 13,
-
-                                            borderWidth: 1,
-                                            borderColor:
-                                                revisionFeedback.length >
-                                                    0 &&
-                                                    !revisionIsValid
-                                                    ? theme.danger
-                                                    : theme.warning,
-
-                                            borderRadius:
-                                                borderRadius.lg,
-
-                                            backgroundColor:
-                                                theme.warningSoft,
-
-                                            color:
-                                                theme.textDark,
-
-                                            fontFamily:
-                                                fonts.bodyRegular,
-
-                                            fontSize: 14,
-                                        }}
+                                        style={[
+                                            correctionsStyles.textArea,
+                                            revisionFeedback.length > 0 && !revisionIsValid
+                                                ? correctionsStyles.textAreaInvalid
+                                                : correctionsStyles.textAreaWarning,
+                                        ]}
                                     />
 
-                                    <Text
-                                        style={{
-                                            marginTop: 6,
-                                            alignSelf:
-                                                'flex-end',
-
-                                            color:
-                                                theme.textFaint,
-
-                                            fontFamily:
-                                                fonts.bodyRegular,
-
-                                            fontSize: 11,
-                                        }}
-                                    >
+                                    <Text style={correctionsStyles.helperText}>
                                         {
                                             revisionFeedback.length
                                         }
@@ -728,63 +296,17 @@ function CorrectionScreen({
 
                             {decision ===
                                 'approved' && (
-                                    <View
-                                        style={{
-                                            marginTop: 20,
-                                            padding: 15,
-
-                                            borderRadius:
-                                                borderRadius.lg,
-
-                                            backgroundColor:
-                                                theme.successSoft,
-                                        }}
-                                    >
-                                        <Text
-                                            style={{
-                                                color:
-                                                    theme.success,
-
-                                                fontFamily:
-                                                    fonts.bodyBold,
-
-                                                fontSize: 13,
-                                            }}
-                                        >
+                                    <View style={correctionsStyles.rewardCard}>
+                                        <Text style={correctionsStyles.rewardTitle}>
                                             Recompensa que será
                                             liberada
                                         </Text>
 
-                                        <Text
-                                            style={{
-                                                marginTop: 5,
-
-                                                color:
-                                                    theme.textDark,
-
-                                                fontFamily:
-                                                    fonts.headlineSemibold,
-
-                                                fontSize: 15,
-                                            }}
-                                        >
+                                        <Text style={correctionsStyles.rewardValue}>
                                             {reward.name}
                                         </Text>
 
-                                        <Text
-                                            style={{
-                                                marginTop: 7,
-
-                                                color:
-                                                    theme.textMuted,
-
-                                                fontFamily:
-                                                    fonts.bodyRegular,
-
-                                                fontSize: 12,
-                                                lineHeight: 18,
-                                            }}
-                                        >
+                                        <Text style={correctionsStyles.rewardHint}>
                                             Nenhuma moeda é concedida
                                             nesta etapa. As moedas já
                                             foram creditadas no envio
@@ -794,29 +316,8 @@ function CorrectionScreen({
                                 )}
 
                             {!revisionIsValid && (
-                                <View
-                                    style={{
-                                        marginTop: 16,
-                                        padding: 13,
-
-                                        borderRadius:
-                                            borderRadius.lg,
-
-                                        backgroundColor:
-                                            theme.dangerSoft,
-                                    }}
-                                >
-                                    <Text
-                                        style={{
-                                            color:
-                                                theme.danger,
-
-                                            fontFamily:
-                                                fonts.bodyBold,
-
-                                            fontSize: 12,
-                                        }}
-                                    >
+                                <View style={correctionsStyles.validationHint}>
+                                    <Text style={correctionsStyles.validationHintText}>
                                         Escreva um feedback para
                                         que o aluno saiba o que
                                         deve revisar.
@@ -827,8 +328,8 @@ function CorrectionScreen({
                             <AppButton
                                 label={
                                     decision === 'approved'
-                                        ? 'Confirmar aprovação'
-                                        : 'Enviar para revisão'
+                                        ? messages.detail.confirm
+                                        : messages.detail.requestRevision
                                 }
                                 variant={
                                     decision === 'approved'
@@ -838,9 +339,7 @@ function CorrectionScreen({
                                 disabled={!canConfirm}
                                 onPress={handleConfirm}
                                 fullWidth
-                                style={{
-                                    marginTop: 22,
-                                }}
+                                style={correctionsStyles.confirmButton}
                             />
                         </AppCard>
                     </View>
@@ -866,7 +365,7 @@ export default function CorrectionRoute() {
                     onBack={() => router.back()}
                     onConfirm={(id, result) => {
                         confirmCorrection(id, result);
-                        router.replace('/(professor)/correcoes' as any);
+                        router.replace(PROFESSOR_ROUTES.CORRECTIONS);
                     }}
                 />
             ) : (

@@ -1,42 +1,14 @@
-import { borderRadius, fonts, theme } from '@/constants/theme';
-import React, {
-  ReactNode,
-} from 'react';
+import { theme } from '@/constants/theme';
+import { appButtonStyles } from '@/styles/professor/appButton';
+import type { AppButtonProps } from '@/types/professor/appButton';
+import { getAppButtonSizeConfig, getAppButtonVariantConfig } from '@/utils/professor/appButton';
 
 import {
   ActivityIndicator,
   Pressable,
-  StyleProp,
   Text,
   View,
-  ViewStyle,
 } from 'react-native';
-
-export type AppButtonVariant =
-  | 'primary'
-  | 'secondary'
-  | 'danger'
-  | 'ghost';
-
-export type AppButtonSize =
-  | 'small'
-  | 'medium'
-  | 'large';
-
-export interface AppButtonProps {
-  label: string;
-  onPress?: () => void;
-  variant?: AppButtonVariant;
-  size?: AppButtonSize;
-  disabled?: boolean;
-  loading?: boolean;
-  fullWidth?: boolean;
-  iconLeft?: ReactNode;
-  iconRight?: ReactNode;
-  accessibilityLabel?: string;
-  accessibilityHint?: string;
-  style?: StyleProp<ViewStyle>;
-}
 
 export default function AppButton({
   label,
@@ -55,89 +27,11 @@ export default function AppButton({
   const unavailable =
     disabled || loading;
 
-  const variants = {
-    primary: {
-      background:
-        theme.primary,
-
-      hoverBackground:
-        theme.primaryLight,
-
-      border:
-        theme.primary,
-
-      foreground:
-        theme.white,
-    },
-
-    secondary: {
-      background:
-        theme.bgSoft,
-
-      hoverBackground:
-        theme.primaryTint,
-
-      border:
-        theme.primaryTint,
-
-      foreground:
-        theme.primary,
-    },
-
-    danger: {
-      background:
-        theme.danger,
-
-      hoverBackground: theme.dangerHover,
-
-      border:
-        theme.danger,
-
-      foreground:
-        theme.white,
-    },
-
-    ghost: {
-      background: 'transparent',
-
-      hoverBackground:
-        theme.bgSoft,
-
-      border: 'transparent',
-
-      foreground:
-        theme.primary,
-    },
-  } as const;
-
-  const sizes = {
-    small: {
-      minHeight: 40,
-      paddingHorizontal: 14,
-      fontSize: 13,
-      iconSize: 16,
-    },
-
-    medium: {
-      minHeight: 46,
-      paddingHorizontal: 17,
-      fontSize: 14,
-      iconSize: 18,
-    },
-
-    large: {
-      minHeight: 52,
-      paddingHorizontal: 21,
-      fontSize: 15,
-      iconSize: 19,
-    },
-  } as const;
-
   const currentVariant =
-    variants[variant];
+    getAppButtonVariantConfig(variant);
 
   const currentSize =
-    sizes[size];
+    getAppButtonSizeConfig(size);
 
   const backgroundColor =
     unavailable
@@ -170,48 +64,20 @@ export default function AppButton({
       disabled={unavailable}
       onPress={onPress}
       style={({ pressed }) => [
+        appButtonStyles.pressable,
         {
-          minHeight:
-            currentSize.minHeight,
-
-          width: fullWidth
-            ? '100%'
-            : undefined,
-
-          alignSelf: fullWidth
-            ? 'stretch'
-            : undefined,
-
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'center',
-
-          gap: 8,
-
-          paddingHorizontal:
-            currentSize
-              .paddingHorizontal,
-
-          borderWidth:
-            variant === 'ghost'
-              ? 0
-              : 1,
-
+          minHeight: currentSize.minHeight,
+          width: fullWidth ? '100%' : undefined,
+          alignSelf: fullWidth ? 'stretch' : undefined,
+          paddingHorizontal: currentSize.paddingHorizontal,
+          borderWidth: variant === 'ghost' ? 0 : 1,
           borderColor,
-
-          borderRadius:
-            borderRadius.lg,
-
+          borderRadius: 12,
           backgroundColor,
-
-          opacity:
-            pressed ? 0.84 : 1,
+          opacity: pressed ? 0.84 : 1,
         },
 
-        variant === 'primary' &&
-          !unavailable
-          ? theme.shadowBtn
-          : undefined,
+        variant === 'primary' && !unavailable ? theme.shadowBtn : undefined,
 
         style,
       ]}
@@ -226,16 +92,13 @@ export default function AppButton({
           {!!iconLeft && (
             <View
               pointerEvents="none"
-              style={{
-                width:
-                  currentSize.iconSize,
-
-                height:
-                  currentSize.iconSize,
-
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
+              style={[
+                appButtonStyles.iconWrapper,
+                {
+                  width: currentSize.iconSize,
+                  height: currentSize.iconSize,
+                },
+              ]}
             >
               {iconLeft}
             </View>
@@ -243,18 +106,10 @@ export default function AppButton({
 
           <Text
             numberOfLines={1}
-            style={{
-              color:
-                foregroundColor,
-
-              fontFamily:
-                fonts.headlineSemibold,
-
-              fontSize:
-                currentSize.fontSize,
-
-              textAlign: 'center',
-            }}
+            style={[appButtonStyles.label, {
+              color: foregroundColor,
+              fontSize: currentSize.fontSize,
+            }]}
           >
             {label}
           </Text>
@@ -262,16 +117,13 @@ export default function AppButton({
           {!!iconRight && (
             <View
               pointerEvents="none"
-              style={{
-                width:
-                  currentSize.iconSize,
-
-                height:
-                  currentSize.iconSize,
-
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
+              style={[
+                appButtonStyles.iconWrapper,
+                {
+                  width: currentSize.iconSize,
+                  height: currentSize.iconSize,
+                },
+              ]}
             >
               {iconRight}
             </View>

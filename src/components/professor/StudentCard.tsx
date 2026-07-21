@@ -1,14 +1,14 @@
 import { borderRadius, fonts, theme } from '@/constants/theme';
 import {
-  Pressable,
-  StyleProp,
-  Text,
-  View,
-  ViewStyle,
+    Pressable,
+    StyleProp,
+    Text,
+    View,
+    ViewStyle,
 } from 'react-native';
 import type { Student } from '../../types/professor';
 import StatusChip, {
-  StatusChipTone,
+    StatusChipTone,
 } from './StatusChip';
 
 export interface StudentCardProps {

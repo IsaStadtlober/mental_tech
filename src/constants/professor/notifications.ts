@@ -1,5 +1,5 @@
-import { theme } from '@/constants/theme';
 import type { StatusChipTone } from '@/components/professor/StatusChip';
+import { theme } from '@/constants/theme';
 import type { NotificationCategory } from '@/types/professor';
 
 export type NotificationFilter = 'all' | 'unread' | NotificationCategory;

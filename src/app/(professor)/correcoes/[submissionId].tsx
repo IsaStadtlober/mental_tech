@@ -1,7 +1,3 @@
-import type {
-    Reward,
-    Submission,
-} from '@/components/professor/../../types/professor';
 import AppButton from '@/components/professor/AppButton';
 import AppCard from '@/components/professor/AppCard';
 import BackButton from '@/components/professor/BackButton';
@@ -10,6 +6,10 @@ import SectionHeader from '@/components/professor/SectionHeader';
 import StatusChip from '@/components/professor/StatusChip';
 import { borderRadius, fonts, theme } from '@/constants/theme';
 import { useProfessorPrototype } from '@/hooks/useProfessorPrototype';
+import type {
+    Reward,
+    Submission,
+} from '@/types/professor';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import {
     Download,

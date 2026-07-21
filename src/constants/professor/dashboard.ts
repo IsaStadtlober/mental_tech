@@ -1,4 +1,4 @@
-import type { Student , RecentSubmission  } from '@/types/professor';
+import type { RecentSubmission, Student } from '@/types/professor';
 
 export const MOCK_STUDENTS: Student[] = [
     {

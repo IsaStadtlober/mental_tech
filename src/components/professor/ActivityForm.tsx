@@ -1,17 +1,17 @@
 import { borderRadius, fonts, theme } from '@/constants/theme';
 import { useState } from 'react';
 import {
-  Pressable,
-  ScrollView,
-  Text,
-  TextInput,
-  useWindowDimensions,
-  View,
+    Pressable,
+    ScrollView,
+    Text,
+    TextInput,
+    useWindowDimensions,
+    View,
 } from 'react-native';
 
 import {
-  Save,
-  Send,
+    Save,
+    Send,
 } from 'lucide-react-native';
 
 import AppButton from '@/components/professor/AppButton';
@@ -21,12 +21,12 @@ import SectionHeader from '@/components/professor/SectionHeader';
 import StatusChip from '@/components/professor/StatusChip';
 
 import type {
-  Activity,
-  ActivityStatus,
-  EducatorStudentOption,
-  FileType,
-  RewardType,
-} from '@/components/professor/../../types/professor';
+    Activity,
+    ActivityStatus,
+    EducatorStudentOption,
+    FileType,
+    RewardType,
+} from '@/types/professor';
 
 export interface ActivityFormData {
   title: string;

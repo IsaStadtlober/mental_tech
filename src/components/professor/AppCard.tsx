@@ -1,24 +1,7 @@
-import { borderRadius, theme } from '@/constants/theme';
-import {
-  Pressable,
-  type StyleProp,
-  View,
-  ViewProps,
-  type ViewStyle,
-} from 'react-native';
-
-export interface AppCardProps
-  extends ViewProps {
-  onPress?: () => void;
-
-  elevated?: boolean;
-  padding?: number;
-
-  accessibilityLabel?: string;
-  accessibilityHint?: string;
-
-  style?: StyleProp<ViewStyle>;
-}
+import { theme } from '@/constants/theme';
+import { appCardStyles } from '@/styles/professor/appCard';
+import type { AppCardProps } from '@/types/professor/appCard';
+import { Pressable, View } from 'react-native';
 
 export default function AppCard({
   children,
@@ -30,27 +13,12 @@ export default function AppCard({
   style,
   ...viewProps
 }: AppCardProps) {
-  const baseStyle: StyleProp<ViewStyle> = [
+  const baseStyle = [
+    appCardStyles.container,
     {
-      width: '100%',
-
       padding,
-
-      borderWidth: 1,
-      borderColor:
-        theme.border,
-
-      borderRadius:
-        borderRadius.xxl,
-
-      backgroundColor:
-        theme.card,
     },
-
-    elevated
-      ? theme.shadowCard
-      : undefined,
-
+    elevated ? theme.shadowCard : undefined,
     style,
   ];
 
@@ -67,17 +35,7 @@ export default function AppCard({
         onPress={onPress}
         style={({ pressed }) => [
           baseStyle,
-
-          {
-            opacity:
-              pressed ? 0.88 : 1,
-
-          borderColor:
-            theme.border,
-
-          backgroundColor:
-            theme.card,
-          },
+          pressed ? appCardStyles.pressed : undefined,
         ]}
       >
         {children}

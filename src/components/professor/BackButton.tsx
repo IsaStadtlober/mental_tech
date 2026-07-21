@@ -1,16 +1,8 @@
-import { borderRadius, fonts, theme } from '@/constants/theme';
-import { Pressable, type StyleProp, Text, type ViewStyle } from 'react-native';
+import { theme } from '@/constants/theme';
+import { backButtonStyles } from '@/styles/professor/backButton';
+import type { BackButtonProps } from '@/types/professor/backButton';
 import { ChevronLeft } from 'lucide-react-native';
-
-export interface BackButtonProps {
-  label: string;
-
-  onPress: () => void;
-
-  accessibilityHint?: string;
-
-  style?: StyleProp<ViewStyle>;
-}
+import { Pressable, Text } from 'react-native';
 
 export default function BackButton({
   label,
@@ -27,30 +19,9 @@ export default function BackButton({
       }
       onPress={onPress}
       style={({ pressed }) => [
+        backButtonStyles.pressable,
         {
-          minHeight: 44,
-
-          alignSelf: 'flex-start',
-
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'center',
-
-          gap: 6,
-
-          paddingLeft: 9,
-          paddingRight: 13,
-
-          borderWidth: 1,
-          borderColor: 'transparent',
-
-          borderRadius:
-            borderRadius.pill,
-
-          backgroundColor: 'transparent',
-
-          opacity:
-            pressed ? 0.78 : 1,
+          opacity: pressed ? 0.78 : 1,
         },
         style,
       ]}
@@ -63,18 +34,7 @@ export default function BackButton({
         }
       />
 
-      <Text
-        numberOfLines={1}
-        style={{
-          color:
-            theme.primary,
-
-          fontFamily:
-            fonts.headlineSemibold,
-
-          fontSize: 14,
-        }}
-      >
+      <Text numberOfLines={1} style={backButtonStyles.label}>
         {label}
       </Text>
     </Pressable>

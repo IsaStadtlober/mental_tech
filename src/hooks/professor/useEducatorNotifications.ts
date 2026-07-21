@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react';
 
-import type { NotificationFilter } from '@/constants/professor/notifications';
 import { PROFESSOR_NOTIFICATIONS_MESSAGES } from '@/constants/professor/professor';
 import type { EducatorNotification, EducatorNotificationsHandlers, NotificationCategory } from '@/types/professor';
+import type { NotificationFilter } from '@/types/professor/notifications';
 import {
     filterNotifications,
     getNotificationActionLabel,

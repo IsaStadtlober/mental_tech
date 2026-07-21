@@ -1,8 +1,8 @@
 import { BookOpen, CheckSquare2, GraduationCap, Settings2 } from 'lucide-react-native';
 import { createElement, type ReactNode } from 'react';
 
-import type { NotificationFilter } from '@/constants/professor/notifications';
 import type { EducatorNotification, NotificationCategory } from '@/types/professor';
+import type { NotificationFilter } from '@/types/professor/notifications';
 
 type NotificationMessages = typeof import('@/constants/professor/professor').PROFESSOR_NOTIFICATIONS_MESSAGES;
 

@@ -1,8 +1,7 @@
-import type { StatusChipTone } from '@/types/professor/statusChip';
 import { theme } from '@/constants/theme';
 import type { NotificationCategory } from '@/types/professor';
-
-export type NotificationFilter = 'all' | 'unread' | NotificationCategory;
+import type { NotificationFilter } from '@/types/professor/notifications';
+import type { StatusChipTone } from '@/types/professor/statusChip';
 
 export const NOTIFICATION_FILTERS: { value: NotificationFilter; label: string }[] = [
     { value: 'all', label: 'Todas' },

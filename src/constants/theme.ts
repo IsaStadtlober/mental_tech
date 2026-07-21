@@ -1,3 +1,4 @@
+import type { InputPreset } from '@/types/theme';
 import { useFonts } from 'expo-font';
 import { Dimensions } from 'react-native';
 
@@ -138,16 +139,6 @@ export const FRAME_H: number = Math.min(SCREEN_H, 780);
 export const BANNER_H: number = 100;
 
 // PRESETS DE INPUT
-export interface InputPreset {
-  py: number;
-  px: number;
-  fontSize: number;
-  radius: number;
-  labelSize: number;
-  bg: string;
-  activeBorder: string;
-}
-
 export const inputPresets: Record<'student' | 'educator', InputPreset> = {
   student: {
     py: 14,

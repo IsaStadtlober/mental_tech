@@ -1,7 +1,6 @@
-import type { StatusChipTone } from '@/types/professor/statusChip';
 import type { ActivityStatus } from '@/types/professor';
-
-export type ActivityFilter = 'all' | ActivityStatus;
+import type { ActivityFilter } from '@/types/professor/activities';
+import type { StatusChipTone } from '@/types/professor/statusChip';
 
 export const ACTIVITY_FILTERS: { value: ActivityFilter; label: string }[] = [
     { value: 'all', label: 'Todas' },

@@ -1,6 +1,5 @@
 import type { FileType, SubmissionStatus } from '@/types/professor';
-
-export type CorrectionFilter = 'all' | '5º Ano A' | '5º Ano B';
+import type { CorrectionFilter } from '@/types/professor/corrections';
 
 export const CORRECTION_CLASS_FILTERS: { value: CorrectionFilter; label: string }[] = [
     { value: 'all', label: 'Todas as turmas' },

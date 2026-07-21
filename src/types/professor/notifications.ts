@@ -4,6 +4,8 @@ export type NotificationCategory =
     | 'student'
     | 'system';
 
+export type NotificationFilter = 'all' | 'unread' | NotificationCategory;
+
 export type NotificationDestination =
     | { type: 'correctionQueue' }
     | { type: 'studentProfile'; studentId: string }

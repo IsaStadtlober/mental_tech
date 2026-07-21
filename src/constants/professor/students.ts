@@ -1,4 +1,4 @@
-export type StudentProfileStatus = 'engaged' | 'attention' | 'inactive';
+import type { StudentProfileStatus } from '@/types/professor/students';
 
 export const STUDENT_PROFILE_STATUS_CONFIG: Record<
     StudentProfileStatus,

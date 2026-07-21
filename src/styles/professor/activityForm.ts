@@ -304,7 +304,7 @@ export const activityFormStyles = StyleSheet.create({
         fontSize: 13,
     },
     validationCard: {
-        marginTop: 20,
+        marginTop: 100,
         padding: 14,
         borderRadius: borderRadius.lg,
         backgroundColor: theme.warningSoft,

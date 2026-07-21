@@ -1,87 +1,21 @@
-import { borderRadius, fonts, theme } from '@/constants/theme';
-import {
-    BarChart3,
-    Bell,
-    BookOpen,
-    CheckSquare2,
-    LayoutDashboard,
-    Menu,
-    UserRound,
-    X,
-} from 'lucide-react-native';
-import React, {
-    useMemo,
-    useState,
-} from 'react';
-import {
-    Pressable,
-    Text,
-    useWindowDimensions,
-    View,
-} from 'react-native';
-import {
-    useSafeAreaInsets,
-} from 'react-native-safe-area-context';
-import {
-    isCompactWidth,
-    layout,
-} from '../../constants/professor/prof_Layout';
+import { EDUCATOR_HEADER_COPY, EDUCATOR_HEADER_DEFAULTS } from '@/constants/professor/educatorHeader';
+import { theme } from '@/constants/theme';
+import { educatorHeaderStyles } from '@/styles/professor/educatorHeader';
+import type { EducatorHeaderProps, HeaderMenuItem } from '@/types/professor/educatorHeader';
+import { BarChart3, Bell, BookOpen, CheckSquare2, LayoutDashboard, Menu, UserRound, X } from 'lucide-react-native';
+import { useMemo, useState } from 'react';
+import { Pressable, Text, useWindowDimensions, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { isCompactWidth, layout } from '../../constants/professor/prof_Layout';
 import DecorativeBubble from './DecorativeBubble';
 import IconButton from './IconButton';
-
-export type HeaderDestination =
-  | 'dashboard'
-  | 'activities'
-  | 'correctionQueue'
-  | 'reports'
-  | 'educatorProfile'
-  | 'notifications';
-
-export interface HeaderNotificationPreview {
-  id: string;
-  title: string;
-  description: string;
-  read?: boolean;
-}
-
-export interface EducatorHeaderProps {
-  educatorName: string;
-
-  subtitle?: string;
-
-  currentDestination?: HeaderDestination;
-
-  unreadNotificationsCount?: number;
-
-  notificationPreview?: HeaderNotificationPreview[];
-
-  onOpenDashboard: () => void;
-  onOpenActivities: () => void;
-  onOpenCorrectionQueue: () => void;
-  onOpenReports: () => void;
-  onOpenProfile: () => void;
-  onOpenAllNotifications?: () => void;
-}
-
-interface HeaderMenuItem {
-  id: Exclude<
-    HeaderDestination,
-    'notifications'
-  >;
-
-  label: string;
-  icon: React.ReactNode;
-  onPress: () => void;
-}
 
 export default function EducatorHeader({
   educatorName,
 
-  subtitle =
-    'Escola Caminho do Saber · 5º Ano A',
+  subtitle = EDUCATOR_HEADER_DEFAULTS.subtitle,
 
-  currentDestination =
-    'dashboard',
+  currentDestination = EDUCATOR_HEADER_DEFAULTS.currentDestination,
 
   unreadNotificationsCount = 0,
 
@@ -98,7 +32,7 @@ export default function EducatorHeader({
     useWindowDimensions();
 
   const insets =
-  useSafeAreaInsets();
+    useSafeAreaInsets();
 
   const compact =
     isCompactWidth(width);
@@ -109,18 +43,18 @@ export default function EducatorHeader({
     mobile
       ? layout.screenPadding.mobile
       : width <
-          layout.breakpoints.desktop
+        layout.breakpoints.desktop
         ? layout.screenPadding.tablet
         : layout.screenPadding.desktop;
 
   const baseHeaderHeight =
-  compact
-    ? layout.header.mobileHeight
-    : layout.header.desktopHeight;
+    compact
+      ? layout.header.mobileHeight
+      : layout.header.desktopHeight;
 
   const totalHeaderHeight =
-  baseHeaderHeight +
-  insets.top;
+    baseHeaderHeight +
+    insets.top;
 
   const [
     notificationsOpen,
@@ -293,70 +227,10 @@ export default function EducatorHeader({
   }
 
   return (
-    <View
-      style={{
-        position: 'absolute',
-
-        top: 0,
-        left: 0,
-        right: 0,
-
-        zIndex: 100,
-
-        height: totalHeaderHeight,
-
-        borderBottomWidth: 1,
-
-        borderBottomColor:
-          theme.border,
-
-        backgroundColor:
-          theme.card,
-
-        shadowColor: theme.textDark,
-
-        shadowOffset: {
-          width: 0,
-          height: 5,
-        },
-
-        shadowOpacity: 0.08,
-        shadowRadius: 14,
-
-        elevation: 6,
-      }}
-    >
+    <View style={[educatorHeaderStyles.shell, { height: totalHeaderHeight }]}>
       {!mobile && (
-        <View
-          pointerEvents="none"
-          style={{
-            position: 'absolute',
-
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-
-            overflow: 'hidden',
-          }}
-        >
-          <View
-            style={{
-              width: '100%',
-
-              maxWidth:
-                layout.content.maxWidth,
-
-              height: '100%',
-
-              alignSelf: 'center',
-
-              position: 'relative',
-
-              paddingHorizontal:
-                horizontalPadding,
-            }}
-          >
+        <View pointerEvents="none" style={educatorHeaderStyles.overlay}>
+          <View style={[educatorHeaderStyles.overlayInner, { paddingHorizontal: horizontalPadding }]}>
             <DecorativeBubble
               style={{
                 top: -92,
@@ -367,96 +241,27 @@ export default function EducatorHeader({
       )}
 
       {/* Conteúdo principal do header */}
-      <View
-        style={{
-          width: '100%',
-
-          maxWidth:
-            layout.content.maxWidth,
-
-          height:
-            baseHeaderHeight,
-
-          alignSelf: 'center',
-
-          marginTop:
-            insets.top,
-
-          position: 'relative',
-          zIndex: 2,
-
-          paddingHorizontal:
-            horizontalPadding,
-
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent:
-            'space-between',
-
-          gap: 16,
-        }}
-      >
+      <View style={[educatorHeaderStyles.mainRow, { height: baseHeaderHeight, marginTop: insets.top, paddingHorizontal: horizontalPadding }]}>
         {/* Identidade do professor */}
-        <View
-          style={{
-            flex: 1,
-            minWidth: 0,
-
-            flexDirection: 'row',
-            alignItems: 'center',
-
-            gap: mobile ? 10 : 12,
-          }}
-        >
+        <View style={[educatorHeaderStyles.identityRow, { gap: mobile ? 10 : 12 }]}>
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel="Abrir meu perfil"
-            accessibilityHint="Abre as configurações do professor"
+            accessibilityLabel={EDUCATOR_HEADER_COPY.profileActionLabel}
+            accessibilityHint={EDUCATOR_HEADER_COPY.profileActionHint}
             onPress={() =>
               runMenuAction(
                 onOpenProfile
               )
             }
             style={({ pressed }) => ({
-              width:
-                mobile ? 42 : 48,
-
-              height:
-                mobile ? 42 : 48,
-
-              flexShrink: 0,
-
-              alignItems: 'center',
-              justifyContent: 'center',
-
-              borderWidth: 0,
-
-              borderColor:
-                theme.primaryTint,
-
-              borderRadius:
-                mobile ? 15 : 17,
-
-              backgroundColor:
-                theme.primary,
-
-              opacity:
-                pressed ? 0.8 : 1,
-
+              width: mobile ? 42 : 48,
+              height: mobile ? 42 : 48,
+              opacity: pressed ? 0.8 : 1,
+              ...educatorHeaderStyles.avatar,
+              borderRadius: mobile ? 15 : 17,
             })}
           >
-            <Text
-              style={{
-                color:
-                  theme.white,
-
-                fontFamily:
-                  fonts.headlineBold,
-
-                fontSize:
-                  mobile ? 13 : 15,
-              }}
-            >
+            <Text style={[educatorHeaderStyles.avatarText, { fontSize: mobile ? 13 : 15 }]}>
               {initials}
             </Text>
           </Pressable>
@@ -467,37 +272,11 @@ export default function EducatorHeader({
               minWidth: 0,
             }}
           >
-            <Text
-              numberOfLines={1}
-              style={{
-                color:
-                  theme.textDark,
-
-                fontFamily:
-                  fonts.headlineBold,
-
-                fontSize:
-                  mobile ? 15 : 17,
-              }}
-            >
+            <Text numberOfLines={1} style={[educatorHeaderStyles.greetingText, { fontSize: mobile ? 15 : 17 }]}>
               Olá, {firstName}!
             </Text>
 
-            <Text
-              numberOfLines={1}
-              style={{
-                marginTop: 2,
-
-                color:
-                  theme.textMuted,
-
-                fontFamily:
-                  fonts.bodyRegular,
-
-                fontSize:
-                  mobile ? 10 : 12,
-              }}
-            >
+            <Text numberOfLines={1} style={[educatorHeaderStyles.subtitleText, { fontSize: mobile ? 10 : 12 }]}>
               {subtitle}
             </Text>
           </View>
@@ -506,14 +285,7 @@ export default function EducatorHeader({
         {/* Navegação desktop */}
 
         {!compact && (
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-
-              gap: 6,
-            }}
-          >
+          <View style={educatorHeaderStyles.navRow}>
             {menuItems
               .filter(
                 (item) =>
@@ -538,81 +310,43 @@ export default function EducatorHeader({
                       )
                     }
                     style={({ pressed }) => ({
-                      minHeight: 42,
-
-                      paddingHorizontal: 12,
-
-                      flexDirection: 'row',
-                      alignItems: 'center',
-
-                      gap: 7,
-
-                      borderRadius:
-                        borderRadius.pill,
-
-                      backgroundColor:
-                        active
-                          ? theme.bgSoft
-                          : 'transparent',
-
-                      opacity:
-                        pressed
-                          ? 0.8
-                          : 1,
+                      opacity: pressed ? 0.8 : 1,
+                      ...educatorHeaderStyles.navItem,
+                      ...(active ? educatorHeaderStyles.navItemActive : {}),
                     })}
                   >
                     {item.icon}
 
-                    <Text
-                      style={{
-                        color: active
-                          ? theme.primary
-                          : theme.textMuted,
-
-                        fontFamily:
-                          active
-                            ? fonts.bodyBold
-                            : fonts.bodyRegular,
-
-                        fontSize: 13,
-                      }}
-                    >
+                    <Text style={[educatorHeaderStyles.navItemText, active ? educatorHeaderStyles.navItemTextActive : undefined]}>
                       {item.label}
                     </Text>
                   </Pressable>
                 );
               })}
 
-              <IconButton
-                accessibilityLabel="Notificações"
-                accessibilityHint="Mostra as notificações recentes"
-                badge={unreadNotificationsCount}
-                variant="soft"
-                icon={
-                  <Bell
-                    size={20}
-                    color={theme.primary}
-                  />
-                }
-                onPress={toggleNotifications}
-              />
+            <IconButton
+              accessibilityLabel={EDUCATOR_HEADER_COPY.notificationsLabel}
+              accessibilityHint={EDUCATOR_HEADER_COPY.notificationsHint}
+              badge={unreadNotificationsCount}
+              variant="soft"
+              icon={
+                <Bell
+                  size={20}
+                  color={theme.primary}
+                />
+              }
+              onPress={toggleNotifications}
+            />
           </View>
         )}
 
         {/* Ações tablet e mobile */}
 
         {compact && (
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-
-              gap: 7,
-            }}
-          >
+          <View style={educatorHeaderStyles.mobileActions}>
             <IconButton
-              accessibilityLabel="Notificações"
-              accessibilityHint="Abre a Central de Notificações"
+              accessibilityLabel={EDUCATOR_HEADER_COPY.notificationsLabel}
+              accessibilityHint={EDUCATOR_HEADER_COPY.mobileNotificationsHint}
               badge={unreadNotificationsCount}
               variant="soft"
               size={
@@ -632,8 +366,8 @@ export default function EducatorHeader({
             <IconButton
               accessibilityLabel={
                 mobileMenuOpen
-                  ? 'Fechar menu'
-                  : 'Abrir menu'
+                  ? EDUCATOR_HEADER_COPY.mobileMenuCloseLabel
+                  : EDUCATOR_HEADER_COPY.mobileMenuLabel
               }
               accessibilityHint="Mostra as áreas do Portal do Professor"
               variant="soft"
@@ -670,47 +404,8 @@ export default function EducatorHeader({
       {/* Menu compacto */}
 
       {mobileMenuOpen && (
-        <View
-          style={{
-            position: 'absolute',
-
-            top:
-              totalHeaderHeight + 8,
-
-            right:
-              mobile ? 12 : 20,
-
-            zIndex: 110,
-
-            width: mobile
-              ? Math.min(
-                  width - 24,
-                  310
-                )
-              : 320,
-
-            overflow: 'hidden',
-
-            borderWidth: 1,
-
-            borderColor:
-              theme.border,
-
-            borderRadius:
-              borderRadius.xxl,
-
-            backgroundColor:
-              theme.card,
-
-            ...theme.shadowCard,
-          }}
-        >
-          <View
-            style={{
-              padding: 10,
-              gap: 4,
-            }}
-          >
+        <View style={[educatorHeaderStyles.panel, { top: totalHeaderHeight + 8, right: mobile ? 12 : 20, width: mobile ? Math.min(width - 24, 310) : 320 }]}>
+          <View style={educatorHeaderStyles.panelContent}>
             {menuItems.map(
               (item) => {
                 const active =
@@ -730,47 +425,14 @@ export default function EducatorHeader({
                       )
                     }
                     style={({ pressed }) => ({
-                      minHeight: 48,
-
-                      paddingHorizontal: 13,
-
-                      flexDirection: 'row',
-                      alignItems: 'center',
-
-                      gap: 11,
-
-                      borderRadius:
-                        borderRadius.lg,
-
-                      backgroundColor:
-                        active
-                          ? theme.bgSoft
-                          : 'transparent',
-
-                      opacity:
-                        pressed
-                          ? 0.78
-                          : 1,
+                      opacity: pressed ? 0.78 : 1,
+                      ...educatorHeaderStyles.panelItem,
+                      ...(active ? educatorHeaderStyles.panelItemActive : {}),
                     })}
                   >
                     {item.icon}
 
-                    <Text
-                      style={{
-                        flex: 1,
-
-                        color: active
-                          ? theme.primary
-                          : theme.textDark,
-
-                        fontFamily:
-                          active
-                            ? fonts.bodyBold
-                            : fonts.bodyRegular,
-
-                        fontSize: 14,
-                      }}
-                    >
+                    <Text style={[educatorHeaderStyles.panelItemText, active ? educatorHeaderStyles.panelItemTextActive : undefined]}>
                       {item.label}
                     </Text>
                   </Pressable>
@@ -784,84 +446,15 @@ export default function EducatorHeader({
       {/* Prévia desktop das notificações */}
 
       {notificationsOpen && (
-        <View
-          style={{
-            position: 'absolute',
-
-            top:
-            totalHeaderHeight + 8,
-
-            right: 20,
-
-            zIndex: 110,
-
-            width: 390,
-
-            overflow: 'hidden',
-
-            borderWidth: 1,
-
-            borderColor:
-              theme.border,
-
-            borderRadius:
-              borderRadius.xxl,
-
-            backgroundColor:
-              theme.card,
-
-            ...theme.shadowCard,
-          }}
-        >
-          <View
-            style={{
-              paddingHorizontal: 17,
-              paddingTop: 16,
-              paddingBottom: 12,
-
-              flexDirection: 'row',
-              alignItems: 'center',
-
-              justifyContent:
-                'space-between',
-
-              gap: 12,
-
-              borderBottomWidth: 1,
-
-              borderBottomColor:
-                theme.border,
-            }}
-          >
+        <View style={[educatorHeaderStyles.panel, educatorHeaderStyles.notificationPanel, { top: totalHeaderHeight + 8, right: 20 }]}>
+          <View style={educatorHeaderStyles.notificationHeader}>
             <View>
-              <Text
-                style={{
-                  color:
-                    theme.textDark,
-
-                  fontFamily:
-                    fonts.headlineSemibold,
-
-                  fontSize: 15,
-                }}
-              >
-                Notificações
+              <Text style={educatorHeaderStyles.notificationHeaderTitle}>
+                {EDUCATOR_HEADER_COPY.notificationsTitle}
               </Text>
 
-              <Text
-                style={{
-                  marginTop: 3,
-
-                  color:
-                    theme.textMuted,
-
-                  fontFamily:
-                    fonts.bodyRegular,
-
-                  fontSize: 11,
-                }}
-              >
-                Eventos recentes
+              <Text style={educatorHeaderStyles.notificationHeaderSubtitle}>
+                {EDUCATOR_HEADER_COPY.notificationsSubtitle}
               </Text>
             </View>
 
@@ -887,15 +480,8 @@ export default function EducatorHeader({
 
           <View>
             {notificationPreview.length ===
-            0 ? (
-              <View
-                style={{
-                  paddingHorizontal: 20,
-                  paddingVertical: 28,
-
-                  alignItems: 'center',
-                }}
-              >
+              0 ? (
+              <View style={educatorHeaderStyles.emptyState}>
                 <Bell
                   size={24}
                   color={
@@ -903,41 +489,12 @@ export default function EducatorHeader({
                   }
                 />
 
-                <Text
-                  style={{
-                    marginTop: 10,
-
-                    color:
-                      theme.textDark,
-
-                    fontFamily:
-                      fonts.headlineSemibold,
-
-                    fontSize: 14,
-
-                    textAlign: 'center',
-                  }}
-                >
-                  Nenhuma notificação
+                <Text style={educatorHeaderStyles.emptyStateTitle}>
+                  {EDUCATOR_HEADER_COPY.emptyStateTitle}
                 </Text>
 
-                <Text
-                  style={{
-                    marginTop: 5,
-
-                    color:
-                      theme.textMuted,
-
-                    fontFamily:
-                      fonts.bodyRegular,
-
-                    fontSize: 12,
-
-                    textAlign: 'center',
-                  }}
-                >
-                  Os novos eventos aparecerão
-                  aqui.
+                <Text style={educatorHeaderStyles.emptyStateSubtitle}>
+                  {EDUCATOR_HEADER_COPY.emptyStateSubtitle}
                 </Text>
               </View>
             ) : (
@@ -965,95 +522,26 @@ export default function EducatorHeader({
                         onOpenAllNotifications?.();
                       }}
                       style={({ pressed }) => ({
-                        paddingHorizontal: 17,
-                        paddingVertical: 14,
-
-                        borderTopWidth:
-                          index === 0
-                            ? 0
-                            : 1,
-
-                        borderTopColor:
-                          theme.border,
-
-                        backgroundColor:
-                          notification.read
-                            ? theme.card
-                            : theme.bgSoft,
-
-                        opacity:
-                          pressed
-                            ? 0.8
-                            : 1,
+                        opacity: pressed ? 0.8 : 1,
+                        ...educatorHeaderStyles.notificationItem,
+                        ...(notification.read ? {} : educatorHeaderStyles.notificationItemUnread),
+                        borderTopWidth: index === 0 ? 0 : 1,
+                        borderTopColor: theme.border,
                       })}
                     >
-                      <View
-                        style={{
-                          flexDirection:
-                            'row',
-
-                          alignItems:
-                            'flex-start',
-
-                          gap: 9,
-                        }}
-                      >
+                      <View style={educatorHeaderStyles.notificationItemRow}>
                         {!notification.read && (
-                          <View
-                            style={{
-                              width: 8,
-                              height: 8,
-
-                              marginTop: 5,
-
-                              flexShrink: 0,
-
-                              borderRadius: 4,
-
-                              backgroundColor:
-                                theme.warning,
-                            }}
-                          />
+                          <View style={educatorHeaderStyles.notificationItemBadge} />
                         )}
 
-                        <View
-                          style={{
-                            flex: 1,
-                            minWidth: 0,
-                          }}
-                        >
-                          <Text
-                            numberOfLines={1}
-                            style={{
-                              color:
-                                theme.textDark,
-
-                              fontFamily:
-                                fonts.bodyBold,
-
-                              fontSize: 13,
-                            }}
-                          >
+                        <View style={educatorHeaderStyles.notificationItemContent}>
+                          <Text numberOfLines={1} style={educatorHeaderStyles.notificationItemText}>
                             {
                               notification.title
                             }
                           </Text>
 
-                          <Text
-                            numberOfLines={2}
-                            style={{
-                              marginTop: 4,
-
-                              color:
-                                theme.textMuted,
-
-                              fontFamily:
-                                fonts.bodyRegular,
-
-                              fontSize: 12,
-                              lineHeight: 17,
-                            }}
-                          >
+                          <Text numberOfLines={2} style={educatorHeaderStyles.notificationItemDescription}>
                             {
                               notification.description
                             }
@@ -1078,35 +566,12 @@ export default function EducatorHeader({
                 onOpenAllNotifications();
               }}
               style={({ pressed }) => ({
-                minHeight: 48,
-
-                alignItems: 'center',
-                justifyContent: 'center',
-
-                borderTopWidth: 1,
-
-                borderTopColor:
-                  theme.border,
-
-                backgroundColor:
-                  theme.card,
-
-                opacity:
-                  pressed ? 0.78 : 1,
+                opacity: pressed ? 0.78 : 1,
+                ...educatorHeaderStyles.footerButton,
               })}
             >
-              <Text
-                style={{
-                  color:
-                    theme.primary,
-
-                  fontFamily:
-                    fonts.bodyBold,
-
-                  fontSize: 13,
-                }}
-              >
-                Ver todas as notificações
+              <Text style={educatorHeaderStyles.footerButtonText}>
+                {EDUCATOR_HEADER_COPY.viewAllLabel}
               </Text>
             </Pressable>
           )}

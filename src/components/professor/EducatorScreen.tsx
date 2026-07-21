@@ -1,39 +1,9 @@
-import { theme } from '@/constants/theme';
-import {
-    type ReactNode,
-} from 'react';
-import {
-    type StyleProp,
-    useWindowDimensions,
-    View,
-    type ViewStyle,
-} from 'react-native';
-import {
-    useSafeAreaInsets,
-} from 'react-native-safe-area-context';
-import {
-    getHeaderHeight,
-} from '../../constants/professor/prof_Layout';
-import EducatorHeader, {
-    type HeaderDestination,
-    type HeaderNotificationPreview,
-} from './EducatorHeader';
-
-export interface EducatorScreenProps {
-  children: ReactNode;
-  educatorName: string;
-  headerSubtitle?: string;
-  currentDestination?: HeaderDestination;
-  unreadNotificationsCount?: number;
-  notificationPreview?: HeaderNotificationPreview[];
-  onOpenDashboard: () => void;
-  onOpenActivities: () => void;
-  onOpenCorrectionQueue: () => void;
-  onOpenReports: () => void;
-  onOpenProfile: () => void;
-  onOpenAllNotifications?: () => void;
-  style?: StyleProp<ViewStyle>;
-}
+import { educatorScreenStyles } from '@/styles/professor/educatorScreen';
+import type { EducatorScreenProps } from '@/types/professor/educatorScreen';
+import { useWindowDimensions, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { getHeaderHeight } from '../../constants/professor/prof_Layout';
+import EducatorHeader from './EducatorHeader';
 
 export default function EducatorScreen({
   children,
@@ -64,17 +34,7 @@ export default function EducatorScreen({
     insets.top;
 
   return (
-    <View
-      style={[
-        {
-          flex: 1,
-
-          backgroundColor:
-            theme.bgSubtle,
-        },
-        style,
-      ]}
-    >
+    <View style={[educatorScreenStyles.container, style]}> 
     <EducatorHeader
         educatorName={educatorName}
         subtitle={headerSubtitle}
@@ -107,14 +67,7 @@ export default function EducatorScreen({
         }
     />
 
-      <View
-        style={{
-          flex: 1,
-
-          marginTop:
-            totalHeaderHeight,
-        }}
-      >
+      <View style={[educatorScreenStyles.content, { marginTop: totalHeaderHeight }]}> 
         {children}
       </View>
     </View>

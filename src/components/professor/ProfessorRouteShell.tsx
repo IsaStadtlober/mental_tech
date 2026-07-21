@@ -1,16 +1,13 @@
 import { useProfessorPrototype } from '@/hooks/professor/useProfessorPrototype';
+import { PROFESSOR_ROUTES } from '@/router/professor.routes';
+import type { ProfessorRouteShellProps } from '@/types/professor/professorRouteShell';
 import { useRouter } from 'expo-router';
-import type { ReactNode } from 'react';
-import type { HeaderDestination } from './EducatorHeader';
 import EducatorScreen from './EducatorScreen';
 
 export function ProfessorRouteShell({
   children,
   currentDestination = 'dashboard',
-}: {
-  children: ReactNode;
-  currentDestination?: HeaderDestination;
-}) {
+}: ProfessorRouteShellProps) {
   const router = useRouter();
   const { notifications } = useProfessorPrototype();
 
@@ -19,18 +16,14 @@ export function ProfessorRouteShell({
       educatorName="Professor"
       headerSubtitle="Escola Caminho do Saber · 5º Ano A"
       currentDestination={currentDestination}
-      unreadNotificationsCount={
-        notifications.filter((item) => !item.read).length
-      }
+      unreadNotificationsCount={notifications.filter((item) => !item.read).length}
       notificationPreview={notifications.slice(0, 3)}
-      onOpenDashboard={() => router.push('/(professor)/dashboard' as any)}
-      onOpenActivities={() => router.push('/(professor)/atividades' as any)}
-      onOpenCorrectionQueue={() => router.push('/(professor)/correcoes' as any)}
-      onOpenReports={() => router.push('/(professor)/relatorios' as any)}
-      onOpenProfile={() => router.push('/(professor)/perfil' as any)}
-      onOpenAllNotifications={() =>
-        router.push('/(professor)/notificacoes' as any)
-      }
+      onOpenDashboard={() => router.push(PROFESSOR_ROUTES.DASHBOARD as any)}
+      onOpenActivities={() => router.push(PROFESSOR_ROUTES.ACTIVITIES as any)}
+      onOpenCorrectionQueue={() => router.push(PROFESSOR_ROUTES.CORRECTIONS as any)}
+      onOpenReports={() => router.push(PROFESSOR_ROUTES.REPORTS as any)}
+      onOpenProfile={() => router.push(PROFESSOR_ROUTES.PROFILE as any)}
+      onOpenAllNotifications={() => router.push(PROFESSOR_ROUTES.NOTIFICATIONS as any)}
     >
       {children}
     </EducatorScreen>

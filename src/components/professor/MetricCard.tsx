@@ -1,34 +1,8 @@
-import { borderRadius, fonts, theme } from '@/constants/theme';
-import type {
-  ReactNode,
-} from 'react';
-import {
-  Pressable,
-  type StyleProp,
-  Text,
-  View,
-  type ViewStyle,
-} from 'react-native';
-
-export type MetricCardTone =
-  | 'primary'
-  | 'success'
-  | 'warning'
-  | 'danger'
-  | 'info';
-
-export interface MetricCardProps {
-  label: string;
-  value: number | string;
-  helper?: string;
-
-  tone?: MetricCardTone;
-  icon?: ReactNode;
-
-  onPress?: () => void;
-
-  style?: StyleProp<ViewStyle>;
-}
+import { theme } from '@/constants/theme';
+import { metricCardStyles } from '@/styles/professor/metricCard';
+import type { MetricCardProps } from '@/types/professor/metricCard';
+import { getMetricCardToneConfig } from '@/utils/professor/metricCard';
+import { Pressable, Text, View } from 'react-native';
 
 export default function MetricCard({
   label,
@@ -39,155 +13,29 @@ export default function MetricCard({
   onPress,
   style,
 }: MetricCardProps) {
-  const tones = {
-    primary: {
-      foreground:
-        theme.primary,
+  const selectedTone = getMetricCardToneConfig(tone);
 
-      background:
-        theme.primaryTint,
-    },
-
-    success: {
-      foreground:
-        theme.success,
-
-      background:
-        theme.successSoft,
-    },
-
-    warning: {
-      foreground:
-        theme.warning,
-
-      background:
-        theme.warningSoft,
-    },
-
-    danger: {
-      foreground:
-        theme.danger,
-
-      background:
-        theme.dangerSoft,
-    },
-
-    info: {
-      foreground:
-        theme.info,
-
-      background:
-        theme.infoSoft,
-    },
-  } as const;
-
-  const selectedTone =
-    tones[tone];
-
-  const cardStyle:
-    StyleProp<ViewStyle> = [
-    {
-      flexGrow: 1,
-      flexShrink: 1,
-      flexBasis: 210,
-
-      minWidth: 210,
-      minHeight: 148,
-
-      justifyContent:
-        'space-between',
-
-      padding: 20,
-
-      borderWidth: 1,
-      borderColor:
-        theme.border,
-
-      borderRadius:
-        borderRadius.xxl,
-
-      backgroundColor:
-        theme.card,
-    },
-
+  const cardStyle = [
+    metricCardStyles.card,
     theme.shadowCard,
-
     style,
   ];
 
   const content = (
     <>
-      <View
-        style={{
-          flexDirection: 'row',
-
-          alignItems:
-            'flex-start',
-
-          justifyContent:
-            'space-between',
-
-          gap: 12,
-        }}
-      >
-        <View
-          style={{
-            flex: 1,
-            minWidth: 0,
-          }}
-        >
-          <Text
-            style={{
-              color:
-                theme.textMuted,
-
-              fontFamily:
-                fonts.bodyRegular,
-
-              fontSize: 13,
-              lineHeight: 18,
-            }}
-          >
-            {label}
-          </Text>
-
-          <Text
-            style={{
-              marginTop: 9,
-
-              color:
-                theme.textDark,
-
-              fontFamily:
-                fonts.headlineBold,
-
-              fontSize: 30,
-              lineHeight: 36,
-            }}
-          >
-            {value}
-          </Text>
+      <View style={metricCardStyles.header}>
+        <View style={metricCardStyles.content}>
+          <Text style={metricCardStyles.label}>{label}</Text>
+          <Text style={metricCardStyles.value}>{value}</Text>
         </View>
 
         {!!icon && (
           <View
             pointerEvents="none"
-            style={{
-              width: 42,
-              height: 42,
-
-              flexShrink: 0,
-
-              alignItems: 'center',
-              justifyContent:
-                'center',
-
-              borderRadius: 14,
-
-              backgroundColor:
-                selectedTone
-                  .background,
-            }}
+            style={[
+              metricCardStyles.iconWrapper,
+              { backgroundColor: selectedTone.background },
+            ]}
           >
             {icon}
           </View>
@@ -195,21 +43,7 @@ export default function MetricCard({
       </View>
 
       {!!helper && (
-        <Text
-          style={{
-            marginTop: 10,
-
-            color:
-              selectedTone
-                .foreground,
-
-            fontFamily:
-              fonts.bodyBold,
-
-            fontSize: 12,
-            lineHeight: 17,
-          }}
-        >
+        <Text style={[metricCardStyles.helper, { color: selectedTone.foreground }]}>
           {helper}
         </Text>
       )}
@@ -220,21 +54,10 @@ export default function MetricCard({
     return (
       <Pressable
         accessibilityRole="button"
-        accessibilityLabel={
-          `${label}: ${value}`
-        }
-        accessibilityHint={
-          helper
-        }
+        accessibilityLabel={`${label}: ${value}`}
+        accessibilityHint={helper}
         onPress={onPress}
-        style={({ pressed }) => [
-          cardStyle,
-
-          {
-            opacity:
-              pressed ? 0.86 : 1,
-          },
-        ]}
+        style={({ pressed }) => [cardStyle, { opacity: pressed ? 0.86 : 1 }]}
       >
         {content}
       </Pressable>
@@ -242,13 +65,7 @@ export default function MetricCard({
   }
 
   return (
-    <View
-      accessibilityRole="text"
-      accessibilityLabel={
-        `${label}: ${value}`
-      }
-      style={cardStyle}
-    >
+    <View accessibilityRole="text" accessibilityLabel={`${label}: ${value}`} style={cardStyle}>
       {content}
     </View>
   );

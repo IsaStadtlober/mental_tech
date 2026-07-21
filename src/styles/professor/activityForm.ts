@@ -1,0 +1,327 @@
+import { borderRadius, fonts, theme } from '@/constants/theme';
+import { StyleSheet } from 'react-native';
+
+export const activityFormStyles = StyleSheet.create({
+    page: {
+        flex: 1,
+        backgroundColor: theme.bgSubtle,
+    },
+    screenContainer: {
+        width: '100%',
+        maxWidth: 1100,
+        alignSelf: 'center',
+    },
+    contentContainer: {
+        paddingTop: 28,
+        paddingBottom: 64,
+    },
+    backButton: {
+        marginBottom: 20,
+    },
+    banner: {
+        marginTop: 18,
+        padding: 14,
+        borderWidth: 1,
+        borderColor: theme.info,
+        borderRadius: borderRadius.lg,
+        backgroundColor: theme.infoSoft,
+    },
+    bannerTitle: {
+        color: theme.info,
+        fontFamily: fonts.bodyBold,
+        fontSize: 13,
+    },
+    bannerSubtitle: {
+        marginTop: 4,
+        color: theme.textMuted,
+        fontFamily: fonts.bodyRegular,
+        fontSize: 12,
+        lineHeight: 18,
+    },
+    layout: {
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        gap: 20,
+        marginTop: 24,
+    },
+    layoutCompact: {
+        flexDirection: 'column',
+    },
+    mainColumn: {
+        flex: 1.3,
+        gap: 20,
+    },
+    mainColumnCompact: {
+        width: '100%',
+    },
+    sideColumn: {
+        flex: 1,
+    },
+    sideColumnCompact: {
+        width: '100%',
+    },
+    sectionHeaderSpacing: {
+        marginBottom: 20,
+    },
+    fieldLabel: {
+        color: theme.textDark,
+        fontFamily: fonts.bodyBold,
+        fontSize: 13,
+        marginBottom: 7,
+    },
+    fieldLabelTop: {
+        marginTop: 18,
+    },
+    textInput: {
+        minHeight: 48,
+        paddingHorizontal: 15,
+        color: theme.textDark,
+        fontFamily: fonts.bodyRegular,
+        fontSize: 14,
+        borderWidth: 1,
+        borderColor: theme.border,
+        borderRadius: borderRadius.lg,
+        backgroundColor: theme.bgSubtle,
+    },
+    textInputInvalid: {
+        borderColor: theme.danger,
+    },
+    textArea: {
+        minHeight: 112,
+        paddingHorizontal: 15,
+        paddingVertical: 13,
+        color: theme.textDark,
+        fontFamily: fonts.bodyRegular,
+        fontSize: 14,
+        borderWidth: 1,
+        borderColor: theme.border,
+        borderRadius: borderRadius.lg,
+        backgroundColor: theme.bgSubtle,
+    },
+    textAreaInvalid: {
+        borderColor: theme.danger,
+    },
+    helperText: {
+        marginTop: 7,
+        alignSelf: 'flex-end',
+        color: theme.textFaint,
+        fontFamily: fonts.bodyRegular,
+        fontSize: 12,
+    },
+    attachmentCard: {
+        padding: 22,
+        alignItems: 'center',
+        borderWidth: 2,
+        borderStyle: 'dashed',
+        borderColor: theme.teal,
+        borderRadius: borderRadius.xl,
+        backgroundColor: theme.bgSubtle,
+    },
+    attachmentTitle: {
+        color: theme.textDark,
+        fontFamily: fonts.bodyBold,
+        fontSize: 14,
+        textAlign: 'center',
+    },
+    attachmentHint: {
+        marginTop: 5,
+        color: theme.textMuted,
+        fontFamily: fonts.bodyRegular,
+        fontSize: 12,
+        textAlign: 'center',
+    },
+    badgeRow: {
+        marginTop: 16,
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'center',
+        gap: 8,
+    },
+    badgeChip: {
+        paddingHorizontal: 13,
+        paddingVertical: 8,
+        borderWidth: 1,
+        borderColor: theme.border,
+        borderRadius: borderRadius.pill,
+        backgroundColor: theme.card,
+    },
+    badgeChipSelected: {
+        borderColor: theme.primary,
+        backgroundColor: theme.primary,
+    },
+    badgeChipText: {
+        color: theme.textMuted,
+        fontFamily: fonts.bodyBold,
+        fontSize: 12,
+    },
+    badgeChipTextSelected: {
+        color: theme.white,
+    },
+    attachmentSummary: {
+        marginTop: 14,
+        padding: 13,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: 12,
+        borderRadius: borderRadius.lg,
+        backgroundColor: theme.bgSoft,
+    },
+    attachmentSummaryContent: {
+        flex: 1,
+        minWidth: 0,
+    },
+    attachmentSummaryName: {
+        color: theme.primary,
+        fontFamily: fonts.bodyBold,
+        fontSize: 13,
+    },
+    attachmentSummarySubtitle: {
+        marginTop: 3,
+        color: theme.textMuted,
+        fontFamily: fonts.bodyRegular,
+        fontSize: 11,
+    },
+    audienceRow: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: 8,
+    },
+    audienceChip: {
+        paddingHorizontal: 12,
+        paddingVertical: 8,
+        borderWidth: 1,
+        borderColor: theme.border,
+        borderRadius: borderRadius.pill,
+        backgroundColor: theme.card,
+    },
+    audienceChipSelected: {
+        borderColor: theme.primary,
+        backgroundColor: theme.primary,
+    },
+    audienceChipText: {
+        color: theme.textMuted,
+        fontFamily: fonts.bodyBold,
+        fontSize: 12,
+    },
+    audienceChipTextSelected: {
+        color: theme.white,
+    },
+    studentSelectionCard: {
+        marginTop: 18,
+        padding: 16,
+        borderWidth: 1,
+        borderColor: theme.infoSoft,
+        borderRadius: borderRadius.xl,
+        backgroundColor: theme.bgSubtle,
+    },
+    studentSelectionCardInvalid: {
+        borderColor: theme.warning,
+    },
+    studentSelectionTitle: {
+        color: theme.textDark,
+        fontFamily: fonts.bodyBold,
+        fontSize: 13,
+    },
+    studentSelectionSubtitle: {
+        marginTop: 4,
+        color: theme.textMuted,
+        fontFamily: fonts.bodyRegular,
+        fontSize: 12,
+        lineHeight: 18,
+    },
+    studentSelectionRow: {
+        marginTop: 13,
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: 8,
+    },
+    studentOption: {
+        minHeight: 42,
+        paddingHorizontal: 13,
+        paddingVertical: 8,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderWidth: 1,
+        borderColor: theme.border,
+        borderRadius: borderRadius.pill,
+        backgroundColor: theme.card,
+    },
+    studentOptionSelected: {
+        borderColor: theme.primary,
+        backgroundColor: theme.primary,
+    },
+    studentOptionText: {
+        color: theme.textMuted,
+        fontFamily: fonts.bodyBold,
+        fontSize: 12,
+    },
+    studentOptionTextSelected: {
+        color: theme.white,
+    },
+    studentOptionSubtext: {
+        marginTop: 2,
+        color: theme.textFaint,
+        fontFamily: fonts.bodyRegular,
+        fontSize: 10,
+    },
+    studentOptionSubtextSelected: {
+        color: theme.white,
+    },
+    studentSelectionState: {
+        marginTop: 12,
+        fontFamily: fonts.bodyBold,
+        fontSize: 12,
+    },
+    studentSelectionStateValid: {
+        color: theme.success,
+    },
+    studentSelectionStateInvalid: {
+        color: theme.warning,
+    },
+    rewardRow: {
+        gap: 8,
+    },
+    rewardOption: {
+        padding: 13,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: 12,
+        borderWidth: 1,
+        borderColor: theme.border,
+        borderRadius: borderRadius.lg,
+        backgroundColor: theme.card,
+    },
+    rewardOptionSelected: {
+        borderColor: theme.primary,
+        backgroundColor: theme.bgSoft,
+    },
+    rewardOptionText: {
+        flex: 1,
+        color: theme.textDark,
+        fontFamily: fonts.bodyBold,
+        fontSize: 13,
+    },
+    validationCard: {
+        marginTop: 20,
+        padding: 14,
+        borderRadius: borderRadius.lg,
+        backgroundColor: theme.warningSoft,
+    },
+    validationText: {
+        color: theme.warning,
+        fontFamily: fonts.bodyBold,
+        fontSize: 13,
+        lineHeight: 19,
+    },
+    actionsRow: {
+        width: '100%',
+        marginTop: 24,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexWrap: 'wrap',
+        gap: 12,
+    },
+});

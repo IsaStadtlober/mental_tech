@@ -7,7 +7,7 @@ import {
     getActivityEmptyStateConfig,
     getPendingCorrectionsCount as getActivityPendingCorrectionsCount,
     getFilteredActivities,
-} from '@/utils/activities';
+} from '@/utils/professor/activities';
 
 export function useActivitiesScreen(activities: Activity[]) {
     const [query, setQuery] = useState('');

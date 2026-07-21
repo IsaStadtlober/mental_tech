@@ -6,7 +6,7 @@ import {
     getDashboardMetricConfig,
     getPendingCorrectionsCount,
     getPublishedActivitiesCount,
-} from '@/utils/dashboard';
+} from '@/utils/professor/dashboard';
 
 export function useEducatorDashboard(activities: Activity[], submissions: Submission[]) {
     const pendingCorrectionsCount = useMemo(

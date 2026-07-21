@@ -10,7 +10,7 @@ import {
     getAttachmentTypeLabel,
     getDownloadMessage,
     getPendingCorrectionsCount,
-} from '@/utils/activities';
+} from '@/utils/professor/activities';
 
 export function useActivityDetail(activity: Activity) {
     const [downloadMessage, setDownloadMessage] = useState('');

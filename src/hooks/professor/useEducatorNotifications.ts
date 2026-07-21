@@ -7,7 +7,7 @@ import {
     filterNotifications,
     getNotificationActionLabel,
     getNotificationCategoryIcon,
-} from '@/utils/notifications';
+} from '@/utils/professor/notifications';
 
 export function useEducatorNotifications(notifications: EducatorNotification[]) {
     const [filter, setFilter] = useState<NotificationFilter>('all');

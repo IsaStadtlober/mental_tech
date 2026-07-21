@@ -10,7 +10,7 @@ import { useProfessorPrototype } from '@/hooks/professor/useProfessorPrototype';
 import { PROFESSOR_ROUTES } from '@/router/professor.routes';
 import { correctionsStyles } from '@/styles/professor/corrections';
 import type { CorrectionScreenProps } from '@/types/professor/corrections';
-import { getAttachmentTypeLabel } from '@/utils/corrections';
+import { getAttachmentTypeLabel } from '@/utils/professor/corrections';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Download } from 'lucide-react-native';
 import { useState } from 'react';

@@ -8,7 +8,7 @@ import {
     getStudentMetrics,
     getStudentPedagogyMessage,
     getStudentTrailPercentage,
-} from '@/utils/students';
+} from '@/utils/professor/students';
 
 export function useStudentProfile(student: StudentProfile) {
     const metrics = useMemo(() => getStudentMetrics(student), [student]);

@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 
 import { PROFESSOR_REPORTS_MESSAGES, REPORT_MODES, REPORT_PERIODS } from '@/constants/professor/professor';
 import type { Activity, ReportMode, ReportPeriod, ReportSummary, Submission } from '@/types/professor';
-import { getReportSummary } from '@/utils/reports';
+import { getReportSummary } from '@/utils/professor/reports';
 
 export function useEducatorReports(activities: Activity[], submissions: Submission[]) {
     const [mode, setMode] = useState<ReportMode>('class');

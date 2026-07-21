@@ -2,6 +2,7 @@ import type { Activity, EducatorNotification, EducatorStudentOption, Submission 
 import type { ActivityFormData } from '@/types/professor/activityForm';
 import { createContext, type ReactNode, useContext, useMemo, useState } from 'react';
 
+// Dados simulados para o protótipo.
 const students: EducatorStudentOption[] = [
   { id: 'student-1', name: 'Carlos Lima', className: '5º Ano A' },
   { id: 'student-2', name: 'Maria Souza', className: '5º Ano B' },
@@ -9,6 +10,7 @@ const students: EducatorStudentOption[] = [
   { id: 'student-4', name: 'Ana Clara', className: '5º Ano A' },
 ];
 
+// Dados simulados para o protótipo.
 const initialActivities: Activity[] = [
   {
     id: 'activity-1',
@@ -158,6 +160,7 @@ export function ProfessorPrototypeProvider({ children }: { children: ReactNode }
   const [submissions, setSubmissions] = useState(initialSubmissions);
   const [notifications, setNotifications] = useState(initialNotifications);
 
+  // Mock de dados e ações para protótipo da área do professor.
   const value = useMemo<ProfessorPrototypeValue>(
     () => ({
       activities,

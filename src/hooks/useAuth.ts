@@ -1,9 +1,9 @@
 import { supabase } from "@/service/supabase";
 import type {
-    ClassData,
-    SchoolOnboardingData,
-    StudentData,
-    TeacherData,
+  ClassData,
+  SchoolOnboardingData,
+  StudentData,
+  TeacherData,
 } from "@/types/wizard";
 import { useState } from "react";
 
@@ -52,7 +52,7 @@ export function useAuth() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  //Logar como Escola e salvar dados completos da instituição
+  // Loga a escola e insere o perfil e os dados da instituição no banco.
   async function signUpSchool(schoolData: SchoolSignUpPayload) {
     setLoading(true);
     setError(null);

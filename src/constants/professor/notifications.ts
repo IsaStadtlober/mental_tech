@@ -3,6 +3,7 @@ import type { NotificationCategory } from '@/types/professor';
 import type { NotificationFilter } from '@/types/professor/notifications';
 import type { StatusChipTone } from '@/types/professor/statusChip';
 
+// Filtros de notificação.
 export const NOTIFICATION_FILTERS: { value: NotificationFilter; label: string }[] = [
     { value: 'all', label: 'Todas' },
     { value: 'unread', label: 'Não lidas' },
@@ -12,6 +13,7 @@ export const NOTIFICATION_FILTERS: { value: NotificationFilter; label: string }[
     { value: 'system', label: 'Sistema' },
 ];
 
+// Categorias de notificação.
 export const NOTIFICATION_CATEGORY_CONFIG: Record<
     NotificationCategory,
     {

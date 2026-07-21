@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-
 import { STUDENT_PROFILE_MESSAGES } from '@/constants/professor/students';
 import type { StudentProfile, StudentProfileStatus } from '@/types/professor';
 import {
@@ -10,6 +9,7 @@ import {
     getStudentTrailPercentage,
 } from '@/utils/professor/students';
 
+// Funções auxiliares para gerar dados do cartão de estudante.
 export function useStudentProfile(student: StudentProfile) {
     const metrics = useMemo(() => getStudentMetrics(student), [student]);
     const historyStatusConfig = useMemo(() => getStudentHistoryStatusConfig(), []);
@@ -27,6 +27,7 @@ export function useStudentProfile(student: StudentProfile) {
     };
 }
 
+// Funções auxiliares para gerar dados do relatório.
 export function getStudentProfileStatusTone(status: StudentProfileStatus): 'success' | 'warning' | 'danger' {
     switch (status) {
         case 'engaged':

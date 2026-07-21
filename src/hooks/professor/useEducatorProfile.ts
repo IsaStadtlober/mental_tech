@@ -1,12 +1,13 @@
 import { useMemo, useState } from 'react';
-
 import { PROFESSOR_PROFILE_MESSAGES } from '@/constants/professor/professor';
 import type { EducatorProfileData } from '@/types/professor';
 
+// Valida se o formato do e-mail é válido.
 export function isValidEducatorEmail(email: string): boolean {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
 }
 
+// Retorna as iniciais do nome do professor.
 export function getProfileInitials(name: string): string {
     return (
         name
@@ -20,6 +21,7 @@ export function getProfileInitials(name: string): string {
     );
 }
 
+// Hook para gerenciar o formulário de perfil do professor. 
 export function useEducatorProfileForm(initialName: string, initialEmail: string) {
     const { personalInfo, security } = PROFESSOR_PROFILE_MESSAGES;
 

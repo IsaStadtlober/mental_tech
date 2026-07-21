@@ -1,10 +1,12 @@
 import { STUDENT_PROFILE_MESSAGES } from '@/constants/professor/students';
 import type { StudentHistoryStatusConfig, StudentProfile, StudentProfileMetricCardData, StudentProfileStatus } from '@/types/professor';
 
+// Funções auxiliares para gerar dados do cartão de estudante.
 export function getStudentTrailPercentage(trailPosition: number): number {
     return Math.min(trailPosition * 10, 100);
 }
 
+// Funções auxiliares para gerar dados do cartão de estudante.
 export function getStudentMetrics(
     student: StudentProfile,
     messages = STUDENT_PROFILE_MESSAGES,

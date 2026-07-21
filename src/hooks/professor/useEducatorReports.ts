@@ -17,11 +17,13 @@ export function useEducatorReports(activities: Activity[], submissions: Submissi
 
     const summary = useMemo<ReportSummary>(() => getReportSummary(activities, submissions, period), [activities, submissions, period]);
 
+    // Simula compartilhamento para o protótipo, sem efeito real.
     function simulateShare() {
         setExportMessage('');
         setShareMessage(messages.actions.shareSuccess);
     }
 
+    // Simula exportação para o protótipo, exibindo mensagem de sucesso.
     function simulateExport() {
         setShareMessage('');
         setExportMessage(messages.actions.exportSuccess);

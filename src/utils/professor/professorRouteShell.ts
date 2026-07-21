@@ -1,6 +1,7 @@
 import { PROFESSOR_ROUTES } from '@/router/professor.routes';
 import type { HeaderDestination } from '@/types/professor/educatorHeader';
 
+// tipo de propriedades para o shell de rota do professor.
 export function getProfessorRoutePath(destination: HeaderDestination) {
     switch (destination) {
         case 'activities':

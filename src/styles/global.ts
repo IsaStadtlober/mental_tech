@@ -1,6 +1,7 @@
 import { Platform, StyleSheet } from 'react-native';
 import { borderRadius, fonts, FRAME_H, FRAME_W, spacing, theme } from '../constants/theme';
 
+// Estilos globais para a aplicação, incluindo configurações de layout, botões, textos e outros elementos visuais.
 export const globalStyles = StyleSheet.create({
     gestureRoot: { flex: 1 },
     outerWrap: { flex: 1, backgroundColor: theme.shellBg, alignItems: 'center', justifyContent: 'center' },

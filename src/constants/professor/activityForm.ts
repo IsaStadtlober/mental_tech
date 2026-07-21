@@ -2,6 +2,7 @@ import type { FileType, RewardType } from '@/types/professor';
 
 export const ACTIVITY_FORM_AUDIENCES = ['5º Ano A', '5º Ano B', 'Alunos específicos'] as const;
 
+// Filtros de atividade.
 export const ACTIVITY_FORM_ATTACHMENT_OPTIONS: {
     label: string;
     name: string;
@@ -24,6 +25,7 @@ export const ACTIVITY_FORM_ATTACHMENT_OPTIONS: {
     },
 ];
 
+// Filtros de atividade.
 export const ACTIVITY_FORM_REWARD_OPTIONS: {
     label: string;
     type: RewardType;
@@ -48,6 +50,7 @@ export const ACTIVITY_FORM_DEFAULTS = {
     rewardType: 'medal' as RewardType,
 };
 
+// Mensagens de atividade
 export const ACTIVITY_FORM_MESSAGES = {
     backLabel: 'Atividades',
     headerTitle: 'Criar nova missão',

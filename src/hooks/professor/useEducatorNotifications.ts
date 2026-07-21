@@ -9,12 +9,15 @@ import {
     getNotificationCategoryIcon,
 } from '@/utils/professor/notifications';
 
+// Hook de estado e ações para a tela de notificações do professor.
 export function useEducatorNotifications(notifications: EducatorNotification[]) {
     const [filter, setFilter] = useState<NotificationFilter>('all');
 
+    // Contadores simples para exibir badge de não lidas / lidas.
     const unreadCount = notifications.filter((item) => !item.read).length;
     const readCount = notifications.filter((item) => item.read).length;
 
+    // Filtra notificações sempre que o filtro ou a lista mudam.
     const filteredNotifications = useMemo(() => {
         return filterNotifications(notifications, filter);
     }, [filter, notifications]);

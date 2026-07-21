@@ -15,6 +15,7 @@ import {
 export function useActivityDetail(activity: Activity) {
     const [downloadMessage, setDownloadMessage] = useState('');
 
+    // Cálculos derivativos de métricas a partir da atividade.
     const pendingCorrections = useMemo(
         () => getPendingCorrectionsCount(activity),
         [activity],

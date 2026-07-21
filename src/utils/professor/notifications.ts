@@ -6,6 +6,7 @@ import type { NotificationFilter } from '@/types/professor/notifications';
 
 type NotificationMessages = typeof import('@/constants/professor/professor').PROFESSOR_NOTIFICATIONS_MESSAGES;
 
+// Filtra notificações por todos, não lidas ou categoria.
 export function filterNotifications(
     notifications: EducatorNotification[],
     filter: NotificationFilter,
@@ -15,6 +16,7 @@ export function filterNotifications(
     return notifications.filter((item) => item.category === filter);
 }
 
+// Mapeia destino em texto de ação para exibir no botão.
 export function getNotificationActionLabel(
     notification: EducatorNotification,
     messages: NotificationMessages,

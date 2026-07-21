@@ -1,3 +1,4 @@
+// Configurações de cores e rótulos para os chips de status.
 export const STATUS_CHIP_TONES = {
     neutral: {
         background: 'bgSubtle',

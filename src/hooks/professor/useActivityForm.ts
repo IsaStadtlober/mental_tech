@@ -40,6 +40,7 @@ export function useActivityForm({ activity, initialStudentName }: UseActivityFor
         return [];
     });
 
+    // Valida os campos principais do formulário antes de salvar.
     const titleIsValid = title.trim().length > 0;
     const instructionIsValid = instruction.trim().length > 0;
     const attachmentIsValid = attachmentName.trim().length > 0;

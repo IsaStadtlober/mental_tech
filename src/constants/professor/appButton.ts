@@ -1,5 +1,6 @@
 import type { AppButtonSize, AppButtonVariant } from '@/types/professor/appButton';
 
+// Configurações de estilo do botão do aplicativo com base na variante.
 export const APP_BUTTON_VARIANTS: Record<
     AppButtonVariant,
     { background: string; hoverBackground: string; border: string; foreground: string }

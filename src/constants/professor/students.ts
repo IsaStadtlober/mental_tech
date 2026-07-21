@@ -1,5 +1,6 @@
 import type { StudentProfileStatus } from '@/types/professor/students';
 
+// Status de perfil do aluno.
 export const STUDENT_PROFILE_STATUS_CONFIG: Record<
     StudentProfileStatus,
     { label: string; tone: 'success' | 'warning' | 'danger' }
@@ -9,6 +10,7 @@ export const STUDENT_PROFILE_STATUS_CONFIG: Record<
     inactive: { label: 'Sem atividade há +7 dias', tone: 'danger' },
 };
 
+// Mensagens do perfil do aluno.
 export const STUDENT_PROFILE_MESSAGES = {
     header: {
         title: 'Perfil do aluno',

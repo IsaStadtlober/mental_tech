@@ -9,6 +9,7 @@ import type {
   WizardStepType,
 } from "../types/wizard";
 
+// Contexto do fluxo de cadastro da escola.
 interface WizardFlowContextValue {
   state: WizardFlowState;
   setStep: (step: WizardStepType) => void;
@@ -22,6 +23,7 @@ interface WizardFlowContextValue {
 
 const WizardFlowContext = createContext<WizardFlowContextValue | undefined>(undefined);
 
+// Estado inicial do fluxo de cadastro da escola.
 const initialSchoolData: SchoolOnboardingData = {
   email: "",
   password: "",
@@ -39,6 +41,7 @@ const initialSchoolData: SchoolOnboardingData = {
   state: "",
 };
 
+// Estado inicial do fluxo de cadastro da escola.
 const initialState: WizardFlowState = {
   step: 1,
   school: initialSchoolData,
@@ -47,9 +50,11 @@ const initialState: WizardFlowState = {
   students: [],
 };
 
+// Provedor do fluxo de cadastro da escola.
 export function WizardFlowProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<WizardFlowState>(initialState);
 
+  // Atualiza o passo atual do fluxo.
   const setStep = useCallback((step: WizardStepType) => {
     setState((current) => ({ ...current, step }));
   }, []);
@@ -103,6 +108,7 @@ return (
 );
 }
 
+// Hook para acessar o fluxo de cadastro da escola.
 export function useWizardFlow() {
   const context = useContext(WizardFlowContext);
 

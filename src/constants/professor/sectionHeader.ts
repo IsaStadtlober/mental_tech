@@ -1,3 +1,4 @@
+// Configurações de layout do cabeçalho da seção.
 export const SECTION_HEADER_LAYOUT = {
     compact: {
         titleFontSize: 18,

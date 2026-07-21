@@ -1,5 +1,6 @@
 import type { ActivityFormAudience } from '@/types/professor/activityForm';
 
+// Contagem de alunos.
 export function getActivityFormStudentSelectionLabel(count: number): string {
     if (count === 0) {
         return 'Selecione pelo menos um aluno.';

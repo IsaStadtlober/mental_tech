@@ -1,10 +1,12 @@
 import type { HeaderDestination } from '@/types/professor/educatorHeader';
 
+// Configurações padrão do cabeçalho do professor.
 export const EDUCATOR_HEADER_DEFAULTS = {
     subtitle: 'Escola Caminho do Saber · 5º Ano A',
     currentDestination: 'dashboard' as HeaderDestination,
 } as const;
 
+// Textos do cabeçalho do professor.
 export const EDUCATOR_HEADER_COPY = {
     profileActionLabel: 'Abrir meu perfil',
     profileActionHint: 'Abre as configurações do professor',

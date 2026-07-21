@@ -1,5 +1,6 @@
 import type { StudentHistoryItem, StudentProfile } from '@/types/professor';
 
+// Dados simulados para o protótipo.
 export const STUDENT_PROFILE_DATA: StudentProfile[] = [
     {
         id: 'student-1',

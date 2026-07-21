@@ -9,6 +9,7 @@ export function useCorrectionsScreen(submissions: Submission[]) {
     const [query, setQuery] = useState('');
     const [classFilter, setClassFilter] = useState<CorrectionFilter>('all');
 
+    // Filtra as submissões pendentes com base em busca e turma selecionada.
     const pendingSubmissions = useMemo(() => {
         return getFilteredPendingSubmissions({ submissions, query, filter: classFilter });
     }, [submissions, query, classFilter]);

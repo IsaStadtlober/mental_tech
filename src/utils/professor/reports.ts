@@ -10,6 +10,7 @@ import type {
     Submission,
 } from '@/types/professor';
 
+// Períodos de relatório com dados simulados para o protótipo.
 const classParticipationByPeriod: Record<ReportPeriod, ReportClassItem[]> = {
     '7': [
         { label: '5º Ano A', value: 82, color: theme.primary },
@@ -40,6 +41,7 @@ const attentionStudentsByPeriod: Record<ReportPeriod, ReportAttentionStudent[]> 
     ],
 };
 
+// Funções auxiliares para o protótipo.
 export function getReportPeriodLabel(period: ReportPeriod) {
     return `${period} dias`;
 }

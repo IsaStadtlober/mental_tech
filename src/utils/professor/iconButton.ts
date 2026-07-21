@@ -1,5 +1,6 @@
 import type { IconButtonSize, IconButtonVariant } from '@/types/professor/iconButton';
 
+// Configurações de estilo do botão de ícone.
 export function getIconButtonSizeConfig(size: IconButtonSize) {
     return {
         small: 40,
@@ -8,6 +9,7 @@ export function getIconButtonSizeConfig(size: IconButtonSize) {
     }[size];
 }
 
+// Configurações de estilo do botão de ícone com base na variante.
 export function getIconButtonVariantConfig(variant: IconButtonVariant) {
     return {
         plain: {

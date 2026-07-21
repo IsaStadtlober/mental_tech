@@ -2,6 +2,7 @@ import type { ActivityStatus } from '@/types/professor';
 import type { ActivityFilter } from '@/types/professor/activities';
 import type { StatusChipTone } from '@/types/professor/statusChip';
 
+// Filtros de atividade.
 export const ACTIVITY_FILTERS: { value: ActivityFilter; label: string }[] = [
     { value: 'all', label: 'Todas' },
     { value: 'published', label: 'Publicadas' },
@@ -9,6 +10,7 @@ export const ACTIVITY_FILTERS: { value: ActivityFilter; label: string }[] = [
     { value: 'closed', label: 'Encerradas' },
 ];
 
+// Status de atividade.
 export const ACTIVITY_STATUS_CONFIG: Record<
     ActivityStatus,
     { label: string; tone: StatusChipTone }
@@ -18,6 +20,7 @@ export const ACTIVITY_STATUS_CONFIG: Record<
     closed: { label: 'Encerrada', tone: 'neutral' },
 };
 
+// Mensagens de atividade.
 export const ACTIVITY_MESSAGES = {
     header: {
         title: 'Atividades',

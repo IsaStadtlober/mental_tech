@@ -14,6 +14,7 @@ export function useActivitiesScreen(activities: Activity[]) {
     const [filter, setFilter] = useState<ActivityFilter>('all');
     const [activityPendingDeletion, setActivityPendingDeletion] = useState<Activity | null>(null);
 
+    // Ativa busca e agregação de filtros da lista de atividades.
     const filteredActivities = useMemo(() => {
         return getFilteredActivities({ activities, query, filter });
     }, [activities, filter, query]);

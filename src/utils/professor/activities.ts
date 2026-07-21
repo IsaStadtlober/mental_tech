@@ -1,6 +1,7 @@
 import { ACTIVITY_MESSAGES } from '@/constants/professor/activities';
 import type { Activity, ActivityConfigurationRow, ActivityFilter, ActivityMetricCardData } from '@/types/professor';
 
+// Cálculos derivativos de métricas a partir da atividade.
 export function getPendingCorrectionsCount(activity: Activity): number {
     return Math.max(activity.submissionsCount - activity.correctedCount, 0);
 }
@@ -13,6 +14,7 @@ export function getActivityParticipation(activity: Activity): number {
     return Math.round((activity.submissionsCount / activity.studentsCount) * 100);
 }
 
+// Métricas da atividade.
 export function getActivityMetrics(
     activity: Activity,
     pendingCorrections: number,
@@ -42,6 +44,7 @@ export function getActivityMetrics(
     ];
 }
 
+// Linhas de configuração da atividade.
 export function getActivityConfigurationRows(activity: Activity): ActivityConfigurationRow[] {
     const detailMessages = ACTIVITY_MESSAGES.detail;
 
@@ -67,6 +70,7 @@ export function getActivityConfigurationRows(activity: Activity): ActivityConfig
     ];
 }
 
+// Metadados do cabeçalho da atividade.
 export function getActivityHeaderMeta(activity: Activity): string {
     return activity.dueDate
         ? `${ACTIVITY_MESSAGES.detail.deadlinePrefix} ${activity.dueDate}`
@@ -81,6 +85,7 @@ export function getDownloadMessage(activity: Activity): string {
     return `Download simulado: ${activity.attachment.name}`;
 }
 
+// Filtros da lista de atividades.
 export function getFilteredActivities({
     activities,
     query,
@@ -103,10 +108,12 @@ export function getFilteredActivities({
     });
 }
 
+// Contagem de atividades.
 export function getActivityCountLabel(count: number): string {
     return count === 1 ? ACTIVITY_MESSAGES.count.one : ACTIVITY_MESSAGES.count.many;
 }
 
+// Configuração do estado de vazio da lista de atividades.
 export function getActivityEmptyStateConfig(query: string, filter: ActivityFilter) {
     const hasQuery = Boolean(query.trim());
     const isDefaultFilter = filter === 'all';

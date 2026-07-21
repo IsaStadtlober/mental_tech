@@ -1,3 +1,4 @@
+// Mensagens do cartão do aluno.
 export const STUDENT_CARD_MESSAGES = {
     openProfileHint: 'Abre o perfil do aluno',
     correctionsLabelSingular: '1 correção',

@@ -18,6 +18,7 @@ export const sanitizeDigits = (value: string): string => {
   return value.replace(/\D/g, "");
 };
 
+// Verifica se o CNPJ possui 14 dígitos somente numéricos.
 export const isValidCnpj = (cnpj: string): boolean => {
   return /^\d{14}$/.test(sanitizeDigits(cnpj));
 };

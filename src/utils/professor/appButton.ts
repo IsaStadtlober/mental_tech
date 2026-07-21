@@ -1,5 +1,6 @@
 import type { AppButtonSize, AppButtonVariant } from '@/types/professor/appButton';
 
+// Configurações de estilo para o componente AppButton
 export function getAppButtonVariantConfig(variant: AppButtonVariant) {
     return {
         primary: {
@@ -29,6 +30,7 @@ export function getAppButtonVariantConfig(variant: AppButtonVariant) {
     }[variant];
 }
 
+// Configurações de tamanho para o componente AppButton
 export function getAppButtonSizeConfig(size: AppButtonSize) {
     return {
         small: {

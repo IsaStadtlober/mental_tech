@@ -1,3 +1,4 @@
+// Posições e dimensões padrão da bolha decorativa.
 export const DECORATIVE_BUBBLE_DEFAULTS = {
     top: -70,
     right: -40,

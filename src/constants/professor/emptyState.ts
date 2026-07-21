@@ -1,3 +1,4 @@
+// Configurações de layout do estado vazio.
 export const EMPTY_STATE_LAYOUT = {
     compact: {
         iconSize: 48,

@@ -3,6 +3,7 @@ import type { StatusChipTone } from '@/types/professor/statusChip';
 import type { StudentCardStatusConfig } from '@/types/professor/studentCard';
 import type { Student } from '@/types/professor/students';
 
+// funções auxiliares para o cartão de estudante.
 export function getStudentCardStatusConfig(student: Student): StudentCardStatusConfig {
     const statusConfig: Record<Student['engagementStatus'], { label: string; tone: StatusChipTone }> = {
         engaged: {
@@ -22,6 +23,7 @@ export function getStudentCardStatusConfig(student: Student): StudentCardStatusC
     return statusConfig[student.engagementStatus];
 }
 
+// Função auxiliar para gerar o rótulo de correções pendentes do cartão de estudante.
 export function getStudentCardCorrectionsLabel(pendingCorrections: number) {
     return pendingCorrections === 1
         ? STUDENT_CARD_MESSAGES.correctionsLabelSingular

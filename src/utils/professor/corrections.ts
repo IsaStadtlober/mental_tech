@@ -2,6 +2,7 @@ import { CORRECTION_MESSAGES } from '@/constants/professor/corrections';
 import type { CorrectionFilter } from '@/types/professor/corrections';
 import type { Submission } from '@/types/professor';
 
+// Filtra as submissões pendentes com base em busca e turma selecionada.
 export function getFilteredPendingSubmissions({
     submissions,
     query,
@@ -25,10 +26,12 @@ export function getFilteredPendingSubmissions({
     });
 }
 
+// Contagem de submissões pendentes.
 export function getPendingSubmissionsLabel(count: number): string {
     return count === 1 ? CORRECTION_MESSAGES.count.one : CORRECTION_MESSAGES.count.many;
 }
 
+// Contagem de submissões corrigidas.
 export function getAttachmentTypeLabel(type: Submission['attachment']['type']): string {
     return type === 'image' ? 'Imagem' : type === 'doc' ? 'Word' : 'PDF';
 }

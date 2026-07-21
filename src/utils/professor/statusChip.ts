@@ -2,6 +2,7 @@ import { STATUS_CHIP_TONES } from '@/constants/professor/statusChip';
 import { theme } from '@/constants/theme';
 import type { StatusChipTone } from '@/types/professor/statusChip';
 
+// Configurações de estilo do chip de status com base no tom.
 export function getStatusChipToneConfig(tone: StatusChipTone) {
     const selectedTone = STATUS_CHIP_TONES[tone];
     const background = theme[selectedTone.background as keyof typeof theme];

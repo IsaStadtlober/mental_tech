@@ -1,13 +1,16 @@
 import type { Activity, DashboardMetricConfig, DashboardMetricInput, Submission } from '@/types/professor';
 
+// Contagem de submissões pendentes.
 export function getPendingCorrectionsCount(submissions: Submission[]): number {
     return submissions.filter((item) => item.status === 'pending').length;
 }
 
+// Contagem de atividades publicadas.
 export function getPublishedActivitiesCount(activities: Activity[]): number {
     return activities.filter((item) => item.status === 'published').length;
 }
 
+// Configuração das métricas do dashboard.
 export function getDashboardMetricConfig({
     pendingCorrectionsCount,
     publishedActivitiesCount,

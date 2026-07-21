@@ -1,6 +1,7 @@
 import { theme } from '@/constants/theme';
 import type { MetricCardTone } from '@/types/professor/metricCard';
 
+// Configurações de estilo do cartão de métrica com base no tom.
 export function getMetricCardToneConfig(tone: MetricCardTone) {
     return {
         primary: {

@@ -1,5 +1,6 @@
 import type { RecentSubmission, Student } from '@/types/professor';
 
+// Dados de alunos simulados.
 export const MOCK_STUDENTS: Student[] = [
     {
         id: 'student-1',

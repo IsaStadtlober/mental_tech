@@ -8,6 +8,7 @@ import {
     getPublishedActivitiesCount,
 } from '@/utils/professor/dashboard';
 
+// Contagem de submissões pendentes e contagem de atividades publicadas.
 export function useEducatorDashboard(activities: Activity[], submissions: Submission[]) {
     const pendingCorrectionsCount = useMemo(
         () => getPendingCorrectionsCount(submissions),

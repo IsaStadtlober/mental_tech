@@ -27,6 +27,21 @@ export const isValidCep = (cep: string): boolean => {
   return /^\d{8}$/.test(sanitizeDigits(cep));
 };
 
+export const formatPhoneNumber = (phone: string): string => {
+  const sanitized = sanitizeDigits(phone);
+  if (sanitized.length <= 2) return sanitized;
+  if (sanitized.length <= 6)
+    return `(${sanitized.slice(0, 2)}) ${sanitized.slice(2)}`;
+  if (sanitized.length <= 10)
+    return `(${sanitized.slice(0, 2)}) ${sanitized.slice(2, 6)}-${sanitized.slice(6)}`;
+  return `(${sanitized.slice(0, 2)}) ${sanitized.slice(2, 7)}-${sanitized.slice(7, 11)}`;
+};
+
+export const isValidPhone = (phone: string): boolean => {
+  const sanitized = sanitizeDigits(phone);
+  return /^\d{10}$|^\d{11}$/.test(sanitized);
+};
+
 export async function fetchCnpjData(cnpj: string) {
   const sanitizedCnpj = sanitizeDigits(cnpj);
   if (!isValidCnpj(sanitizedCnpj)) return null;

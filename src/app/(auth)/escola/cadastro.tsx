@@ -8,17 +8,18 @@ import { AuthHeader } from "../../../components/Headers";
 import { PrimaryButton } from "../../../components/PrimaryButton";
 import { ScreenShell } from "../../../components/ScreenShell";
 
-import { WIZARD_ROUTES } from '@/router';
+import { WIZARD_ROUTES } from "@/router";
 import { EDUCATOR_AUTH_CONSTANTS } from "../../../constants/auth";
 import { useWizardFlow } from "../../../hooks/useWizardFlow";
 import { styles } from "../../../styles";
 import {
-    fetchAddressByCep,
-    fetchCnpjData,
-    isValidCep,
-    isValidCnpj,
-    isValidEmail,
-    sanitizeDigits,
+  fetchAddressByCep,
+  fetchCnpjData,
+  formatPhoneNumber,
+  isValidCep,
+  isValidCnpj,
+  isValidEmail,
+  sanitizeDigits,
 } from "../../../utils/auth";
 
 export default function SchoolSignupRoute() {
@@ -95,6 +96,11 @@ export default function SchoolSignupRoute() {
       setLookupLoading(false);
     }
   }, [cnpj, legalName]);
+
+  const handlePhoneChange = useCallback((value: string) => {
+    const formatted = formatPhoneNumber(value);
+    setPhone(formatted);
+  }, []);
 
   const handleZipCodeBlur = useCallback(async () => {
     const sanitized = sanitizeDigits(zipCode);
@@ -254,9 +260,10 @@ export default function SchoolSignupRoute() {
         <FormField
           label={EDUCATOR_AUTH_CONSTANTS.LABELS.PHONE}
           value={phone}
-          onChangeText={setPhone}
+          onChangeText={handlePhoneChange}
           placeholder={EDUCATOR_AUTH_CONSTANTS.PLACEHOLDERS.PHONE}
           keyboardType="phone-pad"
+          maxLength={15}
           preset="educator"
         />
 

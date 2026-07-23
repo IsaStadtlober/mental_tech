@@ -168,6 +168,19 @@ export function useAuth() {
     try {
       const { school, classDetails, teacher, students } = payload;
 
+      // 🔍 DEBUG: Veja exatamente o que está chegando aqui no console
+      console.log("Payload recebido no onboarding:", {
+        email: school?.email,
+        hasPassword: Boolean(school?.password),
+      });
+
+      // 🛑 Trava de segurança para evitar chamada sem credenciais
+      if (!school?.email || !school?.password) {
+        throw new Error(
+          "E-mail e senha da escola são obrigatórios para concluir o cadastro.",
+        );
+      }
+      // 1. Cria a conta no Supabase Auth
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: school.email,
         password: school.password,
@@ -181,7 +194,6 @@ export function useAuth() {
             "Limite de tentativas atingido. Aguarde alguns minutos antes de tentar novamente.",
           );
         }
-
         throw authError;
       }
 
@@ -190,98 +202,179 @@ export function useAuth() {
         throw new Error("Erro ao recuperar usuário criado.");
       }
 
-      const { error: profileError } = await supabase.from("profiles").insert([
+      // 2. Envia TUDO de uma vez em uma única chamada de banco atômica e segura!
+      const { data: rpcData, error: rpcError } = await supabase.rpc(
+        "finalize_school_onboarding",
         {
-          id: user.id,
-          email: user.email,
-          full_name: school.trade_name,
-          role: "school",
+          p_user_id: user.id,
+          p_school: school,
+          p_class: classDetails,
+          p_teacher: teacher || null,
+          p_students: students || [],
         },
-      ]);
-      if (profileError) throw profileError;
+      );
 
-      const { data: schoolData, error: schoolError } = await supabase
-        .from("schools")
-        .insert([
-          {
-            profile_id: user.id,
-            legal_name: school.legal_name,
-            trade_name: school.trade_name,
-            cnpj: school.cnpj.replace(/\D/g, ""),
-            inep_code: school.inep_code || null,
-            contact_email: school.email,
-            phone: school.phone || null,
-            zip_code: school.zip_code?.replace(/\D/g, "") || null,
-            street: school.street || null,
-            number: school.number || null,
-            complement: school.complement || null,
-            neighborhood: school.neighborhood || null,
-            city: school.city || null,
-            state: school.state || null,
-          },
-        ])
-        .select()
-        .single();
-
-      if (schoolError) throw schoolError;
-      if (!schoolData || !schoolData.id) {
-        throw new Error("Erro ao recuperar a escola criada.");
+      if (rpcError) {
+        throw new Error(
+          rpcError.message || "Erro ao salvar os dados no banco.",
+        );
       }
 
-      const { data: classData, error: classError } = await supabase
-        .from("classes")
-        .insert([
-          {
-            school_id: schoolData.id,
-            name: classDetails.name.trim(),
-            grade: classDetails.grade.trim(),
-            period: classDetails.period.trim(),
-          },
-        ])
-        .select()
-        .single();
-
-      if (classError) throw classError;
-      if (!classData || !classData.id) {
-        throw new Error("Erro ao recuperar a turma criada.");
-      }
-
-      if (teacher?.email) {
-        const { error: teacherError } = await supabase
-          .from("school_teachers")
-          .insert([
-            {
-              school_id: schoolData.id,
-              class_id: classData.id,
-              teacher_email: teacher.email.trim(),
-            },
-          ]);
-
-        if (teacherError) {
-          throw teacherError;
-        }
-      }
-
-      if (students.length > 0) {
-        const studentsPayload = students.map((student) => ({
-          school_id: schoolData.id,
-          class_id: classData.id,
-          name: student.name.trim(),
-          contact: student.contact.trim() || null,
-          enrollment_number: student.enrollmentNumber?.trim() || null,
-        }));
-
-        const { error: studentsError } = await supabase
-          .from("students")
-          .insert(studentsPayload);
-        if (studentsError) throw studentsError;
-      }
-
-      return { user, school: schoolData, class: classData };
+      return { user, school: rpcData };
     } catch (err: any) {
       setError(err.message || "Erro ao finalizar o onboarding da escola.");
       console.error("Erro ao finalizar o onboarding da escola:", err);
       throw err;
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // Registra um professor em auth.users + tabela teachers
+  async function signUpProfessor(
+    professorEmail: string,
+    professorPassword: string,
+    schoolId: string,
+    professorName: string,
+  ) {
+    setLoading(true);
+    setError(null);
+
+    try {
+      // 1. Criar conta no Supabase Auth
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: professorEmail,
+        password: professorPassword,
+      });
+
+      if (authError) {
+        const status =
+          (authError as any)?.status || (authError as any)?.status_code;
+        if (status === 429 || /rate limit/i.test(authError.message || "")) {
+          throw new Error(
+            "Limite de tentativas atingido. Aguarde alguns minutos antes de tentar novamente.",
+          );
+        }
+        throw authError;
+      }
+
+      const user = authData.user;
+      if (!user) throw new Error("Erro ao recuperar usuário criado.");
+
+      // 2. Criar profile
+      const { error: profileError } = await supabase.from("profiles").insert([
+        {
+          id: user.id,
+          email: user.email,
+          full_name: professorName,
+          role: "teacher",
+        },
+      ]);
+      if (profileError) throw profileError;
+
+      // 3. Criar registro do professor na tabela teachers
+      const { data: teacher, error: teacherError } = await supabase
+        .from("teachers")
+        .insert([
+          {
+            profile_id: user.id,
+            school_id: schoolId,
+            is_active: true,
+          },
+        ])
+        .select()
+        .single();
+
+      if (teacherError) throw teacherError;
+      return { user, teacher };
+    } catch (error: any) {
+      setError(error.message);
+      console.error("Erro ao registrar professor:", error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // Autentica professor ou escola usando email e senha
+  async function signInEducator(email: string, password: string) {
+    setLoading(true);
+    setError(null);
+
+    try {
+      // 1. Autenticar no Supabase Auth
+      const { data: authData, error: authError } =
+        await supabase.auth.signInWithPassword({
+          email: email.trim(),
+          password,
+        });
+
+      if (authError) {
+        throw new Error("Email ou senha incorretos.");
+      }
+
+      const user = authData.user;
+      if (!user) throw new Error("Erro ao recuperar usuário autenticado.");
+
+      // 2. Buscar profile para identificar se é professor ou escola
+      const { data: profile, error: profileError } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .single();
+
+      if (profileError) throw profileError;
+      if (!profile) throw new Error("Perfil não encontrado.");
+
+      // 3. Se for professor, buscar dados adicionais
+      let educatorData = null;
+      if (profile.role === "teacher") {
+        const { data: teacher, error: teacherError } = await supabase
+          .from("teachers")
+          .select("*, school_id(*)")
+          .eq("profile_id", user.id)
+          .single();
+
+        if (teacherError) throw teacherError;
+        educatorData = teacher;
+      } else if (profile.role === "school") {
+        const { data: school, error: schoolError } = await supabase
+          .from("schools")
+          .select("*")
+          .eq("profile_id", user.id)
+          .single();
+
+        if (schoolError) throw schoolError;
+        educatorData = school;
+      }
+
+      return {
+        user,
+        profile,
+        educatorData,
+        role: profile.role,
+      };
+    } catch (error: any) {
+      setError(error.message);
+      console.error("Erro ao fazer login:", error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // Faz logout
+  async function signOut() {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+    } catch (error: any) {
+      setError(error.message);
+      console.error("Erro ao fazer logout:", error);
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -293,7 +386,10 @@ export function useAuth() {
     loading,
     error,
     signUpSchool,
+    signUpProfessor,
     registerSchoolData,
     finalizeSchoolOnboarding,
+    signInEducator,
+    signOut,
   };
 }

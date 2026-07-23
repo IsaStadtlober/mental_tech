@@ -1,5 +1,6 @@
-﻿import { useRouter } from 'expo-router';
+﻿import { useRouter, useLocalSearchParams } from 'expo-router';
 import { GraduationCap } from 'lucide-react-native';
+import { useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 
 import { FormField } from '../../../components/form/FormField';
@@ -14,6 +15,11 @@ import { styles } from '../../../styles';
 
 export default function EducatorActivationRoute() {
     const router = useRouter();
+    const params = useLocalSearchParams();
+    const schoolId = params.schoolId as string;
+    const schoolName = params.schoolName as string;
+    const emailParam = params.email as string;
+
     const {
         form,
         updateField,
@@ -24,22 +30,47 @@ export default function EducatorActivationRoute() {
         passwordIsValid,
         passwordsMatch,
         isFormValid,
+        activateProfessor,
+        isLoading,
+        activationError,
     } = useEducatorActivation();
 
-    const handleActivate = () => {
+    // Pré-preencher email do parâmetro
+    useEffect(() => {
+        if (emailParam) {
+            updateField('email', emailParam);
+        }
+    }, [emailParam]);
+
+    const handleActivate = async () => {
         setShowErrors(true);
 
         if (!isFormValid) return;
+        if (!schoolId) {
+            console.error("schoolId não fornecido");
+            return;
+        }
 
-        router.replace(PROFESSOR_ROUTES.DASHBOARD as any);
+        // Ativar professor em auth.users (e fazer login automático)
+        const result = await activateProfessor(schoolId);
+        
+        if (result.success && result.user) {
+            // Login bem-sucedido, entra no app automaticamente
+            router.replace(PROFESSOR_ROUTES.DASHBOARD as any);
+        }
     };
 
     return (
         <ScreenShell
             onBack={() => router.back()}
             footer={
-                <PrimaryButton disabled={!isFormValid} onPress={handleActivate}>
-                    {EDUCATOR_AUTH_CONSTANTS.TEXTS.ACTIVATION_BUTTON}
+                <PrimaryButton 
+                    disabled={!isFormValid || isLoading} 
+                    onPress={handleActivate}
+                >
+                    {isLoading
+                        ? 'Ativando...'
+                        : EDUCATOR_AUTH_CONSTANTS.TEXTS.ACTIVATION_BUTTON}
                 </PrimaryButton>
             }
         >
@@ -51,21 +82,18 @@ export default function EducatorActivationRoute() {
             />
 
             <View style={styles.formStack}>
-                <View style={styles.inviteCard}>
-                    <Text style={styles.eyebrow}>Convite institucional</Text>
+                {schoolName && (
+                    <View style={styles.inviteCard}>
+                        <Text style={styles.eyebrow}>Convite institucional</Text>
 
-                    <View style={styles.inviteStack}>
-                        <View style={styles.inviteItem}>
-                            <Text style={styles.inviteLabel}>Escola</Text>
-                            <Text style={styles.inviteValue}>Escola Caminho do Saber</Text>
-                        </View>
-
-                        <View style={styles.inviteItem}>
-                            <Text style={styles.inviteLabel}>Turma vinculada</Text>
-                            <Text style={styles.inviteValue}>5º Ano A</Text>
+                        <View style={styles.inviteStack}>
+                            <View style={styles.inviteItem}>
+                                <Text style={styles.inviteLabel}>Escola</Text>
+                                <Text style={styles.inviteValue}>{schoolName}</Text>
+                            </View>
                         </View>
                     </View>
-                </View>
+                )}
 
                 <FormField
                     label="Nome do professor *"
@@ -74,6 +102,7 @@ export default function EducatorActivationRoute() {
                     placeholder="Ex: Maria Eduarda"
                     preset="educator"
                     error={showErrors && !nameIsValid}
+                    editable={!isLoading}
                 />
                 {showErrors && !nameIsValid && (
                     <Text style={styles.errorText}>
@@ -89,6 +118,7 @@ export default function EducatorActivationRoute() {
                     keyboardType="email-address"
                     preset="educator"
                     error={showErrors && !emailIsValid}
+                    editable={!isLoading}
                 />
                 {showErrors && !emailIsValid && (
                     <Text style={styles.errorText}>Informe um e-mail válido.</Text>
@@ -102,6 +132,7 @@ export default function EducatorActivationRoute() {
                     secureTextEntry
                     preset="educator"
                     error={showErrors && !passwordIsValid}
+                    editable={!isLoading}
                 />
                 {showErrors && !passwordIsValid && (
                     <Text style={styles.errorText}>
@@ -117,11 +148,16 @@ export default function EducatorActivationRoute() {
                     secureTextEntry
                     preset="educator"
                     error={showErrors && !passwordsMatch}
+                    editable={!isLoading}
                 />
                 {showErrors && !passwordsMatch && (
                     <Text style={styles.errorText}>
                         {EDUCATOR_AUTH_CONSTANTS.ERRORS.PASSWORD_MISMATCH}
                     </Text>
+                )}
+
+                {!!activationError && (
+                    <Text style={styles.errorText}>{activationError}</Text>
                 )}
             </View>
         </ScreenShell>

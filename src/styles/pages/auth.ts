@@ -13,13 +13,9 @@ export const authStyles = StyleSheet.create({
         flex: 1,
         minHeight: 0,
     },
-    sheetBody: {
-        flex: 1,
-        minHeight: 0,
-    },
     shellContentContainer: {
         flexGrow: 1,
-        paddingBottom: 0,
+        paddingBottom: spacing.xxl,
     },
     formBanner: {
         height: BANNER_H,
@@ -37,8 +33,13 @@ export const authStyles = StyleSheet.create({
         overflow: 'hidden',
         ...theme.shadowSheet,
     },
+    sheetBody: {
+        flex: 1,
+        minHeight: 0,
+    },
     sheetContent: {
         flexGrow: 1,
+        paddingBottom: spacing.xl,
     },
     sheetFooter: {
         marginTop: spacing.md,

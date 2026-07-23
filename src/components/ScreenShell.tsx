@@ -52,15 +52,15 @@ export function ScreenShell({
     <SafeAreaView style={[styles.shellRoot, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
       <FloatingBackButton onPress={onBack} />
 
-      <KeyboardAvoidingView
-        style={styles.keyboardView}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={insets.top + 44}
-      >
-        <View style={styles.shellFrame}>
-          <FormBanner variant={bannerVariant} />
+      <View style={styles.shellFrame}>
+        <FormBanner variant={bannerVariant} />
 
-          <View style={styles.sheet}>
+        <View style={styles.sheet}>
+          <KeyboardAvoidingView
+            style={styles.keyboardView}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            keyboardVerticalOffset={Platform.OS === 'ios' ? insets.top + 44 : insets.top + 24}
+          >
             <View style={styles.sheetBody}>
               <ScrollView
                 style={styles.shellScroll}
@@ -71,15 +71,15 @@ export function ScreenShell({
                 <View style={styles.sheetContent}>{children}</View>
               </ScrollView>
             </View>
+          </KeyboardAvoidingView>
 
-            {!!footer && (
-              <View style={[styles.sheetFooter, { paddingBottom: footerPadding + insets.bottom }]}>
-                {footer}
-              </View>
-            )}
-          </View>
+          {!!footer && (
+            <View style={[styles.sheetFooter, { paddingBottom: footerPadding + insets.bottom }]}> 
+              {footer}
+            </View>
+          )}
         </View>
-      </KeyboardAvoidingView>
+      </View>
     </SafeAreaView>
   );
 }

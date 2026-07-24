@@ -24,6 +24,7 @@ export interface ClassData {
 }
 
 export interface TeacherData {
+  name: string;
   email: string;
 }
 

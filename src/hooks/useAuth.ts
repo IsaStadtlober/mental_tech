@@ -1,5 +1,5 @@
-import { supabase } from "@/service/supabase";
 import { sendTeacherInvite } from "@/service/emailServices";
+import { supabase } from "@/service/supabase";
 import type {
   ClassData,
   SchoolOnboardingData,
@@ -226,7 +226,7 @@ export function useAuth() {
         try {
           await sendTeacherInvite({
             teacherEmail: teacher.email,
-            teacherName: teacher.name || "Professor",
+            teacherName: teacher.name || "Professor (a)",
             schoolName: school.trade_name,
             activationUrl: `${process.env.EXPO_PUBLIC_APP_URL || "http://localhost:8081"}/professor/ativacao-conta?email=${encodeURIComponent(teacher.email)}&schoolId=${encodeURIComponent(rpcData.id)}&schoolName=${encodeURIComponent(school.trade_name)}`,
           });

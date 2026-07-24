@@ -1,4 +1,5 @@
 import { supabase } from "@/service/supabase";
+import { sendTeacherInvite } from "@/service/emailServices";
 import type {
   ClassData,
   SchoolOnboardingData,
@@ -218,6 +219,29 @@ export function useAuth() {
         throw new Error(
           rpcError.message || "Erro ao salvar os dados no banco.",
         );
+      }
+
+      // 📧 Enviar email de ativação para o professor
+      if (teacher && teacher.email) {
+        try {
+          await sendTeacherInvite({
+            teacherEmail: teacher.email,
+            teacherName: teacher.name || "Professor",
+            schoolName: school.trade_name,
+            activationUrl: `${process.env.EXPO_PUBLIC_APP_URL || "http://localhost:8081"}/professor/ativacao-conta?email=${encodeURIComponent(teacher.email)}&schoolId=${encodeURIComponent(rpcData.id)}&schoolName=${encodeURIComponent(school.trade_name)}`,
+          });
+
+          console.log(
+            "✅ Email de ativação enviado com sucesso para:",
+            teacher.email,
+          );
+        } catch (emailError) {
+          console.warn(
+            "⚠️ Aviso: Escola criada, mas erro ao enviar email:",
+            emailError,
+          );
+          // Não interrompe o fluxo se o email falhar
+        }
       }
 
       return { user, school: rpcData };

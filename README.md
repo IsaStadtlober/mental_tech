@@ -59,11 +59,6 @@ mental_tech/
     │   ├── index.tsx          # Tela com o Carrossel de telas
     │   └── roles.tsx          # Tela de escolha de perfil
     ├── components/            # Componentes reutilizáveis
-    │   ├── background/
-    │   ├── carousel/
-    │   ├── form/
-    │   ├── roles/
-    │   └── wizard/
     ├── constants/             # Constantes e variáveis globais
     ├── hooks/                 # Lógica do aplicativo
     ├── service/               # Serviços e regras de negócio

@@ -11,6 +11,11 @@ export function useEducatorActivation() {
     email: "",
     password: "",
     confirmPassword: "",
+    cpf: "",
+    phone: "",
+    birthDate: "",
+    position: "",
+    registrationNumber: "",
   });
   const [showErrors, setShowErrors] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -18,15 +23,37 @@ export function useEducatorActivation() {
 
   const nameIsValid = form.name.trim().length >= 3;
   const emailIsValid = isValidEmail(form.email);
+  const cpfIsValid =
+    form.cpf.trim().length === 0 || /^\d{11}$/.test(form.cpf.replace(/\D/g, ""));
+  const phoneIsValid =
+    form.phone.trim().length === 0 || /^\+?[\d\s()-]{10,15}$/.test(form.phone.trim());
+  const birthDateIsValid =
+    form.birthDate.trim().length === 0 || /^\d{2}\/\d{2}\/\d{4}$/.test(form.birthDate.trim());
+  const positionIsValid = form.position.trim().length === 0 || form.position.trim().length >= 2;
+  const registrationNumberIsValid =
+    form.registrationNumber.trim().length === 0 || form.registrationNumber.trim().length >= 3;
   const passwordIsValid =
     form.password.length >= EDUCATOR_AUTH_CONSTANTS.MIN_PASSWORD_LENGTH;
   const passwordsMatch =
     form.confirmPassword.length > 0 && form.password === form.confirmPassword;
   const isFormValid =
-    nameIsValid && emailIsValid && passwordIsValid && passwordsMatch;
+    nameIsValid &&
+    emailIsValid &&
+    passwordIsValid &&
+    passwordsMatch &&
+    cpfIsValid &&
+    phoneIsValid &&
+    birthDateIsValid &&
+    positionIsValid &&
+    registrationNumberIsValid;
 
   const updateField = (field: keyof EducatorActivationData, value: string) => {
     setForm((current) => ({ ...current, [field]: value }));
+  };
+
+  const formatBirthDate = (value: string) => {
+    const [day, month, year] = value.split("/");
+    return day && month && year ? `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}` : undefined;
   };
 
   /**
@@ -64,23 +91,45 @@ export function useEducatorActivation() {
       if (!user) throw new Error("Erro ao recuperar usuário criado.");
 
       // 2. Criar profile
+      const profileInsert: Record<string, any> = {
+        id: user.id,
+        email: user.email,
+        full_name: form.name.trim(),
+        role: "teacher",
+      };
+
+      if (form.cpf.trim().length > 0) {
+        profileInsert.cpf = form.cpf.replace(/\D/g, "");
+      }
+      if (form.phone.trim().length > 0) {
+        profileInsert.phone = form.phone.trim();
+      }
+      if (form.birthDate.trim().length > 0) {
+        const formatted = formatBirthDate(form.birthDate.trim());
+        if (formatted) profileInsert.birth_date = formatted;
+      }
+
       const { error: profileError } = await supabase.from("profiles").insert([
-        {
-          id: user.id,
-          email: user.email,
-          full_name: form.name.trim(),
-          role: "teacher",
-        },
+        profileInsert,
       ]);
       if (profileError) throw profileError;
 
       // 3. Criar registro na tabela teachers
+      const teacherInsert: Record<string, any> = {
+        profile_id: user.id,
+        school_id: schoolId,
+        is_active: true,
+      };
+
+      if (form.position.trim().length > 0) {
+        teacherInsert.position = form.position.trim();
+      }
+      if (form.registrationNumber.trim().length > 0) {
+        teacherInsert.registration_number = form.registrationNumber.trim();
+      }
+
       const { error: teacherError } = await supabase.from("teachers").insert([
-        {
-          profile_id: user.id,
-          school_id: schoolId,
-          is_active: true,
-        },
+        teacherInsert,
       ]);
 
       if (teacherError) throw teacherError;
@@ -118,6 +167,11 @@ export function useEducatorActivation() {
     setShowErrors,
     nameIsValid,
     emailIsValid,
+    cpfIsValid,
+    phoneIsValid,
+    birthDateIsValid,
+    positionIsValid,
+    registrationNumberIsValid,
     passwordIsValid,
     passwordsMatch,
     isFormValid,

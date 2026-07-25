@@ -22,6 +22,11 @@ export type EducatorActivationData = {
     email: string;
     password: string;
     confirmPassword: string;
+    cpf: string;
+    phone: string;
+    birthDate: string;
+    position: string;
+    registrationNumber: string;
 };
 
 export type { WizardStepType } from './wizard';

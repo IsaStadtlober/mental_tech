@@ -47,7 +47,7 @@ export async function authenticateEducator(email: string, password: string) {
       educatorData = teacher;
     } else if (profile.role === "school") {
       const { data: school, error: schoolError } = await supabase
-        .from("schools")
+        .from("school")
         .select("*")
         .eq("profile_id", user.id)
         .single();

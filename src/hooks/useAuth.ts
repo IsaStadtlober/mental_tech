@@ -89,7 +89,7 @@ export function useAuth() {
       if (profileError) throw profileError;
 
       const { data, error: insertError } = await supabase
-        .from("schools")
+        .from("school")
         .insert([
           {
             profile_id: user.id,
@@ -128,7 +128,7 @@ export function useAuth() {
     setError(null);
     try {
       const { data, error: insertError } = await supabase
-        .from("schools")
+        .from("school")
         .insert([
           {
             profile_id: schoolData.profile_id,
@@ -221,6 +221,25 @@ export function useAuth() {
         );
       }
 
+      let schoolTableId = rpcData?.id ?? null;
+
+      if (!schoolTableId) {
+        const { data: schoolRecord, error: schoolLookupError } = await supabase
+          .from("schools")
+          .select("id")
+          .eq("profile_id", user.id)
+          .maybeSingle();
+
+        if (schoolLookupError) throw schoolLookupError;
+        schoolTableId = schoolRecord?.id ?? null;
+      }
+
+      if (!schoolTableId) {
+        throw new Error("Não foi possível localizar o ID da escola no banco.");
+      }
+
+      console.log("ID da escola usado no convite:", schoolTableId);
+
       // 📧 Enviar email de ativação para o professor
       if (teacher && teacher.email) {
         try {
@@ -228,7 +247,7 @@ export function useAuth() {
             teacherEmail: teacher.email,
             teacherName: teacher.name || "Professor (a)",
             schoolName: school.trade_name,
-            activationUrl: `${process.env.EXPO_PUBLIC_APP_URL || "http://localhost:8081"}/professor/ativacao-conta?email=${encodeURIComponent(teacher.email)}&schoolId=${encodeURIComponent(rpcData.id)}&schoolName=${encodeURIComponent(school.trade_name)}`,
+            activationUrl: `${process.env.EXPO_PUBLIC_APP_URL || "http://localhost:8081"}/(auth)/professor/ativacao-conta?email=${encodeURIComponent(teacher.email)}&schoolId=${encodeURIComponent(schoolTableId)}&schoolName=${encodeURIComponent(school.trade_name)}`,
           });
 
           console.log(
@@ -244,7 +263,7 @@ export function useAuth() {
         }
       }
 
-      return { user, school: rpcData };
+      return { user, school: { ...(rpcData || {}), id: schoolTableId } };
     } catch (err: any) {
       setError(err.message || "Erro ao finalizar o onboarding da escola.");
       console.error("Erro ao finalizar o onboarding da escola:", err);

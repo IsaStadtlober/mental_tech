@@ -14,6 +14,31 @@ export const isValidEmail = (email: string): boolean => {
   return emailRegex.test(email.trim());
 };
 
+export const formatCpf = (value: string): string => {
+  const digits = value.replace(/\D/g, "").slice(0, 11);
+  if (digits.length <= 3) return digits;
+  if (digits.length <= 6) return `${digits.slice(0, 3)}.${digits.slice(3)}`;
+  if (digits.length <= 9)
+    return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6)}`;
+  return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9)}`;
+};
+
+export const formatPhoneNumber = (value: string): string => {
+  const digits = value.replace(/\D/g, "").slice(0, 11);
+  if (digits.length <= 2) return digits;
+  if (digits.length <= 6) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+  if (digits.length <= 10)
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+  return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7, 11)}`;
+};
+
+export const formatBirthDate = (value: string): string => {
+  const digits = value.replace(/\D/g, "").slice(0, 8);
+  if (digits.length <= 2) return digits;
+  if (digits.length <= 4) return `${digits.slice(0, 2)}/${digits.slice(2)}`;
+  return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4)}`;
+};
+
 export const sanitizeDigits = (value: string): string => {
   return value.replace(/\D/g, "");
 };
@@ -25,16 +50,6 @@ export const isValidCnpj = (cnpj: string): boolean => {
 
 export const isValidCep = (cep: string): boolean => {
   return /^\d{8}$/.test(sanitizeDigits(cep));
-};
-
-export const formatPhoneNumber = (phone: string): string => {
-  const sanitized = sanitizeDigits(phone);
-  if (sanitized.length <= 2) return sanitized;
-  if (sanitized.length <= 6)
-    return `(${sanitized.slice(0, 2)}) ${sanitized.slice(2)}`;
-  if (sanitized.length <= 10)
-    return `(${sanitized.slice(0, 2)}) ${sanitized.slice(2, 6)}-${sanitized.slice(6)}`;
-  return `(${sanitized.slice(0, 2)}) ${sanitized.slice(2, 7)}-${sanitized.slice(7, 11)}`;
 };
 
 export const isValidPhone = (phone: string): boolean => {

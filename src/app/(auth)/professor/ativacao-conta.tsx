@@ -27,11 +27,6 @@ export default function EducatorActivationRoute() {
     setShowErrors,
     nameIsValid,
     emailIsValid,
-    cpfIsValid,
-    phoneIsValid,
-    birthDateIsValid,
-    positionIsValid,
-    registrationNumberIsValid,
     passwordIsValid,
     passwordsMatch,
     isFormValid,
@@ -45,7 +40,7 @@ export default function EducatorActivationRoute() {
     if (emailParam) {
       updateField("email", emailParam);
     }
-  }, [emailParam, updateField]);
+  }, [emailParam]);
 
   const handleActivate = async () => {
     setShowErrors(true);
@@ -119,79 +114,34 @@ export default function EducatorActivationRoute() {
           label={EDUCATOR_AUTH_CONSTANTS.LABELS.CPF}
           value={form.cpf}
           onChangeText={(value) => updateField("cpf", value)}
-          placeholder={EDUCATOR_AUTH_CONSTANTS.PLACEHOLDERS.CPF}
+          placeholder="000.000.000-00"
           keyboardType="number-pad"
           preset="educator"
-          error={showErrors && !cpfIsValid}
+          maxLength={14}
           editable={!isLoading}
         />
-        {showErrors && !cpfIsValid && (
-          <Text style={styles.errorText}>
-            Informe um CPF válido com 11 dígitos.
-          </Text>
-        )}
 
         <FormField
           label={EDUCATOR_AUTH_CONSTANTS.LABELS.PHONE}
           value={form.phone}
           onChangeText={(value) => updateField("phone", value)}
-          placeholder={EDUCATOR_AUTH_CONSTANTS.PLACEHOLDERS.PHONE}
+          placeholder="(00) 00000-0000"
           keyboardType="phone-pad"
           preset="educator"
-          error={showErrors && !phoneIsValid}
+          maxLength={15}
           editable={!isLoading}
         />
-        {showErrors && !phoneIsValid && (
-          <Text style={styles.errorText}>
-            Informe um telefone válido.
-          </Text>
-        )}
 
         <FormField
           label={EDUCATOR_AUTH_CONSTANTS.LABELS.BIRTH_DATE}
           value={form.birthDate}
           onChangeText={(value) => updateField("birthDate", value)}
-          placeholder={EDUCATOR_AUTH_CONSTANTS.PLACEHOLDERS.BIRTH_DATE}
+          placeholder="DD/MM/AAAA"
           keyboardType="number-pad"
           preset="educator"
-          error={showErrors && !birthDateIsValid}
+          maxLength={10}
           editable={!isLoading}
         />
-        {showErrors && !birthDateIsValid && (
-          <Text style={styles.errorText}>
-            Informe uma data no formato DD/MM/AAAA.
-          </Text>
-        )}
-
-        <FormField
-          label={EDUCATOR_AUTH_CONSTANTS.LABELS.POSITION}
-          value={form.position}
-          onChangeText={(value) => updateField("position", value)}
-          placeholder={EDUCATOR_AUTH_CONSTANTS.PLACEHOLDERS.POSITION}
-          preset="educator"
-          error={showErrors && !positionIsValid}
-          editable={!isLoading}
-        />
-        {showErrors && !positionIsValid && (
-          <Text style={styles.errorText}>
-            Informe o cargo do professor.
-          </Text>
-        )}
-
-        <FormField
-          label={EDUCATOR_AUTH_CONSTANTS.LABELS.REGISTRATION_NUMBER}
-          value={form.registrationNumber}
-          onChangeText={(value) => updateField("registrationNumber", value)}
-          placeholder={EDUCATOR_AUTH_CONSTANTS.PLACEHOLDERS.REGISTRATION_NUMBER}
-          preset="educator"
-          error={showErrors && !registrationNumberIsValid}
-          editable={!isLoading}
-        />
-        {showErrors && !registrationNumberIsValid && (
-          <Text style={styles.errorText}>
-            Informe o número de registro do professor.
-          </Text>
-        )}
 
         <FormField
           label={EDUCATOR_AUTH_CONSTANTS.LABELS.EMAIL}

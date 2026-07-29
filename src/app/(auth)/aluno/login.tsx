@@ -1,30 +1,53 @@
-import { useRouter } from 'expo-router';
-import { Compass } from 'lucide-react-native';
-import { useState } from 'react';
-import { View } from 'react-native';
+import { useRouter } from "expo-router";
+import { Compass } from "lucide-react-native";
+import { useState } from "react";
+import { Text, View } from "react-native";
 
-import { FormField } from '../../../components/form/FormField';
-import { AuthHeader } from '../../../components/Headers';
-import { PrimaryButton } from '../../../components/PrimaryButton';
-import { ScreenShell } from '../../../components/ScreenShell';
+import { FormField } from "../../../components/form/FormField";
+import { AuthHeader } from "../../../components/Headers";
+import { PrimaryButton } from "../../../components/PrimaryButton";
+import { ScreenShell } from "../../../components/ScreenShell";
 
-import { AUTH_ROUTES } from '@/router';
-import { STUDENT_AUTH_CONSTANTS } from '../../../constants/auth';
-import { styles } from '../../../styles';
-import { formatClassCode, formatPin } from '../../../utils/auth';
+import { AUTH_ROUTES } from "@/router";
+import { STUDENT_AUTH_CONSTANTS } from "../../../constants/auth";
+import { useAuth } from "../../../hooks/useAuth";
+import { styles } from "../../../styles";
+import { formatClassCode, formatPin } from "../../../utils/auth";
 
 export default function StudentLoginRoute() {
   const router = useRouter();
-  const [classCode, setClassCode] = useState('');
-  const [pin, setPin] = useState('');
+  const { validateStudentAccess } = useAuth();
+  const [classCode, setClassCode] = useState("");
+  const [pin, setPin] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const canEnter =
     classCode.trim().length > 0 &&
     pin.length >= STUDENT_AUTH_CONSTANTS.MIN_PIN_LENGTH &&
     pin.length <= STUDENT_AUTH_CONSTANTS.MAX_PIN_LENGTH;
 
-  const handleEnter = () => {
-    router.push(AUTH_ROUTES.STUDENT.NAME as any);
+  const handleEnter = async () => {
+    if (!canEnter || loading) return;
+
+    setError("");
+    setLoading(true);
+
+    try {
+      const access = await validateStudentAccess(classCode, pin);
+      router.push({
+        pathname: AUTH_ROUTES.STUDENT.NAME as any,
+        params: {
+          classId: access.classId,
+          schoolId: access.schoolId,
+          className: access.className,
+        },
+      });
+    } catch (err: any) {
+      setError(err?.message || "Não foi possível validar o acesso.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -65,6 +88,8 @@ export default function StudentLoginRoute() {
           center
           keyboardType="numeric"
         />
+
+        {!!error && <Text style={styles.inputErrorText}>{error}</Text>}
       </View>
     </ScreenShell>
   );

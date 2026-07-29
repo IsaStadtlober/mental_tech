@@ -21,6 +21,8 @@ export interface ClassData {
   name: string;
   grade: string;
   period: string;
+  code?: string;
+  pin?: string;
 }
 
 export interface TeacherData {
@@ -30,7 +32,8 @@ export interface TeacherData {
 
 export interface StudentData {
   name: string;
-  contact: string;
+  guardian_email: string;
+  student_access_code?: string;
   enrollmentNumber?: string;
 }
 

@@ -1,16 +1,17 @@
-import { LinearGradient } from 'expo-linear-gradient';
-import { ScrollView, Text, View } from 'react-native';
+import { LinearGradient } from "expo-linear-gradient";
+import { ScrollView, Text, View } from "react-native";
 
-import { theme } from '../constants/theme';
-import { styles } from '../styles';
-import { SuccessScreenProps } from '../types/components';
-import { FloatingBackButton, FormBanner } from './ScreenShell';
+import { theme } from "../constants/theme";
+import { styles } from "../styles";
+import { SuccessScreenProps } from "../types/components";
+import { FloatingBackButton, FormBanner } from "./ScreenShell";
 
 export function SuccessScreen({
   eyebrow,
   title,
   description,
   footer,
+  children,
   onBack,
 }: SuccessScreenProps) {
   return (
@@ -26,14 +27,18 @@ export function SuccessScreen({
 
         <View style={[styles.sheet, styles.successSheet]}>
           <LinearGradient
-            colors={theme.gradPrimary as unknown as [string, string, ...string[]]}
+            colors={
+              theme.gradPrimary as unknown as [string, string, ...string[]]
+            }
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.successBadge}
           >
             <Text style={styles.successEmoji}>✨</Text>
             <View style={[styles.successDot, styles.successDotTopRight]} />
-            <View style={[styles.successDotSmall, styles.successDotSmallBottomLeft]} />
+            <View
+              style={[styles.successDotSmall, styles.successDotSmallBottomLeft]}
+            />
           </LinearGradient>
 
           <Text style={styles.eyebrow}>{eyebrow}</Text>
@@ -42,6 +47,10 @@ export function SuccessScreen({
 
           {!!description && (
             <Text style={styles.successDescription}>{description}</Text>
+          )}
+
+          {!!children && (
+            <View style={styles.successExtraContent}>{children}</View>
           )}
 
           {!!footer && <View style={styles.successFooter}>{footer}</View>}

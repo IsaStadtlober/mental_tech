@@ -91,7 +91,8 @@ export const EDUCATOR_AUTH_CONSTANTS = {
     RECOVERY_HELPER:
       "Enviaremos um link para redefinir sua senha. Verifique também a caixa de spam ou lixo eletrônico.",
     ACTIVATION_TITLE: "Ative sua conta de professor",
-    ACTIVATION_SUBTITLE: "Defina seus dados de acesso para entrar no Portal do Professor.",
+    ACTIVATION_SUBTITLE:
+      "Defina seus dados de acesso para entrar no Portal do Professor.",
     WELCOME_TITLE: "Bem-vindo de volta! Sua turma já está te esperando.",
     SENT_TITLE: "Verifique sua caixa de entrada",
     SENT_DESCRIPTION:
@@ -171,11 +172,11 @@ export const WIZARD_CONSTANTS = {
     SUBTITLE: "Cadastre os alunos que farão parte desta turma.",
     LABELS: {
       STUDENT_NAME: "Nome do aluno",
-      STUDENT_CONTACT: "Contato do responsável",
+      STUDENT_GUARDIAN_EMAIL: "E-mail do responsável",
     },
     PLACEHOLDERS: {
       STUDENT_NAME: "Ex: João Silva",
-      STUDENT_CONTACT: "email@exemplo.com ou (11) 99999-9999",
+      STUDENT_GUARDIAN_EMAIL: "responsavel@email.com",
     },
     TEXTS: {
       IMPORT_SECTION: "Importação em lote via CSV",
@@ -248,7 +249,8 @@ export const PASSWORD_CONSTANTS = {
     LOGIN_TITLE: "Entrar como Educador",
     LOGIN_SUBTITLE: "Use o e-mail e senha da sua conta de Professor ou Escola.",
     ACTIVATION_TITLE: "Ative sua conta de professor",
-    ACTIVATION_SUBTITLE: "Defina seus dados de acesso para entrar no Portal do Professor.",
+    ACTIVATION_SUBTITLE:
+      "Defina seus dados de acesso para entrar no Portal do Professor.",
     SIGNUP_TITLE: "Cadastre sua Escola",
     SIGNUP_SUBTITLE:
       "Vamos criar o espaço da sua instituição para gerenciar turmas, professores e alunos.",

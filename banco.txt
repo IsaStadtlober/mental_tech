@@ -1,11 +1,14 @@
--- 1. Tipos ENUM
 CREATE TYPE user_role AS ENUM ('school', 'teacher', 'student', 'guardian');
 CREATE TYPE activity_status AS ENUM ('draft', 'published');
 CREATE TYPE submission_status AS ENUM ('submitted', 'corrected');
 CREATE TYPE item_category AS ENUM ('cloth', 'shoe', 'backpack', 'hat', 'accessory', 'hairstyle', 'color');
 CREATE TYPE shift_type AS ENUM ('morning', 'afternoon', 'full_time');
 
--- 2. Perfis (Centraliza todos os dados de pessoas)
+-- ==========================================
+-- 2. TABELAS
+-- ==========================================
+
+-- Perfis (Centraliza dados das contas de usuários)
 CREATE TABLE public.profiles (
     id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
     email VARCHAR(255) UNIQUE NOT NULL,
@@ -19,41 +22,41 @@ CREATE TABLE public.profiles (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
 
--- 3. Escolas (Dados Jurídicos e Endereço Físico)
+-- Escolas (Dados Jurídicos e Endereço Físico)
 CREATE TABLE public.schools (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     profile_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
-    legal_name VARCHAR(255) NOT NULL, -- razao_social
-    trade_name VARCHAR(255) NOT NULL, -- nome_fantasia
+    legal_name VARCHAR(255) NOT NULL,
+    trade_name VARCHAR(255) NOT NULL,
     cnpj VARCHAR(20) UNIQUE NOT NULL,
-    inep_code VARCHAR(50) UNIQUE, -- codigo_inep
+    inep_code VARCHAR(50) UNIQUE,
     contact_email VARCHAR(255),
     phone VARCHAR(20),
-    zip_code VARCHAR(20), -- cep
-    street VARCHAR(255), -- logradouro
-    number VARCHAR(50), -- numero
-    complement VARCHAR(255), -- complemento
-    neighborhood VARCHAR(255), -- bairro
-    city VARCHAR(255), -- cidade
-    state VARCHAR(50), -- estado
+    zip_code VARCHAR(20),
+    street VARCHAR(255),
+    number VARCHAR(50),
+    complement VARCHAR(255),
+    neighborhood VARCHAR(255),
+    city VARCHAR(255),
+    state VARCHAR(50),
     is_active BOOLEAN DEFAULT true NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
 
--- 4. Professores (Dados Empregatícios)
+-- Professores
 CREATE TABLE public.teachers (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    profile_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
+    profile_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE, -- Nullable até o aceite do convite
     school_id UUID REFERENCES public.schools(id) ON DELETE CASCADE NOT NULL,
-    position VARCHAR(255), -- cargo
+    position VARCHAR(255),
     registration_number VARCHAR(100),
     is_active BOOLEAN DEFAULT true NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
 
--- 5. Turmas
+-- Turmas
 CREATE TABLE public.classes (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     school_id UUID REFERENCES public.schools(id) ON DELETE CASCADE NOT NULL,
@@ -61,26 +64,32 @@ CREATE TABLE public.classes (
     grade VARCHAR(100) NOT NULL,
     academic_year INT NOT NULL,
     shift shift_type NOT NULL,
+    code VARCHAR(20) UNIQUE NOT NULL, -- Código de acesso da turma
+    pin VARCHAR(10) NOT NULL,        -- PIN de validação
     is_active BOOLEAN DEFAULT true NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
 
--- 6. Tabela Pivot Professor_Turma (N:N - Um professor pode dar aula em várias turmas)
+-- Pivot Professor <-> Turma (N:N)
 CREATE TABLE public.teacher_classes (
     teacher_id UUID REFERENCES public.teachers(id) ON DELETE CASCADE,
     class_id UUID REFERENCES public.classes(id) ON DELETE CASCADE,
     PRIMARY KEY (teacher_id, class_id)
 );
 
--- 7. Alunos
+-- Alunos
 CREATE TABLE public.students (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    profile_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
+    profile_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE, -- Nullable até criação da conta do aluno
     school_id UUID REFERENCES public.schools(id) ON DELETE CASCADE NOT NULL,
     class_id UUID REFERENCES public.classes(id) ON DELETE SET NULL,
     guardian_id UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
-    enrollment_number VARCHAR(100) UNIQUE, -- matricula_escolar
+    guardian_contact VARCHAR(255),
+    student_access_code VARCHAR(100) UNIQUE,
+    name VARCHAR(255),
+    roll_number INT,
+    enrollment_number VARCHAR(100) UNIQUE,
     coins INT DEFAULT 0 NOT NULL CHECK (coins >= 0),
     xp INT DEFAULT 0 NOT NULL CHECK (xp >= 0),
     is_active BOOLEAN DEFAULT true NOT NULL,
@@ -88,7 +97,7 @@ CREATE TABLE public.students (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
 
--- 8. Atividades
+-- Atividades
 CREATE TABLE public.activities (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     teacher_id UUID REFERENCES public.teachers(id) ON DELETE RESTRICT NOT NULL,
@@ -102,7 +111,7 @@ CREATE TABLE public.activities (
     published_at TIMESTAMP WITH TIME ZONE
 );
 
--- 9. Submissões
+-- Submissões
 CREATE TABLE public.submissions (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     activity_id UUID REFERENCES public.activities(id) ON DELETE CASCADE NOT NULL,
@@ -115,7 +124,7 @@ CREATE TABLE public.submissions (
     corrected_at TIMESTAMP WITH TIME ZONE
 );
 
--- 10. Itens da Loja
+-- Itens da Loja
 CREATE TABLE public.shop_items (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -124,7 +133,7 @@ CREATE TABLE public.shop_items (
     image_url VARCHAR(512) NOT NULL
 );
 
--- 11. Inventário do Aluno (N:N)
+-- Inventário do Aluno (N:N)
 CREATE TABLE public.student_inventories (
     student_id UUID REFERENCES public.students(id) ON DELETE CASCADE,
     item_id UUID REFERENCES public.shop_items(id) ON DELETE CASCADE,
@@ -132,9 +141,130 @@ CREATE TABLE public.student_inventories (
     PRIMARY KEY (student_id, item_id)
 );
 
--- 12. Configuração do Avatar
+-- Configuração do Avatar
 CREATE TABLE public.avatars (
     student_id UUID REFERENCES public.students(id) ON DELETE CASCADE PRIMARY KEY,
     equipped_items JSONB DEFAULT '{}'::jsonb NOT NULL,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
+
+-- ==========================================
+-- 3. TRIGGER AUTOMÁTICA DE UPDATED_AT
+-- ==========================================
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = TIMEZONE('utc'::text, NOW());
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER update_profiles_updated_at BEFORE UPDATE ON public.profiles FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_schools_updated_at BEFORE UPDATE ON public.schools FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_teachers_updated_at BEFORE UPDATE ON public.teachers FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_classes_updated_at BEFORE UPDATE ON public.classes FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_students_updated_at BEFORE UPDATE ON public.students FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_activities_updated_at BEFORE UPDATE ON public.activities FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- ==========================================
+-- 4. PROCEDURE: FINALIZE_SCHOOL_ONBOARDING
+-- ==========================================
+CREATE OR REPLACE FUNCTION finalize_school_onboarding(
+  p_user_id UUID,
+  p_school JSONB,
+  p_class JSONB,
+  p_teacher JSONB DEFAULT NULL,
+  p_students JSONB DEFAULT '[]'::jsonb
+)
+RETURNS JSONB
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  v_school_id UUID;
+  v_class_id UUID;
+  v_student JSONB;
+  v_raw_shift TEXT;
+  v_final_shift shift_type;
+BEGIN
+  -- 1. Cria Perfil da Escola
+  INSERT INTO profiles (id, email, full_name, role)
+  VALUES (
+    p_user_id,
+    p_school->>'email',
+    p_school->>'trade_name',
+    'school'
+  )
+  ON CONFLICT (id) DO NOTHING;
+
+  -- 2. Cadastra a Escola
+  INSERT INTO schools (
+    profile_id, legal_name, trade_name, cnpj, inep_code,
+    contact_email, phone, zip_code, street, number, complement, neighborhood, city, state
+  ) VALUES (
+    p_user_id,
+    p_school->>'legal_name',
+    p_school->>'trade_name',
+    REGEXP_REPLACE(COALESCE(p_school->>'cnpj', ''), '\D', '', 'g'),
+    p_school->>'inep_code',
+    p_school->>'email',
+    p_school->>'phone',
+    p_school->>'zip_code',
+    p_school->>'street',
+    p_school->>'number',
+    p_school->>'complement',
+    p_school->>'neighborhood',
+    p_school->>'city',
+    p_school->>'state'
+  )
+  RETURNING id INTO v_school_id;
+
+  -- 3. Mapeia o turno para o Enum ('morning', 'afternoon', 'full_time')
+  v_raw_shift := LOWER(COALESCE(NULLIF(p_class->>'shift', ''), NULLIF(p_class->>'turno', ''), 'morning'));
+
+  v_final_shift := CASE 
+    WHEN v_raw_shift IN ('matutino', 'manha', 'manhã', 'morning') THEN 'morning'::shift_type
+    WHEN v_raw_shift IN ('vespertino', 'tarde', 'afternoon') THEN 'afternoon'::shift_type
+    WHEN v_raw_shift IN ('integral', 'full_time', 'fulltime', 'noturno', 'noite', 'night') THEN 'full_time'::shift_type
+    ELSE 'morning'::shift_type
+  END;
+
+  -- 4. Cadastra a Turma com Code e PIN
+  INSERT INTO classes (
+    school_id, name, grade, shift, academic_year, code, pin
+  ) VALUES (
+    v_school_id,
+    p_class->>'name',
+    p_class->>'grade',
+    v_final_shift,
+    COALESCE((p_class->>'academic_year')::INT, EXTRACT(YEAR FROM CURRENT_DATE)::INT),
+    COALESCE(NULLIF(p_class->>'code', ''), UPPER(SUBSTRING(MD5(RANDOM()::TEXT) FROM 1 FOR 6))),
+    COALESCE(NULLIF(p_class->>'pin', ''), LPAD(FLOOR(RANDOM() * 9000 + 1000)::TEXT, 4, '0'))
+  )
+  RETURNING id INTO v_class_id;
+
+  -- 5. Insere os Alunos (se houver)
+  IF p_students IS NOT NULL AND jsonb_array_length(p_students) > 0 THEN
+    FOR v_student IN SELECT * FROM jsonb_array_elements(p_students)
+    LOOP
+      INSERT INTO students (
+        school_id,
+        class_id,
+        name,
+        roll_number,
+        guardian_contact,
+        student_access_code
+      ) VALUES (
+        v_school_id,
+        v_class_id,
+        v_student->>'name',
+        (v_student->>'roll_number')::INT,
+        NULLIF(v_student->>'guardian_email', ''),
+        NULLIF(v_student->>'student_access_code', '')
+      );
+    END LOOP;
+  END IF;
+
+  RETURN jsonb_build_object('id', v_school_id, 'class_id', v_class_id);
+END;
+$$;

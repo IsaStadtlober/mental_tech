@@ -20,6 +20,7 @@ export interface SuccessScreenProps {
   title: string;
   description?: string;
   footer?: React.ReactNode;
+  children?: React.ReactNode;
   onBack?: () => void;
 }
 

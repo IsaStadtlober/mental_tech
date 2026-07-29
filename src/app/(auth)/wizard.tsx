@@ -1,6 +1,7 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
+import { useState } from "react";
 
-import { AUTH_ROUTES } from '@/router';
+import { AUTH_ROUTES } from "@/router";
 import { WizardDoneScreen } from "../../components/wizard/WizardDoneScreen";
 import { WizardStepClass } from "../../components/wizard/WizardStepClass";
 import { WizardStepStudents } from "../../components/wizard/WizardStepStudents";
@@ -8,20 +9,20 @@ import { WizardStepTeacher } from "../../components/wizard/WizardStepTeacher";
 import { useAuth } from "../../hooks/useAuth";
 import { useWizardFlow } from "../../hooks/useWizardFlow";
 import type { WizardSearchParams } from "../../types/auth";
+import { generateClassCode, generateClassPin } from "../../utils/generators";
 
 export default function WizardRoute() {
   const router = useRouter();
   const { schoolName } = useLocalSearchParams<WizardSearchParams>();
-  const {
-    state,
-    setClassDetails,
-    setTeacherData,
-    setStudents,
-    setStep,
-  } = useWizardFlow();
+  const { state, setClassDetails, setTeacherData, setStudents, setStep } =
+    useWizardFlow();
 
   const { finalizeSchoolOnboarding, loading: finalizing } = useAuth();
   const { step, classDetails, teacher, students, school } = state;
+  const [classCredentials] = useState(() => ({
+    code: generateClassCode(),
+    pin: generateClassPin(),
+  }));
 
   switch (step) {
     case 1:
@@ -37,7 +38,7 @@ export default function WizardRoute() {
         <WizardStepTeacher
           classDetails={classDetails}
           onBack={() => setStep(1)}
-          onNext={(email) => setTeacherData({ email })}
+          onNext={(email) => setTeacherData({ name: "", email })}
           onSkip={() => setStep(3)}
         />
       );
@@ -49,12 +50,20 @@ export default function WizardRoute() {
       return (
         <WizardDoneScreen
           studentsCount={students.length}
+          classCode={classCredentials.code}
+          classPin={classCredentials.pin}
           onBack={() => setStep(3)}
           onGoDashboard={async () => {
             try {
               await finalizeSchoolOnboarding({
                 school,
-                classDetails: classDetails!,
+                classDetails: {
+                  name: classDetails?.name ?? "",
+                  grade: classDetails?.grade ?? "",
+                  period: classDetails?.period ?? "",
+                  code: classCredentials.code,
+                  pin: classCredentials.pin,
+                },
                 teacher,
                 students,
               });

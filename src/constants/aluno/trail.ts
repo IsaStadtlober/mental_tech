@@ -1,0 +1,24 @@
+import type { MapNode } from '../../types/aluno/trail';
+
+export const MAP_HEIGHT = 1040;
+export const MAP_PATH =
+  'M78 900 C105 840 230 810 255 720 C280 630 130 620 105 535 C80 450 238 435 265 350 C292 265 145 245 120 165';
+export const MAP_NODES: MapNode[] = [
+  { id: 1, x: 78, y: 900, label: 'Início', description: 'Primeiros passos' },
+  { id: 2, x: 255, y: 720, label: 'Biomas', description: 'Descobrindo Biomas' },
+  {
+    id: 3,
+    x: 105,
+    y: 535,
+    label: 'Florestas',
+    description: 'Próxima descoberta',
+  },
+  {
+    id: 4,
+    x: 265,
+    y: 350,
+    label: 'Oceanos',
+    description: 'Continue explorando',
+  },
+  { id: 5, x: 120, y: 165, label: 'Universo', description: 'Marco especial' },
+];

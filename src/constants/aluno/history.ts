@@ -1,0 +1,1 @@
+export { PROTOTYPE_HISTORY as SAMPLE_RECENT_ACTIVITIES } from './fixtures';

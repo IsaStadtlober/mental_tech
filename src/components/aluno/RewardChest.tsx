@@ -1,0 +1,50 @@
+import { Backpack, Sparkles, Trophy } from 'lucide-react-native';
+import { useEffect } from 'react';
+import { Text, View } from 'react-native';
+import Animated, {
+  useAnimatedStyle, useSharedValue, withDelay,
+  withSequence, withSpring, withTiming
+} from 'react-native-reanimated';
+import { alunoStyles as s } from '../../styles/aluno/aluno';
+
+export function RewardChest() {
+  const open = useSharedValue(0);
+  const item = useSharedValue(0);
+  useEffect(() => {
+    open.value = withSequence(
+      withTiming(-4, { duration: 180 }),
+      withTiming(4, { duration: 180 }),
+      withTiming(0, { duration: 180 }),
+      withSpring(1)
+    );
+    item.value = withDelay(520, withSpring(1, { damping: 10 }));
+  }, [item, open]);
+  const lid = useAnimatedStyle(() => ({
+    transform: [
+      { translateY: -open.value * 13 },
+      { rotate: `${open.value * -5}deg` },
+    ],
+  }));
+  const itemStyle = useAnimatedStyle(() => ({
+    opacity: item.value,
+    transform: [{ translateY: 20 * (1 - item.value) }, { scale: item.value }],
+  }));
+  return (
+    <View style={s.chestStage}>
+      <Animated.View style={[s.rewardItem, itemStyle]}>
+        <View style={s.rewardItemGlow} />
+        <Backpack size={54} color="#FFE08A" />
+        <View style={s.exclusiveMissionPill}>
+          <Trophy size={12} color="#6D4BB8" />
+          <Text style={s.exclusiveMissionText}>Exclusivo de Missão</Text>
+        </View>
+      </Animated.View>
+      <View style={s.chestBody}>
+        <Animated.View style={[s.chestLid, lid]}>
+          <Sparkles size={20} color="#FFF2B8" />
+        </Animated.View>
+        <View style={s.chestBase} />
+      </View>
+    </View>
+  );
+}

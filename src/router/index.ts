@@ -2,3 +2,4 @@
 export * from './auth.routes';
 export * from './wizard.routes';
 export * from './professor.routes';
+export * from './aluno.routes';

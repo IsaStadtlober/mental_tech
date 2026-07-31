@@ -7,7 +7,7 @@ import { StudentScreenShell } from '../../../components/aluno/StudentScreenShell
 import { SAMPLE_RECENT_ACTIVITIES } from '../../../constants/aluno/history';
 import { theme } from '../../../constants/theme';
 import { useStudentPrototype } from '../../../hooks/aluno/useStudentPrototype';
-import { alunoStyles as s } from '../../../styles/aluno/aluno';
+import { alunoStyles as s } from '../../../styles/aluno';
 import type { HistoryFilter, RecentActivity } from '../../../types/aluno';
 
 const filters: [HistoryFilter, string][] = [

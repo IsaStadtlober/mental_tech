@@ -1,7 +1,7 @@
 import { CheckCircle2, Sparkles } from 'lucide-react-native';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { theme } from '../../constants/theme';
-import { alunoStyles as s } from '../../styles/aluno/aluno';
+import { alunoStyles as s } from '../../styles/aluno';
 import type { HistoryFilter } from '../../types/aluno';
 
 const EMPTY_COPY: Record<

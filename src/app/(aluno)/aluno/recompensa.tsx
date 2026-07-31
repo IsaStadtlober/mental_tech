@@ -5,7 +5,7 @@ import { RewardChest } from '../../../components/aluno/RewardChest';
 import { StudentScreenShell } from '../../../components/aluno/StudentScreenShell';
 import { useStudentPrototype } from '../../../hooks/aluno/useStudentPrototype';
 import { ALUNO_ROUTES } from '../../../router/aluno.routes';
-import { alunoStyles as s } from '../../../styles/aluno/aluno';
+import { alunoStyles as s } from '../../../styles/aluno';
 
 export default function RewardRoute() {
   const router = useRouter();

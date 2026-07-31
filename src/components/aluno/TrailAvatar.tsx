@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import Animated, {
   useAnimatedStyle, useSharedValue, withSpring
 } from 'react-native-reanimated';
-import { alunoStyles as s } from '../../styles/aluno/aluno';
+import { alunoStyles as s } from '../../styles/aluno';
 import type { EquippedBySlot, MissionStatus } from '../../types/aluno';
 import { ExplorerAvatar } from './ExplorerAvatar';
 

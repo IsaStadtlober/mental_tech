@@ -5,7 +5,7 @@ import Animated, {
   Easing, useAnimatedStyle, useSharedValue,
   withDelay, withSpring, withTiming
 } from 'react-native-reanimated';
-import { alunoStyles as s } from '../../styles/aluno/aluno';
+import { alunoStyles as s } from '../../styles/aluno';
 
 export function CoinCelebration({
   reward,

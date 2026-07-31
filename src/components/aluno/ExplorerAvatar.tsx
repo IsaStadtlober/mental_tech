@@ -4,7 +4,7 @@ import { Text, View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { theme } from '../../constants/theme';
 import { usePop } from '../../hooks/useAnimations';
-import { alunoStyles as s } from '../../styles/aluno/aluno';
+import { alunoStyles as s } from '../../styles/aluno';
 import { authStyles as styles } from '../../styles/pages/auth';
 import type { EquippedBySlot } from '../../types/aluno';
 

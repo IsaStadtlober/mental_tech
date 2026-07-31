@@ -6,7 +6,7 @@ import { StudentScreenShell } from '../../../components/aluno/StudentScreenShell
 import { theme } from '../../../constants/theme';
 import { useStudentPrototype } from '../../../hooks/aluno/useStudentPrototype';
 import { ALUNO_ROUTES } from '../../../router/aluno.routes';
-import { alunoStyles as s } from '../../../styles/aluno/aluno';
+import { alunoStyles as s } from '../../../styles/aluno';
 import type { StudentNotification } from '../../../types/aluno';
 
 export default function NotificationsRoute() {
@@ -34,7 +34,7 @@ export default function NotificationsRoute() {
           description="Quando uma novidade chegar, ela aparecerá aqui."
         />
       ) : (
-        <View style={{ gap: 10 }}>
+        <View style={s.notificationList}>
           {notifications.map((x) => (
             <NotificationCard key={x.id} item={x} onPress={() => open(x)} />
           ))}

@@ -9,7 +9,7 @@ import {
   useSafeAreaInsets,
 } from 'react-native-safe-area-context';
 import { theme } from '../../constants/theme';
-import { alunoStyles as s } from '../../styles/aluno/aluno';
+import { alunoStyles as s } from '../../styles/aluno';
 import type { BackgroundVariantType } from '../../types/backgroundScene';
 import { BackgroundScene } from '../background/BackgroundScene';
 

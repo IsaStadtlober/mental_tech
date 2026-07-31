@@ -1,7 +1,7 @@
 import { Bell, Coins } from 'lucide-react-native';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { theme } from '../../constants/theme';
-import { alunoStyles as s } from '../../styles/aluno/aluno';
+import { alunoStyles as s } from '../../styles/aluno';
 import type { EquippedBySlot, StudentSession } from '../../types/aluno';
 import { ExplorerAvatar } from './ExplorerAvatar';
 

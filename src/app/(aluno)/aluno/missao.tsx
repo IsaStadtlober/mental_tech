@@ -10,7 +10,7 @@ import { PrimaryButton } from '../../../components/PrimaryButton';
 import { theme } from '../../../constants/theme';
 import { useStudentPrototype } from '../../../hooks/aluno/useStudentPrototype';
 import { ALUNO_ROUTES } from '../../../router/aluno.routes';
-import { alunoStyles as s } from '../../../styles/aluno/aluno';
+import { alunoStyles as s } from '../../../styles/aluno';
 import { isRevision } from '../../../utils/aluno/mission';
 
 export default function MissionRoute() {

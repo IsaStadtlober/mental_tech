@@ -1,10 +1,10 @@
 import { ScrollView, View } from 'react-native';
 import { MAP_HEIGHT, MAP_NODES } from '../../constants/aluno/trail';
-import { alunoStyles as s } from '../../styles/aluno/aluno';
+import { alunoStyles as s } from '../../styles/aluno';
 import type {
-  EquippedBySlot,
-  MapNodeState,
-  MissionStatus,
+    EquippedBySlot,
+    MapNodeState,
+    MissionStatus,
 } from '../../types/aluno';
 import { MapLevel } from './MapLevel';
 import { MapPath } from './MapPath';

@@ -4,7 +4,7 @@ import {
 import { Pressable, Text, View } from 'react-native';
 import { MISSION_PRESENTATION } from '../../constants/aluno/missionPresentation';
 import { theme } from '../../constants/theme';
-import { alunoStyles as s } from '../../styles/aluno/aluno';
+import { alunoStyles as s } from '../../styles/aluno';
 import type { StudentMission } from '../../types/aluno';
 
 export interface MissionCardProps {

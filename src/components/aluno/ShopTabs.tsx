@@ -1,7 +1,7 @@
 import { ShoppingBag, Sparkles } from 'lucide-react-native';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { theme } from '../../constants/theme';
-import { alunoStyles as s } from '../../styles/aluno/aluno';
+import { alunoStyles as s } from '../../styles/aluno';
 
 export type ShopTab = 'inventory' | 'shop';
 export function ShopTabs({

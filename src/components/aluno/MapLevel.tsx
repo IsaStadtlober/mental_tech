@@ -1,10 +1,10 @@
 import {
-  CheckCircle, Clock3, FileText, Lock, RotateCcw
+    CheckCircle, Clock3, FileText, Lock, RotateCcw
 } from 'lucide-react-native';
 import { memo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { theme } from '../../constants/theme';
-import { alunoStyles as s } from '../../styles/aluno/aluno';
+import { alunoStyles as s } from '../../styles/aluno';
 import type { MapNode, MapNodeState, MissionStatus } from '../../types/aluno';
 
 export const MapLevel = memo(function MapLevel({

@@ -1,7 +1,7 @@
 import { FileText, Image as ImageIcon } from 'lucide-react-native';
 import { Text, View } from 'react-native';
 import { theme } from '../../constants/theme';
-import { alunoStyles as s } from '../../styles/aluno/aluno';
+import { alunoStyles as s } from '../../styles/aluno';
 
 export function MissionFileCard({ name }: { name: string }) {
   const image = /\.(png|jpg|jpeg)$/i.test(name);

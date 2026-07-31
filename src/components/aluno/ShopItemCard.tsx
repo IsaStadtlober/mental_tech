@@ -1,10 +1,10 @@
 import {
-  CheckCircle, Coins, Gift, LockKeyhole,
-  ShoppingBag, Sparkles, Trophy
+    CheckCircle, Coins, Gift, LockKeyhole,
+    ShoppingBag, Sparkles, Trophy
 } from 'lucide-react-native';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { theme } from '../../constants/theme';
-import { alunoStyles as s } from '../../styles/aluno/aluno';
+import { alunoStyles as s } from '../../styles/aluno';
 import type { ShopItem } from '../../types/aluno';
 
 export function ShopItemCard({

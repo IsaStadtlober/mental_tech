@@ -8,7 +8,7 @@ import { StudentMap } from '../../../components/aluno/StudentMap';
 import { StudentTopBar } from '../../../components/aluno/StudentTopBar';
 import { useStudentPrototype } from '../../../hooks/aluno/useStudentPrototype';
 import { ALUNO_ROUTES } from '../../../router/aluno.routes';
-import { alunoStyles as s } from '../../../styles/aluno/aluno';
+import { alunoStyles as s } from '../../../styles/aluno';
 
 export default function TrailRoute() {
   const router = useRouter();

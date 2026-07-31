@@ -1,8 +1,8 @@
 import { useRouter } from 'expo-router';
 import {
-  CheckCircle2,
-  ChevronRight,
-  Coins, Gift, History, MapPin,
+    CheckCircle2,
+    ChevronRight,
+    Coins, Gift, History, MapPin,
 } from 'lucide-react-native';
 import React from 'react';
 import { Pressable, Text, View } from 'react-native';
@@ -12,7 +12,7 @@ import { SimpleCenteredHeader } from '../../../components/Headers';
 import { theme } from '../../../constants/theme';
 import { useStudentPrototype } from '../../../hooks/aluno/useStudentPrototype';
 import { ALUNO_ROUTES } from '../../../router/aluno.routes';
-import { alunoStyles as s } from '../../../styles/aluno/aluno';
+import { alunoStyles as s } from '../../../styles/aluno';
 
 export default function ProfileRoute() {
   const router = useRouter();

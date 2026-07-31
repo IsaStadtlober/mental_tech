@@ -2,7 +2,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { View } from 'react-native';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { useLoopValue } from '../../hooks/useAnimations';
-import { alunoStyles as s } from '../../styles/aluno/aluno';
+import { alunoStyles as s } from '../../styles/aluno';
 
 function DriftingCloud({
   top,

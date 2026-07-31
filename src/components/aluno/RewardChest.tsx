@@ -2,10 +2,10 @@ import { Backpack, Sparkles, Trophy } from 'lucide-react-native';
 import { useEffect } from 'react';
 import { Text, View } from 'react-native';
 import Animated, {
-  useAnimatedStyle, useSharedValue, withDelay,
-  withSequence, withSpring, withTiming
+    useAnimatedStyle, useSharedValue, withDelay,
+    withSequence, withSpring, withTiming
 } from 'react-native-reanimated';
-import { alunoStyles as s } from '../../styles/aluno/aluno';
+import { alunoStyles as s } from '../../styles/aluno';
 
 export function RewardChest() {
   const open = useSharedValue(0);

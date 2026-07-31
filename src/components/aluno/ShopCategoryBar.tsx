@@ -1,12 +1,12 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react-native';
 import { useRef, useState } from 'react';
 import {
-  LayoutChangeEvent, NativeScrollEvent, NativeSyntheticEvent,
-  ScrollView, Text, TouchableOpacity, View
+    LayoutChangeEvent, NativeScrollEvent, NativeSyntheticEvent,
+    ScrollView, Text, TouchableOpacity, View
 } from 'react-native';
 import { SHOP_CATEGORIES } from '../../constants/aluno/shop';
 import { theme } from '../../constants/theme';
-import { alunoStyles as s } from '../../styles/aluno/aluno';
+import { alunoStyles as s } from '../../styles/aluno';
 import type { ShopCategory } from '../../types/aluno';
 
 const SCROLL_STEP = 140;

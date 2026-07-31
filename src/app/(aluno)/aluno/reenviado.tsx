@@ -5,7 +5,7 @@ import { PrimaryButton } from '../../../components/PrimaryButton';
 import { StudentScreenShell } from '../../../components/aluno/StudentScreenShell';
 import { theme } from '../../../constants/theme';
 import { ALUNO_ROUTES } from '../../../router/aluno.routes';
-import { alunoStyles as s } from '../../../styles/aluno/aluno';
+import { alunoStyles as s } from '../../../styles/aluno';
 
 export default function ResentRoute() {
   const router = useRouter();

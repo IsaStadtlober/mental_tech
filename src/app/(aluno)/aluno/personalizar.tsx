@@ -13,7 +13,7 @@ import { PrimaryButton } from '../../../components/PrimaryButton';
 import { SHOP_ITEMS } from '../../../constants/aluno/shop';
 import { theme } from '../../../constants/theme';
 import { useStudentPrototype } from '../../../hooks/aluno/useStudentPrototype';
-import { alunoStyles as s } from '../../../styles/aluno/aluno';
+import { alunoStyles as s } from '../../../styles/aluno';
 import type { ShopCategory, ShopItem } from '../../../types/aluno';
 import { canAcquire } from '../../../utils/aluno/shop';
 

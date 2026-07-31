@@ -1,0 +1,91 @@
+import { StyleSheet } from 'react-native';
+import { fonts, theme } from '../../constants/theme';
+
+export const historyStudentStyles = StyleSheet.create({
+    historyFilters: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: 8,
+        paddingBottom: 18,
+    },
+    historyFilter: {
+        paddingHorizontal: 13,
+        paddingVertical: 8,
+        borderRadius: 999,
+        borderWidth: 1,
+        borderColor: theme.border,
+        backgroundColor: theme.bgSubtle,
+    },
+    historyFilterActive: {
+        backgroundColor: theme.primary,
+        borderColor: theme.primary,
+    },
+    historyFilterText: {
+        fontFamily: fonts.bodyBold,
+        fontSize: 11,
+        color: theme.textMuted,
+    },
+    historyFilterTextActive: { color: theme.card },
+    historyCardRevision: {
+        borderColor: 'rgba(164,95,8,.35)',
+        backgroundColor: '#FFF9F0',
+        flexDirection: 'row',
+        gap: 12,
+        alignItems: 'center',
+    },
+    historyStatusIcon: {
+        width: 38,
+        height: 38,
+        borderRadius: 12,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: theme.bgSoft,
+    },
+    historyStatusIconRevision: { backgroundColor: theme.warningSoft },
+    historyEmptyState: {
+        minHeight: 220,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 22,
+        paddingHorizontal: 28,
+        paddingVertical: 30,
+        backgroundColor: theme.bgSubtle,
+        borderWidth: 1,
+        borderColor: theme.border,
+    },
+    historyEmptyIcon: {
+        width: 64,
+        height: 64,
+        borderRadius: 22,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: theme.bgSoft,
+        marginBottom: 14,
+    },
+    historyEmptyTitle: {
+        fontFamily: fonts.headlineBold,
+        fontSize: 17,
+        color: theme.textDark,
+        textAlign: 'center',
+    },
+    historyEmptyText: {
+        fontFamily: fonts.bodyRegular,
+        fontSize: 13,
+        lineHeight: 19,
+        color: theme.textMuted,
+        textAlign: 'center',
+        marginTop: 7,
+    },
+    historyEmptyAction: {
+        marginTop: 16,
+        paddingHorizontal: 14,
+        paddingVertical: 9,
+        borderRadius: 999,
+        backgroundColor: theme.bgSoft,
+    },
+    historyEmptyActionText: {
+        fontFamily: fonts.bodyBold,
+        fontSize: 12,
+        color: theme.primary,
+    },
+});

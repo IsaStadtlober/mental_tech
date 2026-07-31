@@ -6,8 +6,21 @@ import {
   formatCpf,
   formatPhoneNumber,
   isValidEmail,
+  sanitizeDigits,
 } from "@/utils/auth";
 import { useState } from "react";
+
+const normalizeBirthDate = (value: string) => {
+  const trimmedValue = value.trim();
+  if (!trimmedValue) return null;
+
+  const normalizedValue = trimmedValue.replace(/-/g, "/");
+  const [day, month, year] = normalizedValue.split("/");
+
+  if (!day || !month || !year) return null;
+
+  return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+};
 
 // Função de hook para gerenciar o estado e validação do formulário de ativação do professor.
 export function useEducatorActivation() {
@@ -104,10 +117,9 @@ export function useEducatorActivation() {
         resolvedSchoolId = schoolByProfile.id;
       }
 
-      console.log(
-        "[activation] schoolId resolvido para insert",
-        resolvedSchoolId,
-      );
+      const normalizedCpf = sanitizeDigits(form.cpf).trim() || null;
+      const normalizedPhone = sanitizeDigits(form.phone).trim() || null;
+      const normalizedBirthDate = normalizeBirthDate(form.birthDate);
 
       // 2. Criar profile
       const { error: profileError } = await supabase.from("profiles").insert([
@@ -116,20 +128,57 @@ export function useEducatorActivation() {
           email: user.email,
           full_name: form.name.trim(),
           role: "teacher",
+          cpf: normalizedCpf,
+          phone: normalizedPhone,
+          birth_date: normalizedBirthDate,
         },
       ]);
       if (profileError) throw profileError;
 
       // 3. Criar registro na tabela teachers
-      const { error: teacherError } = await supabase.from("teachers").insert([
-        {
-          profile_id: user.id,
-          school_id: resolvedSchoolId,
-          is_active: true,
-        },
-      ]);
+      const { data: createdTeacher, error: teacherError } = await supabase
+        .from("teachers")
+        .insert([
+          {
+            profile_id: user.id,
+            school_id: resolvedSchoolId,
+            position: form.position.trim() || null,
+            registration_number: form.registrationNumber.trim() || null,
+            is_active: true,
+          },
+        ])
+        .select("id")
+        .single();
 
       if (teacherError) throw teacherError;
+      if (!createdTeacher?.id) {
+        throw new Error("Não foi possível criar o vínculo do professor.");
+      }
+
+      const { data: activeClasses, error: activeClassesError } = await supabase
+        .from("classes")
+        .select("id")
+        .eq("school_id", resolvedSchoolId)
+        .eq("is_active", true);
+
+      if (activeClassesError) throw activeClassesError;
+
+      if (activeClasses?.length) {
+        const teacherClassRows = activeClasses
+          .map((classroom: { id?: string | null }) => classroom.id)
+          .filter((classroomId): classroomId is string => Boolean(classroomId))
+          .map((classroomId) => ({
+            teacher_id: createdTeacher.id,
+            class_id: classroomId,
+          }));
+
+        // Quando o convite receber classId, este vínculo deverá ser limitado à turma informada.
+        const { error: teacherClassesError } = await supabase
+          .from("teacher_classes")
+          .upsert(teacherClassRows, { onConflict: "teacher_id,class_id" });
+
+        if (teacherClassesError) throw teacherClassesError;
+      }
 
       // 4. Fazer login automático com a senha fornecida
       const { error: signInError } = await supabase.auth.signInWithPassword({

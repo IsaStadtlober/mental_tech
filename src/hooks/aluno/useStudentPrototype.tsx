@@ -1,23 +1,14 @@
 import React, {
-  createContext, useCallback, useContext, useMemo, useReducer
+  createContext, useCallback, useContext, useMemo, useReducer,
 } from 'react';
 import { INITIAL_STUDENT_PROTOTYPE_STATE } from '../../constants/aluno/fixtures';
 import type {
   PurchaseResult,
   ShopItem,
-  StudentPrototypeState,
+  StudentPrototypeContextValue,
   SubmissionResult,
 } from '../../types/aluno';
 import { studentPrototypeReducer } from './studentPrototypeReducer';
-
-interface StudentPrototypeContextValue extends StudentPrototypeState {
-  setExplorerName(name: string): void;
-  saveMission(): void;
-  submitMission(fileName: string): SubmissionResult;
-  acquireOrEquip(item: ShopItem): PurchaseResult;
-  equipReward(): void;
-  markNotificationRead(notificationId: string): void;
-}
 
 const StudentPrototypeContext =
   createContext<StudentPrototypeContextValue | null>(null);

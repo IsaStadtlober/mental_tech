@@ -27,9 +27,9 @@ export function ExplorerAvatar({
     null;
   const item =
     activeItem === 'cosmic-backpack' ? (
-      <Backpack size={compact ? 18 : 25} color="#FFE08A" />
+      <Backpack size={compact ? 18 : 25} color={theme.studentGoldAccent} />
     ) : activeItem === 'explorer-glasses' ? (
-      <Glasses size={compact ? 18 : 25} color="#FFE08A" />
+      <Glasses size={compact ? 18 : 25} color={theme.studentGoldAccent} />
     ) : (
       <Sparkles size={compact ? 25 : 44} color={theme.bg} strokeWidth={1.8} />
     );

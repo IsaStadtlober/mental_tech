@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, type ViewStyle } from 'react-native';
 import { fonts, theme } from '../../constants/theme';
 
 export const commonStudentStyles = StyleSheet.create({
@@ -90,6 +90,7 @@ export const commonStudentStyles = StyleSheet.create({
         color: theme.primaryLight,
         marginBottom: 4,
     },
+    profileOptionStack: { gap: 12 },
     studentProfileOption: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -177,7 +178,7 @@ export const commonStudentStyles = StyleSheet.create({
         bottom: 0,
         paddingHorizontal: 20,
         paddingTop: 12,
-        backgroundColor: 'rgba(255,255,255,0.97)',
+        backgroundColor: theme.whiteSoft,
         borderTopWidth: 1,
         borderTopColor: theme.border,
     },
@@ -191,7 +192,7 @@ export const commonStudentStyles = StyleSheet.create({
         gap: 6,
         paddingHorizontal: 12,
         borderRadius: 999,
-        backgroundColor: 'rgba(255,255,255,0.96)',
+        backgroundColor: theme.whiteSubtle,
         ...theme.shadowCard,
     },
     studentBackText: {
@@ -202,13 +203,13 @@ export const commonStudentStyles = StyleSheet.create({
     nativeModalRoot: {
         flex: 1,
         justifyContent: 'flex-end',
-        backgroundColor: 'rgba(0,0,0,0.28)',
+        backgroundColor: theme.overlay,
     },
     nativeModalBackdrop: { flex: 1 },
     nativeModalSheet: {
         borderTopLeftRadius: 28,
         borderTopRightRadius: 28,
-        backgroundColor: '#fff',
+        backgroundColor: theme.card,
         paddingHorizontal: 20,
         paddingTop: 10,
         ...theme.shadowSheet,
@@ -217,8 +218,54 @@ export const commonStudentStyles = StyleSheet.create({
         width: 44,
         height: 5,
         borderRadius: 99,
-        backgroundColor: '#D9DED9',
+        backgroundColor: theme.studentSoftGray,
         alignSelf: 'center',
         marginBottom: 12,
     },
 });
+
+const studentBackButtonBase = {
+    left: 14,
+    position: 'absolute' as const,
+    zIndex: 40,
+    minHeight: 44,
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    gap: 6,
+    paddingHorizontal: 12,
+    borderRadius: 999,
+    backgroundColor: theme.whiteSubtle,
+    ...theme.shadowCard,
+};
+
+const nativeModalSheetBase = {
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
+    backgroundColor: theme.card,
+    paddingHorizontal: 20,
+    paddingTop: 10,
+    ...theme.shadowSheet,
+};
+
+export const studentStyleHelpers = {
+    positionedBackButton: (top: number): ViewStyle => ({
+        ...studentBackButtonBase,
+        top,
+    }),
+    footerWithInset: (paddingBottom: number): ViewStyle => ({
+        position: 'absolute' as const,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        paddingHorizontal: 20,
+        paddingTop: 12,
+        paddingBottom,
+        backgroundColor: theme.whiteSoft,
+        borderTopWidth: 1,
+        borderTopColor: theme.border,
+    }),
+    modalSheetWithInset: (paddingBottom: number): ViewStyle => ({
+        ...nativeModalSheetBase,
+        paddingBottom,
+    }),
+} as const;

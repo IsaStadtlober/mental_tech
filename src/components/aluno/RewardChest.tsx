@@ -5,6 +5,7 @@ import Animated, {
     useAnimatedStyle, useSharedValue, withDelay,
     withSequence, withSpring, withTiming
 } from 'react-native-reanimated';
+import { theme } from '../../constants/theme';
 import { alunoStyles as s } from '../../styles/aluno';
 
 export function RewardChest() {
@@ -33,15 +34,15 @@ export function RewardChest() {
     <View style={s.chestStage}>
       <Animated.View style={[s.rewardItem, itemStyle]}>
         <View style={s.rewardItemGlow} />
-        <Backpack size={54} color="#FFE08A" />
+        <Backpack size={54} color={theme.studentGoldAccent} />
         <View style={s.exclusiveMissionPill}>
-          <Trophy size={12} color="#6D4BB8" />
+          <Trophy size={12} color={theme.studentPurpleDeep} />
           <Text style={s.exclusiveMissionText}>Exclusivo de Missão</Text>
         </View>
       </Animated.View>
       <View style={s.chestBody}>
         <Animated.View style={[s.chestLid, lid]}>
-          <Sparkles size={20} color="#FFF2B8" />
+          <Sparkles size={20} color={theme.studentGemSoft} />
         </Animated.View>
         <View style={s.chestBase} />
       </View>

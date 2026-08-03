@@ -36,7 +36,7 @@ export function StudentTopBar({
         onPress={onCoins}
         style={s.mapCoins}
       >
-        <Coins size={16} color="#D6961D" />
+        <Coins size={16} color={theme.studentGold} />
         <Text style={s.mapCoinsText}>{session.coins}</Text>
       </TouchableOpacity>
       <TouchableOpacity

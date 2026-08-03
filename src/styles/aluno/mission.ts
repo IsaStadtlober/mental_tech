@@ -69,14 +69,14 @@ export const missionStudentStyles = StyleSheet.create({
     studentFeedback: {
         padding: 16,
         borderRadius: 18,
-        backgroundColor: '#FFF0DE',
+        backgroundColor: theme.studentWarmSoft,
         marginBottom: 20,
     },
     studentFeedbackLabel: {
         fontFamily: fonts.bodyBold,
         fontSize: 10,
         letterSpacing: 1,
-        color: '#A65F1B',
+        color: theme.studentWarm,
     },
     studentFeedbackText: {
         fontFamily: fonts.bodyRegular,

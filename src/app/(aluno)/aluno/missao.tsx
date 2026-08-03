@@ -84,7 +84,7 @@ export default function MissionRoute() {
             <Text style={s.screenTitle}>{mission.title}</Text>
           </View>
           <View style={s.coinRewardPill}>
-            <Coins size={14} color="#D6961D" />
+            <Coins size={14} color={theme.studentGold} />
             <Text style={s.coinRewardText}>+{mission.rewardCoins}</Text>
           </View>
         </View>

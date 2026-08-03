@@ -1,18 +1,27 @@
 import { useRouter } from 'expo-router';
 import {
-    CheckCircle2,
-    ChevronRight,
-    Coins, Gift, History, MapPin,
+  CheckCircle2,
+  ChevronRight,
+  Coins, Gift, History, MapPin,
 } from 'lucide-react-native';
 import React from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { ExplorerAvatar } from '../../../components/aluno/ExplorerAvatar';
 import { StudentScreenShell } from '../../../components/aluno/StudentScreenShell';
 import { SimpleCenteredHeader } from '../../../components/Headers';
+import {
+  PROFILE_OPTION_COPY,
+  PROFILE_POSITION_COPY,
+  PROFILE_SCREEN_COPY,
+} from '../../../constants/aluno/profile';
 import { theme } from '../../../constants/theme';
 import { useStudentPrototype } from '../../../hooks/aluno/useStudentPrototype';
 import { ALUNO_ROUTES } from '../../../router/aluno.routes';
 import { alunoStyles as s } from '../../../styles/aluno';
+import {
+  getMissionCountValue,
+  getProfilePositionKey,
+} from '../../../utils/aluno/profile';
 
 export default function ProfileRoute() {
   const router = useRouter();
@@ -25,23 +34,23 @@ export default function ProfileRoute() {
   return (
     <StudentScreenShell onBack={onBack}>
       <SimpleCenteredHeader
-        title="Perfil do Explorador"
-        subtitle="Sua identidade nesta aventura"
+        title={PROFILE_SCREEN_COPY.title}
+        subtitle={PROFILE_SCREEN_COPY.subtitle}
       />
       <ExplorerAvatar equippedBySlot={equippedBySlot} />
       <View style={s.profileStats}>
         <Stat
-          icon={<Coins size={17} color="#D6961D" />}
+          icon={<Coins size={17} color={theme.studentGold} />}
           value={`${session.coins}`}
           label="moedas"
         />
         <Stat
           icon={<CheckCircle2 size={17} color={theme.primary} />}
-          value={mission.status === 'approved' ? '3' : '2'}
+          value={getMissionCountValue(mission.status)}
           label="missões"
         />
         <Stat
-          icon={<Gift size={17} color="#7452B8" />}
+          icon={<Gift size={17} color={theme.studentPurple} />}
           value={`${ownedItemIds.length}`}
           label="itens"
         />
@@ -51,26 +60,21 @@ export default function ProfileRoute() {
         <View>
           <Text style={s.profilePositionLabel}>Posição na trilha</Text>
           <Text style={s.profilePositionValue}>
-            {mission.status === 'approved'
-              ? 'Florestas'
-              : mission.status === 'awaitingReview' ||
-                mission.status === 'revision'
-                ? 'A caminho de Biomas'
-                : 'Início'}
+            {PROFILE_POSITION_COPY[getProfilePositionKey(mission)]}
           </Text>
         </View>
       </View>
       <View style={s.profileOptionStack}>
         <ProfileOption
           icon={<Gift size={20} color={theme.primary} />}
-          label="Loja e meu inventário"
-          hint="Abre a personalização do explorador"
+          label={PROFILE_OPTION_COPY.shop.label}
+          hint={PROFILE_OPTION_COPY.shop.hint}
           onPress={onCustomize}
         />
         <ProfileOption
           icon={<History size={20} color={theme.primary} />}
-          label="Histórico de atividades"
-          hint="Abre todas as missões e conquistas anteriores"
+          label={PROFILE_OPTION_COPY.history.label}
+          hint={PROFILE_OPTION_COPY.history.hint}
           onPress={onHistory}
         />
       </View>

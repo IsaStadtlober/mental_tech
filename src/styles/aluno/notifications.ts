@@ -14,12 +14,12 @@ export const notificationsStudentStyles = StyleSheet.create({
         marginBottom: 12,
     },
     notificationCardRevision: {
-        backgroundColor: '#FFF9F0',
-        borderColor: 'rgba(164,95,8,.3)',
+        backgroundColor: theme.studentWarmGlow,
+        borderColor: theme.studentWarmBorderSoft,
     },
     notificationCardReward: {
-        backgroundColor: '#F4EFFF',
-        borderColor: '#CBBCEB',
+        backgroundColor: theme.studentPurpleLight,
+        borderColor: theme.studentPurpleBorder,
     },
     notificationCardIcon: {
         width: 42,
@@ -30,12 +30,12 @@ export const notificationsStudentStyles = StyleSheet.create({
         backgroundColor: theme.bgSoft,
     },
     notificationCardIconRevision: { backgroundColor: theme.warningSoft },
-    notificationCardIconReward: { backgroundColor: '#E6DDFA' },
+    notificationCardIconReward: { backgroundColor: theme.studentPurpleSoft },
     unreadDot: {
         width: 8,
         height: 8,
         borderRadius: 4,
-        backgroundColor: '#E0704F',
+        backgroundColor: theme.danger,
     },
     notificationList: {
         gap: 10,

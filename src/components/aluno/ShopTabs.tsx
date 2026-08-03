@@ -2,8 +2,8 @@ import { ShoppingBag, Sparkles } from 'lucide-react-native';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { theme } from '../../constants/theme';
 import { alunoStyles as s } from '../../styles/aluno';
+import type { ShopTab } from '../../types/aluno';
 
-export type ShopTab = 'inventory' | 'shop';
 export function ShopTabs({
   value,
   onChange,
@@ -19,7 +19,7 @@ export function ShopTabs({
       >
         <Sparkles
           size={16}
-          color={value === 'inventory' ? '#fff' : theme.primary}
+          color={value === 'inventory' ? theme.white : theme.primary}
         />
         <Text
           style={[s.shopTabText, value === 'inventory' && s.shopTabTextActive]}
@@ -33,7 +33,7 @@ export function ShopTabs({
       >
         <ShoppingBag
           size={16}
-          color={value === 'shop' ? '#fff' : theme.primary}
+          color={value === 'shop' ? theme.white : theme.primary}
         />
         <Text style={[s.shopTabText, value === 'shop' && s.shopTabTextActive]}>
           Loja

@@ -4,37 +4,26 @@ import { useMemo, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { HistoryEmptyState } from '../../../components/aluno/HistoryEmptyState';
 import { StudentScreenShell } from '../../../components/aluno/StudentScreenShell';
-import { SAMPLE_RECENT_ACTIVITIES } from '../../../constants/aluno/history';
+import { HISTORY_FILTERS, SAMPLE_RECENT_ACTIVITIES } from '../../../constants/aluno/history';
 import { theme } from '../../../constants/theme';
 import { useStudentPrototype } from '../../../hooks/aluno/useStudentPrototype';
 import { alunoStyles as s } from '../../../styles/aluno';
 import type { HistoryFilter, RecentActivity } from '../../../types/aluno';
-
-const filters: [HistoryFilter, string][] = [
-  ['all', 'Todas'],
-  ['inProgress', 'Em andamento'],
-  ['awaitingReview', 'Aguardando'],
-  ['revision', 'Revisar'],
-  ['approved', 'Concluídas'],
-];
+import {
+  buildHistoryEntries,
+  filterActivitiesByStatus,
+  getActivityStatusLabel,
+} from '../../../utils/aluno/history';
 export default function HistoryRoute() {
   const router = useRouter();
   const onBack = () => router.back();
   const { mission } = useStudentPrototype();
   const [filter, setFilter] = useState<HistoryFilter>('all');
   const all = useMemo<RecentActivity[]>(
-    () => [
-      {
-        id: 'current',
-        title: mission.title,
-        status: mission.status,
-        dateLabel: 'Hoje',
-      },
-      ...SAMPLE_RECENT_ACTIVITIES,
-    ],
+    () => buildHistoryEntries(mission, SAMPLE_RECENT_ACTIVITIES),
     [mission]
   );
-  const list = filter === 'all' ? all : all.filter((x) => x.status === filter);
+  const list = filterActivitiesByStatus(all, filter);
   return (
     <StudentScreenShell onBack={onBack}>
       <Text style={s.screenTitle}>Histórico de atividades</Text>
@@ -42,7 +31,7 @@ export default function HistoryRoute() {
         Acompanhe suas missões e veja cada conquista.
       </Text>
       <View style={s.historyFilters}>
-        {filters.map(([id, label]) => (
+        {HISTORY_FILTERS.map(([id, label]) => (
           <TouchableOpacity
             key={id}
             onPress={() => setFilter(id)}
@@ -76,14 +65,7 @@ function ActivityRow({ activity: a }: { activity: RecentActivity }) {
       : a.status === 'revision'
       ? RotateCcw
       : Clock3;
-  const label =
-    a.status === 'approved'
-      ? `Aprovada${a.grade ? ` · Nota ${a.grade}` : ''}`
-      : a.status === 'revision'
-      ? 'Revisão solicitada'
-      : a.status === 'awaitingReview'
-      ? 'Aguardando correção'
-      : 'Em andamento';
+  const label = getActivityStatusLabel(a.status, a.grade);
   return (
     <View
       style={[

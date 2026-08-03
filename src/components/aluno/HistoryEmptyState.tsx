@@ -1,38 +1,9 @@
 import { CheckCircle2, Sparkles } from 'lucide-react-native';
 import { Text, TouchableOpacity, View } from 'react-native';
+import { HISTORY_EMPTY_COPY } from '../../constants/aluno/history';
 import { theme } from '../../constants/theme';
 import { alunoStyles as s } from '../../styles/aluno';
 import type { HistoryFilter } from '../../types/aluno';
-
-const EMPTY_COPY: Record<
-  HistoryFilter,
-  { title: string; description: string }
-> = {
-  all: {
-    title: 'Sua jornada está começando',
-    description: 'Quando você participar de uma missão, ela aparecerá aqui.',
-  },
-  pending: {
-    title: 'Nenhuma missão nova',
-    description: 'Quando uma nova aventura chegar, ela aparecerá aqui.',
-  },
-  inProgress: {
-    title: 'Nenhuma missão em andamento',
-    description: 'Você terminou tudo por enquanto. Muito bem!',
-  },
-  awaitingReview: {
-    title: 'Nada aguardando correção',
-    description: 'Quando você enviar uma resposta, poderá acompanhar por aqui.',
-  },
-  revision: {
-    title: 'Tudo certo por aqui!',
-    description: 'Você não tem nenhuma correção pendente.',
-  },
-  approved: {
-    title: 'Nenhuma missão concluída ainda',
-    description: 'Sua primeira conquista vai aparecer aqui em breve.',
-  },
-};
 
 export function HistoryEmptyState({
   filter,
@@ -41,7 +12,7 @@ export function HistoryEmptyState({
   filter: HistoryFilter;
   onShowAll(): void;
 }) {
-  const copy = EMPTY_COPY[filter];
+  const copy = HISTORY_EMPTY_COPY[filter];
   const Icon = filter === 'revision' ? CheckCircle2 : Sparkles;
 
   return (

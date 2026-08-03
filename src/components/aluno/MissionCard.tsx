@@ -1,16 +1,11 @@
 import {
-  ChevronRight, Clock3, Coins, FileText, RotateCcw
+  ChevronRight, Clock3, Coins, FileText, RotateCcw,
 } from 'lucide-react-native';
 import { Pressable, Text, View } from 'react-native';
 import { MISSION_PRESENTATION } from '../../constants/aluno/missionPresentation';
 import { theme } from '../../constants/theme';
 import { alunoStyles as s } from '../../styles/aluno';
-import type { StudentMission } from '../../types/aluno';
-
-export interface MissionCardProps {
-  mission: StudentMission;
-  onPress(): void;
-}
+import type { MissionCardProps } from '../../types/aluno';
 
 export function MissionCard({ mission, onPress }: MissionCardProps) {
   const presentation = MISSION_PRESENTATION[mission.status];
@@ -40,7 +35,7 @@ export function MissionCard({ mission, onPress }: MissionCardProps) {
             mission.status === 'revision' && s.missionIconRevision,
           ]}
         >
-          <Icon size={21} color="#fff" />
+          <Icon size={21} color={theme.white} />
         </View>
         <View style={s.contentFlex}>
           <Text
@@ -55,7 +50,7 @@ export function MissionCard({ mission, onPress }: MissionCardProps) {
           <View style={s.missionMetaRow}>
             <Clock3 size={12} color={theme.textMuted} />
             <Text style={s.missionFixedMeta}>{mission.estimate}</Text>
-            <Coins size={12} color="#D6961D" />
+            <Coins size={12} color={theme.studentGold} />
             <Text style={s.missionFixedMeta}>+{mission.rewardCoins}</Text>
           </View>
           <Text style={[s.missionCta]}>{presentation.action}</Text>

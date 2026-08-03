@@ -1,11 +1,11 @@
 import { avatarStudentStyles } from './avatar';
 import { celebrationStudentStyles } from './celebration';
-import { commonStudentStyles } from './common';
+import { commonStudentStyles, studentStyleHelpers } from './common';
 import { historyStudentStyles } from './history';
 import { missionStudentStyles } from './mission';
 import { notificationsStudentStyles } from './notifications';
 import { shopStudentStyles } from './shop';
-import { trailStudentStyles } from './trail';
+import { trailStudentStyles, trailStyleHelpers } from './trail';
 
 export {
     avatarStudentStyles,
@@ -15,13 +15,16 @@ export {
     missionStudentStyles,
     notificationsStudentStyles,
     shopStudentStyles,
-    trailStudentStyles
+    studentStyleHelpers,
+    trailStudentStyles,
+    trailStyleHelpers
 };
 
 export const alunoStyles = {
     ...commonStudentStyles,
     ...avatarStudentStyles,
     ...trailStudentStyles,
+    ...trailStyleHelpers,
     ...missionStudentStyles,
     ...shopStudentStyles,
     ...historyStudentStyles,

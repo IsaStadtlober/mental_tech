@@ -27,8 +27,8 @@ export const historyStudentStyles = StyleSheet.create({
     },
     historyFilterTextActive: { color: theme.card },
     historyCardRevision: {
-        borderColor: 'rgba(164,95,8,.35)',
-        backgroundColor: '#FFF9F0',
+        borderColor: theme.studentWarmBorder,
+        backgroundColor: theme.studentWarmGlow,
         flexDirection: 'row',
         gap: 12,
         alignItems: 'center',

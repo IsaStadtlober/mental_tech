@@ -37,7 +37,7 @@ export function StudentMap({
       contentContainerStyle={s.mapScrollContent}
       showsVerticalScrollIndicator={false}
     >
-      <View style={[s.mapCanvas, { height: MAP_HEIGHT }]}>
+      <View style={s.mapCanvasHeight(MAP_HEIGHT)}>
         <TrailWorld />
         <MapScenery />
         <MapPath status={status} />

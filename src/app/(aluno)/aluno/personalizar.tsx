@@ -5,7 +5,7 @@ import { Text, TouchableOpacity, View } from 'react-native';
 import { ExplorerAvatar } from '../../../components/aluno/ExplorerAvatar';
 import { ShopCategoryBar } from '../../../components/aluno/ShopCategoryBar';
 import { ShopItemCard } from '../../../components/aluno/ShopItemCard';
-import { ShopTabs, type ShopTab } from '../../../components/aluno/ShopTabs';
+import { ShopTabs } from '../../../components/aluno/ShopTabs';
 import { StudentBottomSheet } from '../../../components/aluno/StudentBottomSheet';
 import { StudentScreenShell } from '../../../components/aluno/StudentScreenShell';
 import { SimpleCenteredHeader } from '../../../components/Headers';
@@ -14,7 +14,7 @@ import { SHOP_ITEMS } from '../../../constants/aluno/shop';
 import { theme } from '../../../constants/theme';
 import { useStudentPrototype } from '../../../hooks/aluno/useStudentPrototype';
 import { alunoStyles as s } from '../../../styles/aluno';
-import type { ShopCategory, ShopItem } from '../../../types/aluno';
+import type { ShopCategory, ShopItem, ShopTab } from '../../../types/aluno';
 import { canAcquire } from '../../../utils/aluno/shop';
 
 export default function CustomizeRoute() {
@@ -67,7 +67,7 @@ export default function CustomizeRoute() {
           name={session.explorerName}
         />
         <View style={s.shopBalanceLarge}>
-          <Coins size={17} color="#D6961D" />
+          <Coins size={17} color={theme.studentGold} />
           <Text style={s.shopBalanceLargeText}>{session.coins} moedas</Text>
         </View>
         <ShopTabs value={tab} onChange={setTab} />

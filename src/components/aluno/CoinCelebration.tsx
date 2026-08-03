@@ -5,6 +5,7 @@ import Animated, {
   Easing, useAnimatedStyle, useSharedValue,
   withDelay, withSpring, withTiming
 } from 'react-native-reanimated';
+import { theme } from '../../constants/theme';
 import { alunoStyles as s } from '../../styles/aluno';
 
 export function CoinCelebration({
@@ -32,9 +33,9 @@ export function CoinCelebration({
   return (
     <Animated.View style={[s.coinCelebration, style]}>
       <View style={s.coinBurst}>
-        <Sparkles size={24} color="#FFE08A" />
-        <Coins size={50} color="#FFD66B" />
-        <Sparkles size={20} color="#FFE08A" />
+        <Sparkles size={24} color={theme.studentGoldAccent} />
+        <Coins size={50} color={theme.studentGoldGlow} />
+        <Sparkles size={20} color={theme.studentGoldAccent} />
       </View>
       <Text style={s.coinCelebrationValue}>+{reward} moedas!</Text>
       <Text style={s.coinCelebrationTotal}>Seu saldo agora é {total}</Text>

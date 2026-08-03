@@ -1,6 +1,6 @@
 import { memo } from 'react';
-import Svg, { Path } from 'react-native-svg';
 import { StyleSheet } from 'react-native';
+import Svg, { Path } from 'react-native-svg';
 import { MAP_HEIGHT, MAP_PATH } from '../../constants/aluno/trail';
 import { theme } from '../../constants/theme';
 import type { MissionStatus } from '../../types/aluno';
@@ -26,7 +26,7 @@ export const MapPath = memo(function MapPath({
       <Path
         d={MAP_PATH}
         fill="none"
-        stroke="#D7E2DD"
+        stroke={theme.studentMapTrail}
         strokeWidth="18"
         strokeLinecap="round"
       />
@@ -40,7 +40,7 @@ export const MapPath = memo(function MapPath({
       <Path
         d={MAP_PATH}
         fill="none"
-        stroke="rgba(255,255,255,.72)"
+        stroke={theme.studentMapPathSoft}
         strokeWidth="4"
         strokeLinecap="round"
         strokeDasharray="4 14"

@@ -49,10 +49,10 @@ export const shopStudentStyles = StyleSheet.create({
         alignItems: 'center',
         padding: 12,
     },
-    shopItemCardLocked: { backgroundColor: '#F3F4F4', borderColor: '#E1E5E3' },
+    shopItemCardLocked: { backgroundColor: theme.studentSoftOff, borderColor: theme.studentSoftOffBorder },
     shopItemCardEquipped: {
         borderColor: theme.primary,
-        backgroundColor: '#E5F2EE',
+        backgroundColor: theme.studentSoftMint,
     },
     shopItemIcon: {
         width: 48,
@@ -63,7 +63,7 @@ export const shopStudentStyles = StyleSheet.create({
         backgroundColor: theme.card,
         marginBottom: 8,
     },
-    shopItemIconLocked: { backgroundColor: '#E7EAE9' },
+    shopItemIconLocked: { backgroundColor: theme.studentSoftMintAlt },
     shopItemTitle: {
         fontFamily: fonts.bodyBold,
         fontSize: 12.5,
@@ -106,7 +106,7 @@ export const shopStudentStyles = StyleSheet.create({
         marginTop: 7,
         padding: 7,
         borderRadius: 10,
-        backgroundColor: 'rgba(23,63,55,.06)',
+        backgroundColor: theme.primaryTint,
     },
     requirementLabel: {
         fontFamily: fonts.bodyBold,
@@ -163,7 +163,7 @@ export const shopStudentStyles = StyleSheet.create({
         color: theme.primary,
     },
     shopTabTextActive: { color: theme.card },
-    shopItemExclusive: { backgroundColor: '#F3EEFF', borderColor: '#BCAAE8' },
+    shopItemExclusive: { backgroundColor: theme.studentPurpleLight, borderColor: theme.studentPurpleBorder },
     shopItemExclusiveIcon: { backgroundColor: theme.studentPurpleSoft },
     exclusiveRequirement: {
         flexDirection: 'row',
@@ -255,7 +255,7 @@ export const shopStudentStyles = StyleSheet.create({
         borderRadius: 17,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: 'rgba(255,255,255,.96)',
+        backgroundColor: theme.whiteSubtle,
         borderWidth: 1,
         borderColor: theme.border,
         ...theme.shadowCard,

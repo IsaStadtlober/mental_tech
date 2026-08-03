@@ -3,35 +3,32 @@ import { Bell, FileText, Gift, RotateCcw } from 'lucide-react-native';
 import { Pressable, Text, View } from 'react-native';
 import { StudentEmptyState } from '../../../components/aluno/StudentEmptyState';
 import { StudentScreenShell } from '../../../components/aluno/StudentScreenShell';
+import {
+  NOTIFICATION_CATEGORY_LABELS,
+  NOTIFICATION_EMPTY_STATE,
+  NOTIFICATION_SCREEN_COPY,
+} from '../../../constants/aluno/notifications';
 import { theme } from '../../../constants/theme';
 import { useStudentPrototype } from '../../../hooks/aluno/useStudentPrototype';
-import { ALUNO_ROUTES } from '../../../router/aluno.routes';
 import { alunoStyles as s } from '../../../styles/aluno';
 import type { StudentNotification } from '../../../types/aluno';
+import { resolveNotificationRoute } from '../../../utils/aluno/notifications';
 
 export default function NotificationsRoute() {
   const router = useRouter();
   const { notifications, markNotificationRead } = useStudentPrototype();
   const open = (x: StudentNotification) => {
     markNotificationRead(x.id);
-    router.push(
-      x.destination === 'mission'
-        ? ALUNO_ROUTES.MISSION
-        : x.destination === 'reward'
-        ? ALUNO_ROUTES.REWARD
-        : ALUNO_ROUTES.HISTORY
-    );
+    router.push(resolveNotificationRoute(x));
   };
   return (
     <StudentScreenShell onBack={() => router.back()}>
-      <Text style={s.screenTitle}>Notificações</Text>
-      <Text style={s.screenSubtitle}>
-        Novidades e lembretes da sua jornada.
-      </Text>
+      <Text style={s.screenTitle}>{NOTIFICATION_SCREEN_COPY.title}</Text>
+      <Text style={s.screenSubtitle}>{NOTIFICATION_SCREEN_COPY.subtitle}</Text>
       {notifications.length === 0 ? (
         <StudentEmptyState
-          title="Tudo tranquilo por aqui"
-          description="Quando uma novidade chegar, ela aparecerá aqui."
+          title={NOTIFICATION_EMPTY_STATE.title}
+          description={NOTIFICATION_EMPTY_STATE.description}
         />
       ) : (
         <View style={s.notificationList}>
@@ -84,14 +81,14 @@ function NotificationCard({
             item.category === 'revision'
               ? theme.warning
               : item.category === 'reward'
-              ? '#7452B8'
+              ? theme.studentPurple
               : theme.primary
           }
         />
       </View>
       <View style={s.contentFlex}>
         <Text style={s.studentNotificationEyebrow}>
-          {item.category.toUpperCase()}
+          {NOTIFICATION_CATEGORY_LABELS[item.category]}
         </Text>
         <Text style={s.studentListTitle}>{item.title}</Text>
         <Text style={s.studentListMeta}>{item.description}</Text>

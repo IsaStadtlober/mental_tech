@@ -2,12 +2,8 @@ import { CheckCircle2, Gift } from 'lucide-react-native';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { theme } from '../../constants/theme';
 import { alunoStyles as s } from '../../styles/aluno';
+import type { StudentEmptyStateProps } from '../../types/aluno';
 
-export interface StudentEmptyStateProps {
-  onInventory?: () => void;
-  title?: string;
-  description?: string;
-}
 export function StudentEmptyState({
   onInventory,
   title = 'Você está em dia, explorador!',

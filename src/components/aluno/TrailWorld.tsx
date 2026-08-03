@@ -1,6 +1,7 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { View } from 'react-native';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import { theme } from '../../constants/theme';
 import { useLoopValue } from '../../hooks/useAnimations';
 import { alunoStyles as s } from '../../styles/aluno';
 
@@ -24,7 +25,7 @@ function DriftingCloud({
     ],
   }));
   return (
-    <Animated.View style={[s.trailCloud, { top, left }, style]}>
+    <Animated.View style={[s.trailCloudPosition(top, left), style]}>
       <View style={s.trailCloudPuff} />
       <View style={[s.trailCloudPuff, s.trailCloudPuffTwo]} />
       <View style={[s.trailCloudPuff, s.trailCloudPuffThree]} />
@@ -45,13 +46,13 @@ function Firefly({
     opacity: glow.value,
     transform: [{ scale: 0.7 + glow.value * 0.5 }],
   }));
-  return <Animated.View style={[s.firefly, { top, left }, style]} />;
+  return <Animated.View style={[s.fireflyPosition(top, left), style]} />;
 }
 export function TrailWorld() {
   return (
     <View pointerEvents="none" style={s.trailWorld}>
       <LinearGradient
-        colors={['#DDF3ED', '#F5F0DE', '#FCF6F0']}
+        colors={[theme.studentSkyTop, theme.studentSkyMid, theme.studentSkyBottom]}
         style={s.trailSky}
       />
       <View style={s.mountainBack} />
@@ -68,9 +69,9 @@ export function TrailWorld() {
       ].map((x, i) => (
         <Firefly key={i} {...x} />
       ))}
-      <View style={[s.trailBush, { top: 280, left: 12 }]} />
-      <View style={[s.trailBush, { top: 580, right: 14 }]} />
-      <View style={[s.trailBushSmall, { top: 735, left: 32 }]} />
+      <View style={s.trailBushPosition(280, 12)} />
+      <View style={s.trailBushPosition(580, undefined, 14)} />
+      <View style={s.trailBushSmallPosition(735, 32)} />
     </View>
   );
 }

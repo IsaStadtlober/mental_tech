@@ -1,6 +1,6 @@
 import {
-    CheckCircle, Coins, Gift, LockKeyhole,
-    ShoppingBag, Sparkles, Trophy
+  CheckCircle, Coins, Gift, LockKeyhole,
+  ShoppingBag, Sparkles, Trophy
 } from 'lucide-react-native';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { theme } from '../../constants/theme';
@@ -48,11 +48,11 @@ export function ShopItemCard({
         ]}
       >
         {item.missionOnly && !owned ? (
-          <LockKeyhole size={22} color="#7452B8" />
+          <LockKeyhole size={22} color={theme.studentPurple} />
         ) : (
           <Icon
             size={25}
-            color={item.missionOnly ? '#7452B8' : theme.primary}
+            color={item.missionOnly ? theme.studentPurple : theme.primary}
           />
         )}
       </View>
@@ -66,12 +66,12 @@ export function ShopItemCard({
         <Text style={s.itemActionText}>Equipar</Text>
       ) : item.missionOnly ? (
         <View style={s.exclusiveRequirement}>
-          <Trophy size={12} color="#7452B8" />
+          <Trophy size={12} color={theme.studentPurple} />
           <Text style={s.exclusiveRequirementText}>Exclusivo de Missão</Text>
         </View>
       ) : available ? (
         <View style={s.itemPriceRow}>
-          <Coins size={12} color="#D6961D" />
+          <Coins size={12} color={theme.studentGold} />
           <Text style={s.itemPriceText}>{item.price}</Text>
         </View>
       ) : (

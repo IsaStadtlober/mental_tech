@@ -19,7 +19,7 @@ export const celebrationStudentStyles = StyleSheet.create({
     coinCelebrationValue: {
         fontFamily: fonts.headlineBold,
         fontSize: 30,
-        color: '#9A6B11',
+        color: theme.studentGoldDark,
     },
     coinCelebrationTotal: {
         fontFamily: fonts.bodyBold,
@@ -33,7 +33,7 @@ export const celebrationStudentStyles = StyleSheet.create({
         marginTop: 20,
         justifyContent: 'center',
     },
-    halfwayLine: { height: 8, borderRadius: 4, backgroundColor: '#D7E2DD' },
+    halfwayLine: { height: 8, borderRadius: 4, backgroundColor: theme.studentMapTrail },
     halfwayStart: {
         position: 'absolute',
         left: 0,
@@ -140,9 +140,9 @@ export const celebrationStudentStyles = StyleSheet.create({
         width: 150,
         height: 42,
         borderRadius: 18,
-        backgroundColor: '#7D5BD0',
+        backgroundColor: theme.studentPurple,
         borderWidth: 5,
-        borderColor: '#5B3DA8',
+        borderColor: theme.studentPurpleDeep,
         alignItems: 'center',
         justifyContent: 'center',
         zIndex: 3,
@@ -151,9 +151,9 @@ export const celebrationStudentStyles = StyleSheet.create({
         width: 136,
         height: 66,
         borderRadius: 17,
-        backgroundColor: '#6D4BB8',
+        backgroundColor: theme.studentPurpleDeep,
         borderWidth: 5,
-        borderColor: '#543397',
+        borderColor: theme.studentPurple,
     },
     rewardItem: { position: 'absolute', top: 8, alignItems: 'center', zIndex: 1 },
     rewardItemGlow: {
@@ -161,7 +161,7 @@ export const celebrationStudentStyles = StyleSheet.create({
         width: 110,
         height: 110,
         borderRadius: 55,
-        backgroundColor: 'rgba(255,224,138,.24)',
+        backgroundColor: theme.studentMapGlow,
     },
     exclusiveMissionPill: {
         flexDirection: 'row',
@@ -170,13 +170,13 @@ export const celebrationStudentStyles = StyleSheet.create({
         paddingHorizontal: 10,
         paddingVertical: 6,
         borderRadius: 999,
-        backgroundColor: '#EEE8FF',
+        backgroundColor: theme.studentPurpleTint,
         marginTop: 9,
     },
     exclusiveMissionText: {
         fontFamily: fonts.bodyBold,
         fontSize: 10,
-        color: '#6D4BB8',
+        color: theme.studentPurpleDeep,
     },
     rewardTitle: {
         fontFamily: fonts.headlineBold,

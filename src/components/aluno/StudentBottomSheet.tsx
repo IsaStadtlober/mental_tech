@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { Modal, Pressable, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { alunoStyles as s } from '../../styles/aluno';
+import { alunoStyles as s, studentStyleHelpers } from '../../styles/aluno';
 
 export function StudentBottomSheet({
   children,
@@ -25,12 +25,7 @@ export function StudentBottomSheet({
           onPress={onClose}
           style={s.nativeModalBackdrop}
         />
-        <View
-          style={[
-            s.nativeModalSheet,
-            { paddingBottom: Math.max(12, insets.bottom) },
-          ]}
-        >
+        <View style={studentStyleHelpers.modalSheetWithInset(Math.max(12, insets.bottom))}>
           <View style={s.nativeModalGrabber} />
           {children}
         </View>

@@ -1,25 +1,17 @@
 import { ArrowLeft } from 'lucide-react-native';
-import type { ReactNode } from 'react';
 import {
   KeyboardAvoidingView, Platform, ScrollView,
-  Text, TouchableOpacity, View
+  Text, TouchableOpacity, View,
 } from 'react-native';
 import {
   SafeAreaView,
   useSafeAreaInsets,
 } from 'react-native-safe-area-context';
 import { theme } from '../../constants/theme';
-import { alunoStyles as s } from '../../styles/aluno';
-import type { BackgroundVariantType } from '../../types/backgroundScene';
+import { alunoStyles as s, studentStyleHelpers } from '../../styles/aluno';
+import type { StudentScreenShellProps } from '../../types/aluno';
 import { BackgroundScene } from '../background/BackgroundScene';
 
-export interface StudentScreenShellProps {
-  children: ReactNode;
-  onBack?: () => void;
-  footer?: ReactNode;
-  footerPadding?: number;
-  bannerVariant?: BackgroundVariantType;
-}
 export function StudentScreenShell({
   children,
   onBack,
@@ -39,7 +31,7 @@ export function StudentScreenShell({
             accessibilityRole="button"
             accessibilityLabel="Voltar"
             onPress={onBack}
-            style={[s.studentBackButton, { top: insets.top + 8 }]}
+            style={studentStyleHelpers.positionedBackButton(insets.top + 8)}
           >
             <ArrowLeft size={18} color={theme.primary} />
             <Text style={s.studentBackText}>Voltar</Text>
@@ -57,12 +49,7 @@ export function StudentScreenShell({
             {children}
           </ScrollView>
           {footer && (
-            <View
-              style={[
-                s.studentFooter,
-                { paddingBottom: footerPadding + insets.bottom },
-              ]}
-            >
+            <View style={studentStyleHelpers.footerWithInset(footerPadding + insets.bottom)}>
               {footer}
             </View>
           )}

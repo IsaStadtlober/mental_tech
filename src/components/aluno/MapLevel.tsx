@@ -1,5 +1,5 @@
 import {
-    CheckCircle, Clock3, FileText, Lock, RotateCcw
+  CheckCircle, Clock3, FileText, Lock, RotateCcw
 } from 'lucide-react-native';
 import { memo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
@@ -39,7 +39,7 @@ export const MapLevel = memo(function MapLevel({
             ? 'Nova missão'
             : undefined;
   return (
-    <View style={[s.mapNodeWrap, { left: node.x - 40, top: node.y - 40 }]}>
+    <View style={s.mapNodePosition(node.x - 40, node.y - 40)}>
       {state === 'current' && (
         <View
           style={[
@@ -63,7 +63,7 @@ export const MapLevel = memo(function MapLevel({
       >
         <Icon
           size={state === 'locked' ? 24 : 28}
-          color={state === 'locked' ? theme.textFaint : '#fff'}
+          color={state === 'locked' ? theme.textFaint : theme.white}
         />
         {missionStatus === 'pending' && (
           <View style={s.pendingBadge}>

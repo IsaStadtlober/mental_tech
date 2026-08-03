@@ -155,7 +155,7 @@ export const commonStudentStyles = StyleSheet.create({
     studentBanner: {
         height: 100,
         overflow: 'hidden',
-        backgroundColor: theme.primary,
+        backgroundColor: theme.studentSkyBottom,
     },
     studentSheet: {
         flex: 1,
@@ -165,11 +165,15 @@ export const commonStudentStyles = StyleSheet.create({
         borderTopRightRadius: 28,
         backgroundColor: theme.card,
     },
+    studentScrollArea: {
+        flex: 1,
+        backgroundColor: theme.card,
+    },
     studentScreenContent: {
         flexGrow: 1,
         paddingHorizontal: 20,
         paddingTop: 30,
-        paddingBottom: 132,
+        paddingBottom: 20,
     },
     studentFooter: {
         position: 'absolute',
@@ -253,10 +257,6 @@ export const studentStyleHelpers = {
         top,
     }),
     footerWithInset: (paddingBottom: number): ViewStyle => ({
-        position: 'absolute' as const,
-        left: 0,
-        right: 0,
-        bottom: 0,
         paddingHorizontal: 20,
         paddingTop: 12,
         paddingBottom,

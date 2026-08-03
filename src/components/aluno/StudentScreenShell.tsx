@@ -38,10 +38,11 @@ export function StudentScreenShell({
           </TouchableOpacity>
         )}
         <View style={s.studentBanner}>
-          <BackgroundScene variant={bannerVariant} />
+          <BackgroundScene variant={bannerVariant} tintColor={theme.primary} />
         </View>
         <View style={s.studentSheet}>
           <ScrollView
+            style={s.studentScrollArea}
             contentContainerStyle={s.studentScreenContent}
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"

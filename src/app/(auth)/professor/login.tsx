@@ -41,8 +41,12 @@ export default function EducatorLoginRoute() {
         return;
       }
 
-      // Login bem-sucedido - navegar para dashboard
-      router.replace(PROFESSOR_ROUTES.DASHBOARD as any);
+      // Login bem-sucedido - navegar conforme o tipo de usuário
+      if (authResult.role === "teacher") {
+        router.replace(PROFESSOR_ROUTES.DASHBOARD as any);
+      } else {
+        router.replace(AUTH_ROUTES.CAROUSEL as any);
+      }
     } catch (error: any) {
       setLoginError(
         error?.message || "Erro ao processar login. Tente novamente.",

@@ -47,12 +47,220 @@ export interface ProfessorClassroomSummary {
 
 export interface ProfessorActivitySummary {
   id: string;
-  title?: string | null;
+  teacher_id: string;
+  class_id: string;
+  title: string;
   description?: string | null;
-  status?: string | null;
-  created_at?: string | null;
-  class_id?: string | null;
-  teacher_id?: string | null;
+  content_url?: string | null;
+  status: "draft" | "published";
+  created_at: string;
+  updated_at: string;
+  published_at?: string | null;
+}
+
+export interface CreateProfessorActivityInput {
+  classId: string;
+  title: string;
+  description?: string | null;
+}
+
+export interface UploadProfessorActivityFileInput {
+  activityId: string;
+  uri: string;
+  fileName: string;
+  mimeType?: string | null;
+}
+
+const ACTIVITIES_STORAGE_BUCKET = "activities";
+
+const PROFESSOR_ACTIVITY_SELECT =
+  "id, teacher_id, class_id, title, description, content_url, status, created_at, updated_at, published_at";
+
+async function validateTeacherClass(
+  teacherId: string,
+  schoolId: string,
+  classId: string
+): Promise<void> {
+  if (!classId || !classId.trim()) throw new Error("Turma não informada.");
+
+  const requestedClassId = classId.trim();
+
+  const { data: classroom, error: classroomError } = await supabase
+    .from("classes")
+    .select("id, is_active, school_id")
+    .eq("id", requestedClassId)
+    .maybeSingle();
+
+  if (classroomError) throw classroomError;
+  if (!classroom) throw new Error("Turma inválida ou não pertencente à escola.");
+  if (classroom.is_active !== true) throw new Error("Turma inativa.");
+  if (classroom.school_id !== schoolId) throw new Error("Turma não pertence à escola do professor.");
+
+  const { data: teacherClass, error: tcError } = await supabase
+    .from("teacher_classes")
+    .select("teacher_id")
+    .eq("teacher_id", teacherId)
+    .eq("class_id", requestedClassId)
+    .maybeSingle();
+
+  if (tcError) throw tcError;
+  if (!teacherClass) throw new Error("Professor não vinculado à turma informada.");
+}
+
+export async function createProfessorActivity(
+  input: CreateProfessorActivityInput
+): Promise<ProfessorActivitySummary> {
+  const { teacher } = await getAuthenticatedTeacherContext();
+
+  if (!input?.classId) throw new Error("Turma não informada.");
+
+  await validateTeacherClass(teacher.id, teacher.school_id, input.classId);
+
+  const title = input.title?.trim() || "";
+  if (!title) throw new Error("Título não pode ser vazio.");
+
+  const description = input.description?.trim() || null;
+
+  const { data: activity, error } = await supabase
+    .from("activities")
+    .insert({
+      teacher_id: teacher.id,
+      class_id: input.classId.trim(),
+      title,
+      description,
+      status: "draft",
+    })
+    .select(PROFESSOR_ACTIVITY_SELECT)
+    .single();
+
+  if (error) throw error;
+  return activity as ProfessorActivitySummary;
+}
+
+export async function uploadProfessorActivityFile(
+  input: UploadProfessorActivityFileInput
+): Promise<ProfessorActivitySummary> {
+  const { teacher } = await getAuthenticatedTeacherContext();
+
+  if (!input?.activityId) throw new Error("Atividade não informada.");
+  if (!input?.uri) throw new Error("URI do arquivo não informada.");
+  if (!input?.fileName) throw new Error("Nome do arquivo não informado.");
+
+  const activityId = input.activityId.trim();
+
+  const { data: activity, error: activityError } = await supabase
+    .from("activities")
+    .select(PROFESSOR_ACTIVITY_SELECT)
+    .eq("id", activityId)
+    .eq("teacher_id", teacher.id)
+    .maybeSingle();
+
+  if (activityError) throw activityError;
+  if (!activity) throw new Error("Atividade não encontrada ou não pertence ao professor.");
+
+  await validateTeacherClass(teacher.id, teacher.school_id, activity.class_id);
+
+  const sanitizedFileName = input.fileName.replace(/[^a-zA-Z0-9.\-_]/g, "-");
+  const storagePath = `${teacher.id}/${activity.id}/${Date.now()}-${sanitizedFileName}`;
+
+  let fileData: ArrayBuffer;
+  try {
+    const response = await fetch(input.uri);
+    if (!response.ok) throw new Error("Falha ao ler o arquivo a partir da URI.");
+    fileData = await response.arrayBuffer();
+  } catch {
+    throw new Error("Não foi possível converter a URI do arquivo. Verifique se a URI é acessível.");
+  }
+
+  const { error: uploadError } = await supabase.storage
+    .from(ACTIVITIES_STORAGE_BUCKET)
+    .upload(storagePath, fileData, {
+      contentType: input.mimeType || undefined,
+      upsert: false,
+    });
+
+  if (uploadError) {
+    if (/bucket|not found|forbidden|permission/i.test(uploadError.message || "")) {
+      throw new Error("Erro de Storage: bucket 'activities' não disponível ou sem permissão.");
+    }
+    throw uploadError;
+  }
+
+  const { data: publicData } = supabase.storage
+    .from(ACTIVITIES_STORAGE_BUCKET)
+    .getPublicUrl(storagePath);
+
+  const publicUrl = publicData?.publicUrl || null;
+
+  if (!publicUrl) {
+    // tentar remover arquivo enviado
+    try {
+      await supabase.storage.from(ACTIVITIES_STORAGE_BUCKET).remove([storagePath]);
+    } catch {
+      // ignore cleanup error
+    }
+    throw new Error("Não foi possível obter a URL pública do arquivo enviado.");
+  }
+
+  const { data: updated, error: updateError } = await supabase
+    .from("activities")
+    .update({ content_url: publicUrl })
+    .eq("id", activity.id)
+    .eq("teacher_id", teacher.id)
+    .select(PROFESSOR_ACTIVITY_SELECT)
+    .single();
+
+  if (updateError) {
+    // tentar remover arquivo enviado
+    try {
+      await supabase.storage.from(ACTIVITIES_STORAGE_BUCKET).remove([storagePath]);
+    } catch {
+      // ignore cleanup error
+    }
+    throw updateError;
+  }
+
+  return updated as ProfessorActivitySummary;
+}
+
+export async function publishProfessorActivity(
+  activityId: string
+): Promise<ProfessorActivitySummary> {
+  const { teacher } = await getAuthenticatedTeacherContext();
+
+  if (!activityId || !activityId.trim()) throw new Error("Atividade não informada.");
+
+  const requestedId = activityId.trim();
+
+  const { data: activity, error: activityError } = await supabase
+    .from("activities")
+    .select(PROFESSOR_ACTIVITY_SELECT)
+    .eq("id", requestedId)
+    .eq("teacher_id", teacher.id)
+    .maybeSingle();
+
+  if (activityError) throw activityError;
+  if (!activity) throw new Error("Atividade não encontrada ou não pertence ao professor.");
+
+  await validateTeacherClass(teacher.id, teacher.school_id, activity.class_id);
+
+  if (!activity.content_url) throw new Error("Não é possível publicar atividade sem arquivo de conteúdo.");
+
+  if (activity.status === "published") {
+    return activity as ProfessorActivitySummary;
+  }
+
+  const { data: published, error: publishError } = await supabase
+    .from("activities")
+    .update({ status: "published", published_at: new Date().toISOString() })
+    .eq("id", requestedId)
+    .eq("teacher_id", teacher.id)
+    .select(PROFESSOR_ACTIVITY_SELECT)
+    .single();
+
+  if (publishError) throw publishError;
+
+  return published as ProfessorActivitySummary;
 }
 
 export interface ProfessorProfileResponse {
@@ -199,43 +407,25 @@ export async function listProfessorClasses() {
 /**
  * Lista as atividades vinculadas ao professor autenticado.
  */
-export async function listProfessorActivities(classId?: string) {
+export async function listProfessorActivities(
+  classId: string
+): Promise<ProfessorActivitySummary[]> {
   const { teacher } = await getAuthenticatedTeacherContext();
-  const requestedClassId = classId?.trim();
 
-  if (requestedClassId) {
-    const { data: classroom, error: classroomError } = await supabase
-      .from("classes")
-      .select("id")
-      .eq("id", requestedClassId)
-      .eq("school_id", teacher.school_id)
-      .eq("is_active", true)
-      .maybeSingle();
+  if (!classId || !classId.trim()) throw new Error("Turma não informada.");
 
-    if (classroomError) throw classroomError;
-    if (!classroom) {
-      throw new Error("Turma inválida ou não pertencente à escola.");
-    }
-  }
+  await validateTeacherClass(teacher.id, teacher.school_id, classId);
 
-  let query = supabase
+  const { data: activities, error: activitiesError } = await supabase
     .from("activities")
-    .select("id, title, description, status, created_at, class_id, teacher_id")
+    .select(PROFESSOR_ACTIVITY_SELECT)
     .eq("teacher_id", teacher.id)
+    .eq("class_id", classId.trim())
     .order("created_at", { ascending: false });
-
-  if (requestedClassId) {
-    query = query.eq("class_id", requestedClassId);
-  }
-
-  const { data: activities, error: activitiesError } = await query;
 
   if (activitiesError) throw activitiesError;
 
-  return (activities ?? []).filter((activity) => {
-    if (!activity.class_id) return false;
-    return activity.class_id !== null && activity.teacher_id === teacher.id;
-  }) as ProfessorActivitySummary[];
+  return (activities ?? []) as ProfessorActivitySummary[];
 }
 
 /**

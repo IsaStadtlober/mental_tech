@@ -45,6 +45,14 @@ export interface ProfessorClassroomSummary {
   school_id?: string | null;
 }
 
+export interface ProfessorStudentSummary {
+  id: string;
+  name: string;
+  class_id?: string | null;
+  class_name?: string | null;
+  school_id?: string | null;
+}
+
 export interface ProfessorActivitySummary {
   id: string;
   teacher_id: string;
@@ -408,24 +416,76 @@ export async function listProfessorClasses() {
  * Lista as atividades vinculadas ao professor autenticado.
  */
 export async function listProfessorActivities(
-  classId: string
+  classId?: string
 ): Promise<ProfessorActivitySummary[]> {
   const { teacher } = await getAuthenticatedTeacherContext();
 
-  if (!classId || !classId.trim()) throw new Error("Turma não informada.");
+  if (classId && classId.trim()) {
+    await validateTeacherClass(teacher.id, teacher.school_id, classId);
+  }
 
-  await validateTeacherClass(teacher.id, teacher.school_id, classId);
-
-  const { data: activities, error: activitiesError } = await supabase
+  let query = supabase
     .from("activities")
     .select(PROFESSOR_ACTIVITY_SELECT)
     .eq("teacher_id", teacher.id)
-    .eq("class_id", classId.trim())
     .order("created_at", { ascending: false });
+
+  if (classId && classId.trim()) {
+    query = query.eq("class_id", classId.trim());
+  }
+
+  const { data: activities, error: activitiesError } = await query;
 
   if (activitiesError) throw activitiesError;
 
   return (activities ?? []) as ProfessorActivitySummary[];
+}
+
+/**
+ * Lista os alunos vinculados ao professor autenticado.
+ */
+export async function listProfessorStudents(): Promise<ProfessorStudentSummary[]> {
+  const { teacher } = await getAuthenticatedTeacherContext();
+
+  const { data: teacherClasses, error: teacherClassesError } = await supabase
+    .from("teacher_classes")
+    .select("class_id")
+    .eq("teacher_id", teacher.id);
+
+  if (teacherClassesError) throw teacherClassesError;
+
+  const classIds = (teacherClasses ?? [])
+    .map((item) => item.class_id)
+    .filter(Boolean) as string[];
+
+  if (classIds.length === 0) {
+    return [];
+  }
+
+  const { data: students, error: studentsError } = await supabase
+    .from("students")
+    .select("id, name, class_id, school_id")
+    .eq("school_id", teacher.school_id)
+    .in("class_id", classIds);
+
+  if (studentsError) throw studentsError;
+
+  const { data: classes, error: classesError } = await supabase
+    .from("classes")
+    .select("id, name")
+    .in("id", classIds);
+
+  if (classesError) throw classesError;
+
+  const classNameById = new Map((classes ?? []).map((classItem) => [classItem.id, classItem.name]));
+
+  return (students ?? []).map((student) => ({
+    id: student.id,
+    name: student.name,
+    class_id: student.class_id,
+    class_name: student.class_id ? classNameById.get(student.class_id) ?? null : null,
+    school_id: student.school_id,
+  })) as ProfessorStudentSummary[];
 }
 
 /**

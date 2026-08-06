@@ -9,7 +9,7 @@ import { getHorizontalPadding, isCompactWidth } from '@/constants/professor/prof
 import { PROFESSOR_NOTIFICATIONS_MESSAGES } from '@/constants/professor/professor';
 import { theme } from '@/constants/theme';
 import { useEducatorNotifications } from '@/hooks/professor/useEducatorNotifications';
-import { useProfessorPrototype } from '@/hooks/professor/useProfessorPrototype';
+import { useProfessorData } from '@/hooks/professor/useProfessorData';
 import { PROFESSOR_ROUTES } from '@/router';
 import { notificationsStyles as styles } from '@/styles/professor/notifications';
 import type { EducatorNotification } from '@/types/professor';
@@ -309,8 +309,11 @@ function NotificationsScreen({
 
 export default function NotificationsRoute() {
     const router = useRouter();
-    const { notifications, markRead, markAllRead, deleteNotification, clearRead } =
-        useProfessorPrototype();
+    const { notifications } = useProfessorData();
+    const markRead = () => undefined;
+    const markAllRead = () => undefined;
+    const deleteNotification = () => undefined;
+    const clearRead = () => undefined;
 
     return (
         <ProfessorRouteShell currentDestination="notifications">

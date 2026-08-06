@@ -1,4 +1,4 @@
-import { useProfessorPrototype } from '@/hooks/professor/useProfessorPrototype';
+import { useProfessorData } from '@/hooks/professor/useProfessorData';
 import { PROFESSOR_ROUTES } from '@/router/professor.routes';
 import type { ProfessorRouteShellProps } from '@/types/professor/professorRouteShell';
 import { useRouter } from 'expo-router';
@@ -9,12 +9,14 @@ export function ProfessorRouteShell({
   currentDestination = 'dashboard',
 }: ProfessorRouteShellProps) {
   const router = useRouter();
-  const { notifications } = useProfessorPrototype();
+  const { profileName, schoolName, notifications } = useProfessorData();
+
+  const subtitle = `${schoolName}`;
 
   return (
     <EducatorScreen
-      educatorName="Professor"
-      headerSubtitle="Escola Caminho do Saber · 5º Ano A"
+      educatorName={profileName}
+      headerSubtitle={subtitle}
       currentDestination={currentDestination}
       unreadNotificationsCount={notifications.filter((item) => !item.read).length}
       notificationPreview={notifications.slice(0, 3)}

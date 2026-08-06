@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { PROFESSOR_PROFILE_MESSAGES } from '@/constants/professor/professor';
 import type { EducatorProfileData } from '@/types/professor';
 
@@ -39,6 +39,11 @@ export function useEducatorProfileForm(initialName: string, initialEmail: string
     const [largeText, setLargeText] = useState(false);
     const [highContrast, setHighContrast] = useState(false);
     const [reduceAnimations, setReduceAnimations] = useState(false);
+
+    useEffect(() => {
+        setDisplayName(initialName || 'Professor');
+        setDisplayEmail(initialEmail || '');
+    }, [initialName, initialEmail]);
 
     const nameIsValid = displayName.trim().length >= 3;
     const emailIsValid = isValidEducatorEmail(displayEmail);

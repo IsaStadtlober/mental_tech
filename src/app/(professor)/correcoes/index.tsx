@@ -8,7 +8,7 @@ import { CORRECTION_CLASS_FILTERS, FILE_TYPE_LABELS } from '@/constants/professo
 import { getHorizontalPadding, isCompactWidth } from '@/constants/professor/prof_Layout';
 import { theme } from '@/constants/theme';
 import { useCorrectionsScreen } from '@/hooks/professor/useCorrectionsScreen';
-import { useProfessorPrototype } from '@/hooks/professor/useProfessorPrototype';
+import { useProfessorData } from '@/hooks/professor/useProfessorData';
 import { PROFESSOR_ROUTES } from '@/router/professor.routes';
 import { correctionsStyles } from '@/styles/professor/corrections';
 import type { CorrectionQueueScreenProps } from '@/types/professor/corrections';
@@ -295,7 +295,7 @@ function CorrectionQueueScreen({
 
 export default function CorrectionQueueRoute() {
     const router = useRouter();
-    const { submissions } = useProfessorPrototype();
+    const { submissions } = useProfessorData();
 
     return (
         <ProfessorRouteShell currentDestination="correctionQueue">

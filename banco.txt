@@ -1,270 +1,93 @@
-CREATE TYPE user_role AS ENUM ('school', 'teacher', 'student', 'guardian');
-CREATE TYPE activity_status AS ENUM ('draft', 'published');
-CREATE TYPE submission_status AS ENUM ('submitted', 'corrected');
-CREATE TYPE item_category AS ENUM ('cloth', 'shoe', 'backpack', 'hat', 'accessory', 'hairstyle', 'color');
-CREATE TYPE shift_type AS ENUM ('morning', 'afternoon', 'full_time');
-
--- ==========================================
--- 2. TABELAS
--- ==========================================
-
--- Perfis (Centraliza dados das contas de usuários)
-CREATE TABLE public.profiles (
-    id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    full_name VARCHAR(255) NOT NULL,
-    cpf VARCHAR(20) UNIQUE,
-    phone VARCHAR(20),
-    birth_date DATE,
-    role user_role NOT NULL,
-    is_active BOOLEAN DEFAULT true NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
-);
-
--- Escolas (Dados Jurídicos e Endereço Físico)
-CREATE TABLE public.schools (
-    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    profile_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
-    legal_name VARCHAR(255) NOT NULL,
-    trade_name VARCHAR(255) NOT NULL,
-    cnpj VARCHAR(20) UNIQUE NOT NULL,
-    inep_code VARCHAR(50) UNIQUE,
-    contact_email VARCHAR(255),
-    phone VARCHAR(20),
-    zip_code VARCHAR(20),
-    street VARCHAR(255),
-    number VARCHAR(50),
-    complement VARCHAR(255),
-    neighborhood VARCHAR(255),
-    city VARCHAR(255),
-    state VARCHAR(50),
-    is_active BOOLEAN DEFAULT true NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
-);
-
--- Professores
-CREATE TABLE public.teachers (
-    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    profile_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE, -- Nullable até o aceite do convite
-    school_id UUID REFERENCES public.schools(id) ON DELETE CASCADE NOT NULL,
-    position VARCHAR(255),
-    registration_number VARCHAR(100),
-    is_active BOOLEAN DEFAULT true NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
-);
-
--- Turmas
-CREATE TABLE public.classes (
-    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    school_id UUID REFERENCES public.schools(id) ON DELETE CASCADE NOT NULL,
-    name VARCHAR(100) NOT NULL,
-    grade VARCHAR(100) NOT NULL,
-    academic_year INT NOT NULL,
-    shift shift_type NOT NULL,
-    code VARCHAR(20) UNIQUE NOT NULL, -- Código de acesso da turma
-    pin VARCHAR(10) NOT NULL,        -- PIN de validação
-    is_active BOOLEAN DEFAULT true NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
-);
-
--- Pivot Professor <-> Turma (N:N)
-CREATE TABLE public.teacher_classes (
-    teacher_id UUID REFERENCES public.teachers(id) ON DELETE CASCADE,
-    class_id UUID REFERENCES public.classes(id) ON DELETE CASCADE,
-    PRIMARY KEY (teacher_id, class_id)
-);
-
--- Alunos
-CREATE TABLE public.students (
-    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    profile_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE, -- Nullable até criação da conta do aluno
-    school_id UUID REFERENCES public.schools(id) ON DELETE CASCADE NOT NULL,
-    class_id UUID REFERENCES public.classes(id) ON DELETE SET NULL,
-    guardian_id UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
-    guardian_contact VARCHAR(255),
-    student_access_code VARCHAR(100) UNIQUE,
-    name VARCHAR(255),
-    roll_number INT,
-    enrollment_number VARCHAR(100) UNIQUE,
-    coins INT DEFAULT 0 NOT NULL CHECK (coins >= 0),
-    xp INT DEFAULT 0 NOT NULL CHECK (xp >= 0),
-    is_active BOOLEAN DEFAULT true NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
-);
-
--- Atividades
-CREATE TABLE public.activities (
-    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    teacher_id UUID REFERENCES public.teachers(id) ON DELETE RESTRICT NOT NULL,
-    class_id UUID REFERENCES public.classes(id) ON DELETE CASCADE NOT NULL,
-    title VARCHAR(255) NOT NULL,
-    description TEXT,
-    content_url VARCHAR(512),
-    status activity_status DEFAULT 'draft' NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
-    published_at TIMESTAMP WITH TIME ZONE
-);
-
--- Submissões
-CREATE TABLE public.submissions (
-    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    activity_id UUID REFERENCES public.activities(id) ON DELETE CASCADE NOT NULL,
-    student_id UUID REFERENCES public.students(id) ON DELETE CASCADE NOT NULL,
-    student_answers JSONB NOT NULL,
-    status submission_status DEFAULT 'submitted' NOT NULL,
-    submitted_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
-    teacher_feedback TEXT,
-    performance_rating VARCHAR(50),
-    corrected_at TIMESTAMP WITH TIME ZONE
-);
-
--- Itens da Loja
-CREATE TABLE public.shop_items (
-    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    category item_category NOT NULL,
-    price INT NOT NULL CHECK (price >= 0),
-    image_url VARCHAR(512) NOT NULL
-);
-
--- Inventário do Aluno (N:N)
-CREATE TABLE public.student_inventories (
-    student_id UUID REFERENCES public.students(id) ON DELETE CASCADE,
-    item_id UUID REFERENCES public.shop_items(id) ON DELETE CASCADE,
-    purchased_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
-    PRIMARY KEY (student_id, item_id)
-);
-
--- Configuração do Avatar
-CREATE TABLE public.avatars (
-    student_id UUID REFERENCES public.students(id) ON DELETE CASCADE PRIMARY KEY,
-    equipped_items JSONB DEFAULT '{}'::jsonb NOT NULL,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
-);
-
--- ==========================================
--- 3. TRIGGER AUTOMÁTICA DE UPDATED_AT
--- ==========================================
-CREATE OR REPLACE FUNCTION update_updated_at_column()
-RETURNS TRIGGER AS $$
-BEGIN
-    NEW.updated_at = TIMEZONE('utc'::text, NOW());
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER update_profiles_updated_at BEFORE UPDATE ON public.profiles FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-CREATE TRIGGER update_schools_updated_at BEFORE UPDATE ON public.schools FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-CREATE TRIGGER update_teachers_updated_at BEFORE UPDATE ON public.teachers FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-CREATE TRIGGER update_classes_updated_at BEFORE UPDATE ON public.classes FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-CREATE TRIGGER update_students_updated_at BEFORE UPDATE ON public.students FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-CREATE TRIGGER update_activities_updated_at BEFORE UPDATE ON public.activities FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
--- ==========================================
--- 4. PROCEDURE: FINALIZE_SCHOOL_ONBOARDING
--- ==========================================
-CREATE OR REPLACE FUNCTION finalize_school_onboarding(
-  p_user_id UUID,
-  p_school JSONB,
-  p_class JSONB,
-  p_teacher JSONB DEFAULT NULL,
-  p_students JSONB DEFAULT '[]'::jsonb
-)
-RETURNS JSONB
-LANGUAGE plpgsql
-SECURITY DEFINER
-AS $$
-DECLARE
-  v_school_id UUID;
-  v_class_id UUID;
-  v_student JSONB;
-  v_raw_shift TEXT;
-  v_final_shift shift_type;
-BEGIN
-  -- 1. Cria Perfil da Escola
-  INSERT INTO profiles (id, email, full_name, role)
-  VALUES (
-    p_user_id,
-    p_school->>'email',
-    p_school->>'trade_name',
-    'school'
-  )
-  ON CONFLICT (id) DO NOTHING;
-
-  -- 2. Cadastra a Escola
-  INSERT INTO schools (
-    profile_id, legal_name, trade_name, cnpj, inep_code,
-    contact_email, phone, zip_code, street, number, complement, neighborhood, city, state
-  ) VALUES (
-    p_user_id,
-    p_school->>'legal_name',
-    p_school->>'trade_name',
-    REGEXP_REPLACE(COALESCE(p_school->>'cnpj', ''), '\D', '', 'g'),
-    p_school->>'inep_code',
-    p_school->>'email',
-    p_school->>'phone',
-    p_school->>'zip_code',
-    p_school->>'street',
-    p_school->>'number',
-    p_school->>'complement',
-    p_school->>'neighborhood',
-    p_school->>'city',
-    p_school->>'state'
-  )
-  RETURNING id INTO v_school_id;
-
-  -- 3. Mapeia o turno para o Enum ('morning', 'afternoon', 'full_time')
-  v_raw_shift := LOWER(COALESCE(NULLIF(p_class->>'shift', ''), NULLIF(p_class->>'turno', ''), 'morning'));
-
-  v_final_shift := CASE 
-    WHEN v_raw_shift IN ('matutino', 'manha', 'manhã', 'morning') THEN 'morning'::shift_type
-    WHEN v_raw_shift IN ('vespertino', 'tarde', 'afternoon') THEN 'afternoon'::shift_type
-    WHEN v_raw_shift IN ('integral', 'full_time', 'fulltime', 'noturno', 'noite', 'night') THEN 'full_time'::shift_type
-    ELSE 'morning'::shift_type
-  END;
-
-  -- 4. Cadastra a Turma com Code e PIN
-  INSERT INTO classes (
-    school_id, name, grade, shift, academic_year, code, pin
-  ) VALUES (
-    v_school_id,
-    p_class->>'name',
-    p_class->>'grade',
-    v_final_shift,
-    COALESCE((p_class->>'academic_year')::INT, EXTRACT(YEAR FROM CURRENT_DATE)::INT),
-    COALESCE(NULLIF(p_class->>'code', ''), UPPER(SUBSTRING(MD5(RANDOM()::TEXT) FROM 1 FOR 6))),
-    COALESCE(NULLIF(p_class->>'pin', ''), LPAD(FLOOR(RANDOM() * 9000 + 1000)::TEXT, 4, '0'))
-  )
-  RETURNING id INTO v_class_id;
-
-  -- 5. Insere os Alunos (se houver)
-  IF p_students IS NOT NULL AND jsonb_array_length(p_students) > 0 THEN
-    FOR v_student IN SELECT * FROM jsonb_array_elements(p_students)
-    LOOP
-      INSERT INTO students (
-        school_id,
-        class_id,
-        name,
-        roll_number,
-        guardian_contact,
-        student_access_code
-      ) VALUES (
-        v_school_id,
-        v_class_id,
-        v_student->>'name',
-        (v_student->>'roll_number')::INT,
-        NULLIF(v_student->>'guardian_email', ''),
-        NULLIF(v_student->>'student_access_code', '')
-      );
-    END LOOP;
-  END IF;
-
-  RETURN jsonb_build_object('id', v_school_id, 'class_id', v_class_id);
-END;
-$$;
+| tabela              | coluna              | tipo_dado                | aceita_null |
+| ------------------- | ------------------- | ------------------------ | ----------- |
+| activities          | id                  | uuid                     | NO          |
+| activities          | teacher_id          | uuid                     | NO          |
+| activities          | class_id            | uuid                     | NO          |
+| activities          | title               | character varying        | NO          |
+| activities          | description         | text                     | YES         |
+| activities          | content_url         | character varying        | YES         |
+| activities          | status              | USER-DEFINED             | NO          |
+| activities          | created_at          | timestamp with time zone | NO          |
+| activities          | updated_at          | timestamp with time zone | NO          |
+| activities          | published_at        | timestamp with time zone | YES         |
+| avatars             | student_id          | uuid                     | NO          |
+| avatars             | equipped_items      | jsonb                    | NO          |
+| avatars             | updated_at          | timestamp with time zone | NO          |
+| classes             | id                  | uuid                     | NO          |
+| classes             | school_id           | uuid                     | NO          |
+| classes             | name                | character varying        | NO          |
+| classes             | grade               | character varying        | NO          |
+| classes             | academic_year       | integer                  | NO          |
+| classes             | shift               | USER-DEFINED             | NO          |
+| classes             | is_active           | boolean                  | NO          |
+| classes             | created_at          | timestamp with time zone | NO          |
+| classes             | updated_at          | timestamp with time zone | NO          |
+| classes             | code                | character varying        | NO          |
+| classes             | pin                 | character varying        | NO          |
+| profiles            | id                  | uuid                     | NO          |
+| profiles            | email               | character varying        | NO          |
+| profiles            | full_name           | character varying        | NO          |
+| profiles            | cpf                 | character varying        | YES         |
+| profiles            | phone               | character varying        | YES         |
+| profiles            | birth_date          | date                     | YES         |
+| profiles            | role                | USER-DEFINED             | NO          |
+| profiles            | is_active           | boolean                  | NO          |
+| profiles            | created_at          | timestamp with time zone | NO          |
+| profiles            | updated_at          | timestamp with time zone | NO          |
+| schools             | id                  | uuid                     | NO          |
+| schools             | profile_id          | uuid                     | NO          |
+| schools             | legal_name          | character varying        | NO          |
+| schools             | trade_name          | character varying        | NO          |
+| schools             | cnpj                | character varying        | NO          |
+| schools             | inep_code           | character varying        | YES         |
+| schools             | contact_email       | character varying        | YES         |
+| schools             | phone               | character varying        | YES         |
+| schools             | zip_code            | character varying        | YES         |
+| schools             | street              | character varying        | YES         |
+| schools             | number              | character varying        | YES         |
+| schools             | complement          | character varying        | YES         |
+| schools             | neighborhood        | character varying        | YES         |
+| schools             | city                | character varying        | YES         |
+| schools             | state               | character varying        | YES         |
+| schools             | is_active           | boolean                  | NO          |
+| schools             | created_at          | timestamp with time zone | NO          |
+| schools             | updated_at          | timestamp with time zone | NO          |
+| student_inventories | student_id          | uuid                     | NO          |
+| student_inventories | item_id             | uuid                     | NO          |
+| student_inventories | purchased_at        | timestamp with time zone | NO          |
+| students            | id                  | uuid                     | NO          |
+| students            | profile_id          | uuid                     | YES         |
+| students            | school_id           | uuid                     | NO          |
+| students            | class_id            | uuid                     | YES         |
+| students            | guardian_id         | uuid                     | YES         |
+| students            | enrollment_number   | character varying        | YES         |
+| students            | coins               | integer                  | NO          |
+| students            | xp                  | integer                  | NO          |
+| students            | is_active           | boolean                  | NO          |
+| students            | created_at          | timestamp with time zone | NO          |
+| students            | updated_at          | timestamp with time zone | NO          |
+| students            | name                | character varying        | YES         |
+| students            | roll_number         | integer                  | YES         |
+| students            | guardian_contact    | character varying        | YES         |
+| students            | student_access_code | character varying        | YES         |
+| students            | last_login_at       | timestamp with time zone | YES         |
+| students            | fiction_name        | text                     | YES         |
+| submissions         | id                  | uuid                     | NO          |
+| submissions         | activity_id         | uuid                     | NO          |
+| submissions         | student_id          | uuid                     | NO          |
+| submissions         | student_answers     | jsonb                    | NO          |
+| submissions         | status              | USER-DEFINED             | NO          |
+| submissions         | submitted_at        | timestamp with time zone | NO          |
+| submissions         | teacher_feedback    | text                     | YES         |
+| submissions         | performance_rating  | character varying        | YES         |
+| submissions         | corrected_at        | timestamp with time zone | YES         |
+| teacher_classes     | teacher_id          | uuid                     | NO          |
+| teacher_classes     | class_id            | uuid                     | NO          |
+| teachers            | id                  | uuid                     | NO          |
+| teachers            | profile_id          | uuid                     | NO          |
+| teachers            | school_id           | uuid                     | NO          |
+| teachers            | position            | character varying        | YES         |
+| teachers            | registration_number | character varying        | YES         |
+| teachers            | is_active           | boolean                  | NO          |
+| teachers            | created_at          | timestamp with time zone | NO          |
+| teachers            | updated_at          | timestamp with time zone | NO          |

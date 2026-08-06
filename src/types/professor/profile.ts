@@ -6,6 +6,7 @@ export interface EducatorProfileData {
 export interface EducatorProfileScreenProps {
     name: string;
     email: string;
+    schoolName?: string;
     onBack: () => void;
     onSave: (data: EducatorProfileData) => void;
 }

@@ -6,6 +6,7 @@ import SectionHeader from '@/components/professor/SectionHeader';
 import { PROFESSOR_PROFILE_MESSAGES } from '@/constants/professor/professor';
 import { fonts, theme } from '@/constants/theme';
 import { useEducatorProfileForm } from '@/hooks/professor/useEducatorProfile';
+import { useProfessorData } from '@/hooks/professor/useProfessorData';
 import { PROFESSOR_ROUTES } from '@/router';
 import { profileStyles as styles } from '@/styles/professor/perfil';
 import type {
@@ -63,6 +64,7 @@ function PreferenceRow({
 function EducatorProfileScreen({
     name,
     email,
+    schoolName,
     onBack,
     onSave,
 }: EducatorProfileScreenProps) {
@@ -230,7 +232,7 @@ function EducatorProfileScreen({
                                 </Text>
 
                                 <Text style={styles.schoolValue}>
-                                    {personalInfo.schoolValue}
+                                    {schoolName || personalInfo.schoolValue}
                                 </Text>
                             </View>
 
@@ -509,12 +511,14 @@ function Divider() {
 
 export default function ProfileRoute() {
     const router = useRouter();
+    const { profileName, profileEmail, schoolName } = useProfessorData();
 
     return (
         <ProfessorRouteShell currentDestination="educatorProfile">
             <EducatorProfileScreen
-                name="Professor"
-                email="professor@caminhodosaber.edu.br"
+                name={profileName}
+                email={profileEmail}
+                schoolName={schoolName}
                 onBack={() => router.push(PROFESSOR_ROUTES.DASHBOARD as any)}
                 onSave={() => undefined}
             />

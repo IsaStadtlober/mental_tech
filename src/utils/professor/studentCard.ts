@@ -20,7 +20,8 @@ export function getStudentCardStatusConfig(student: Student): StudentCardStatusC
         },
     };
 
-    return statusConfig[student.engagementStatus];
+    const engagementStatus = student?.engagementStatus ?? 'engaged';
+    return statusConfig[engagementStatus] ?? statusConfig.engaged;
 }
 
 // Função auxiliar para gerar o rótulo de correções pendentes do cartão de estudante.

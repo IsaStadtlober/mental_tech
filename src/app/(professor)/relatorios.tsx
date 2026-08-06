@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 
 import { useEducatorReports } from '@/hooks/professor/useEducatorReports';
-import { useProfessorPrototype } from '@/hooks/professor/useProfessorPrototype';
+import { useProfessorData } from '@/hooks/professor/useProfessorData';
 import { reportsStyles as styles } from '@/styles/professor/reports';
 import type { ReportsScreenProps } from '@/types/professor';
 
@@ -23,7 +23,7 @@ function ReportsScreen({
     const { width } = useWindowDimensions();
     const isCompact = width < 780;
 
-    const { activities, submissions } = useProfessorPrototype();
+    const { activities, submissions } = useProfessorData();
     const {
         mode,
         setMode,

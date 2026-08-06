@@ -6,6 +6,8 @@ export interface EducatorDashboardScreenProps {
     onOpenReports: () => void;
     pendingCorrectionsCount: number;
     publishedActivitiesCount: number;
+    students: any[];
+    submissions: any[];
 }
 
 export interface DashboardMetricConfig {

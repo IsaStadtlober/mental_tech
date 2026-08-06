@@ -73,6 +73,8 @@ export default function EducatorHeader({
       .filter(Boolean)[0] ||
     'Professor';
 
+  const greetingName = educatorName?.trim() ? educatorName : 'Professor';
+
   const initials =
     educatorName
       .trim()
@@ -273,7 +275,7 @@ export default function EducatorHeader({
             }}
           >
             <Text numberOfLines={1} style={[educatorHeaderStyles.greetingText, { fontSize: mobile ? 15 : 17 }]}>
-              Olá, {firstName}!
+              Olá, Prof(a) {greetingName}!
             </Text>
 
             <Text numberOfLines={1} style={[educatorHeaderStyles.subtitleText, { fontSize: mobile ? 10 : 12 }]}>

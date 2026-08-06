@@ -8,7 +8,7 @@ import { ACTIVITY_FILTERS } from '@/constants/professor/activities';
 import { getHorizontalPadding, isCompactWidth } from '@/constants/professor/prof_Layout';
 import { theme } from '@/constants/theme';
 import { useActivitiesScreen } from '@/hooks/professor/useActivitiesScreen';
-import { useProfessorPrototype } from '@/hooks/professor/useProfessorPrototype';
+import { useProfessorData } from '@/hooks/professor/useProfessorData';
 import { PROFESSOR_ROUTES } from '@/router/professor.routes';
 import { activitiesStyles } from '@/styles/professor/activities';
 import type { ActivitiesScreenProps } from '@/types/professor';
@@ -357,7 +357,8 @@ function ActivitiesScreen({
 
 export default function ActivitiesRoute() {
     const router = useRouter();
-    const { activities, deleteActivity } = useProfessorPrototype();
+    const { activities } = useProfessorData();
+    const deleteActivity = () => undefined;
 
     return (
         <ProfessorRouteShell currentDestination="activities">

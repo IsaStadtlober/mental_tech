@@ -54,3 +54,8 @@ export interface EducatorStudentOption {
     name: string;
     className: string;
 }
+export interface Class {
+  id: string;
+  name: string;
+  participation_rate?: number;
+}

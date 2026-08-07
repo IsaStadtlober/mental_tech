@@ -1,4 +1,4 @@
-import type { Activity, ActivityStatus, EducatorStudentOption, FileType, RewardType } from '@/types/professor';
+import type { Activity, ActivityStatus, Class, EducatorStudentOption, FileType, RewardType } from '@/types/professor';
 
 export interface ActivityFormData {
     title: string;
@@ -8,6 +8,7 @@ export interface ActivityFormData {
     dueDate?: string;
     attachmentName: string;
     attachmentType: FileType;
+    attachmentUri: string | null;
     rewardName: string;
     rewardType: RewardType;
     status: ActivityStatus;
@@ -15,6 +16,7 @@ export interface ActivityFormData {
 
 export interface ActivityFormScreenProps {
     availableStudents: EducatorStudentOption[];
+    classes: Class[];
     activity?: Activity | null;
     initialStudentName?: string | null;
     onBack: () => void;

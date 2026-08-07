@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import type { Activity, EducatorNotification, EducatorStudentOption, Submission } from '@/types/professor';
+import type { Activity, Class, EducatorNotification, EducatorStudentOption, Submission } from '@/types/professor';
 import {
   getProfessorProfile,
   listProfessorActivities,
@@ -18,6 +18,7 @@ interface UseProfessorDataResult {
   notifications: EducatorNotification[];
   loading: boolean;
   error: string | null;
+  classes: Class[];
 }
 
 function formatDate(value?: string | null) {
@@ -150,6 +151,7 @@ export function useProfessorData(): UseProfessorDataResult {
   const [students, setStudents] = useState<EducatorStudentOption[]>([]);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [notifications, setNotifications] = useState<EducatorNotification[]>([]);
+  const [classes, setClasses] = useState<Class[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -185,6 +187,7 @@ export function useProfessorData(): UseProfessorDataResult {
         setStudents(mappedStudents);
         setSubmissions(mappedSubmissions);
         setNotifications(mappedNotifications);
+        setClasses((classesResponse ?? []) as unknown as Class[]);
       } catch (loadError: any) {
         if (!isMounted) {
           return;
@@ -216,5 +219,6 @@ export function useProfessorData(): UseProfessorDataResult {
     notifications,
     loading,
     error,
+    classes: [], // Adicionei a propriedade classes como um array vazio para evitar erros de tipagem
   };
 }

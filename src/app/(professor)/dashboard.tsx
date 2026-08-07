@@ -29,6 +29,11 @@ function EducatorDashboardScreen({
   publishedActivitiesCount,
   students,
   submissions,
+  inactiveStudentsCount,
+  overallParticipation,
+  classSummaries,
+  metrics,
+  messages,
 }: EducatorDashboardScreenProps) {
   const { width } = useWindowDimensions();
   const isCompact = width < 760;
@@ -354,17 +359,38 @@ function EducatorDashboardScreen({
 
 export default function DashboardRoute() {
   const router = useRouter();
-  const { activities, students, submissions } = useProfessorData();
-  const { pendingCorrectionsCount, publishedActivitiesCount } =
-    useEducatorDashboard(activities, submissions);
+
+  // 1. Puxamos 'classes' do useProfessorData
+  const { activities, students, submissions, classes } = useProfessorData();
+
+  // 2. Passamos students e classes para o hook e extraímos TODAS as variáveis
+  const {
+    pendingCorrectionsCount,
+    publishedActivitiesCount,
+    inactiveStudentsCount,
+    overallParticipation,
+    classSummaries,
+    metrics,
+    messages,
+  } = useEducatorDashboard(
+      activities as any, 
+      submissions as any, 
+      students as any,
+      classes as any
+  );
 
   return (
     <ProfessorRouteShell>
       <EducatorDashboardScreen
         pendingCorrectionsCount={pendingCorrectionsCount}
         publishedActivitiesCount={publishedActivitiesCount}
+        inactiveStudentsCount={inactiveStudentsCount}
+        overallParticipation={overallParticipation}
+        classSummaries={classSummaries}
         students={students}
         submissions={submissions}
+        metrics={metrics}
+        messages={messages}
         onOpenActivities={() => router.push(PROFESSOR_ROUTES.ACTIVITIES as any)}
         onCreateActivity={() =>
           router.push(PROFESSOR_ROUTES.CREATE_ACTIVITY as any)

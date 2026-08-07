@@ -1,20 +1,23 @@
-import { ACTIVITY_FORM_ATTACHMENT_OPTIONS, ACTIVITY_FORM_AUDIENCES, ACTIVITY_FORM_REWARD_OPTIONS } from '@/constants/professor/activityForm';
+import { useState } from 'react';
+import { Pressable, ScrollView, Text, TextInput, useWindowDimensions, View } from 'react-native';
+import * as DocumentPicker from 'expo-document-picker';
+import { Save, Send, Paperclip, X } from 'lucide-react-native';
+
 import { theme } from '@/constants/theme';
 import { useActivityForm } from '@/hooks/professor/useActivityForm';
 import { activityFormStyles } from '@/styles/professor/activityForm';
 import type { ActivityFormScreenProps } from '@/types/professor/activityForm';
-import { Pressable, ScrollView, Text, TextInput, useWindowDimensions, View } from 'react-native';
-
-import { Save, Send } from 'lucide-react-native';
 
 import AppButton from '@/components/professor/AppButton';
 import AppCard from '@/components/professor/AppCard';
 import BackButton from '@/components/professor/BackButton';
 import SectionHeader from '@/components/professor/SectionHeader';
 import StatusChip from '@/components/professor/StatusChip';
+import { ACTIVITY_FORM_REWARD_OPTIONS } from '@/constants/professor/activityForm';
 
 export default function ActivityFormScreen({
   availableStudents,
+  classes = [],
   activity,
   initialStudentName,
   onBack,
@@ -22,6 +25,14 @@ export default function ActivityFormScreen({
 }: ActivityFormScreenProps) {
   const { width } = useWindowDimensions();
   const isCompact = width < 760;
+
+  // 1. Unificou a string para evitar divergência de maiúsculas/minúsculas
+  const SPECIFIC_STUDENTS_OPTION = 'Alunos específicos';
+
+  const audienceOptions = [
+    ...classes.map((c) => c.name),
+    SPECIFIC_STUDENTS_OPTION,
+  ];
 
   const {
     title,
@@ -33,6 +44,7 @@ export default function ActivityFormScreen({
     attachmentName,
     setAttachmentName,
     setAttachmentType,
+    setAttachmentUri,
     rewardName,
     setRewardName,
     setRewardType,
@@ -49,6 +61,34 @@ export default function ActivityFormScreen({
     studentSelectionLabel,
     messages,
   } = useActivityForm({ activity, initialStudentName });
+
+  // 2. Função para selecionar arquivos reais do celular (PDF/DOC)
+  const handlePickDocument = async () => {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: [
+          'application/pdf',
+          'application/msword',
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        ],
+        copyToCacheDirectory: true,
+      });
+
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        const file = result.assets[0];
+        setAttachmentName(file.name);
+        setAttachmentUri(file.uri);
+        setAttachmentType(file.mimeType?.includes('pdf') ? 'pdf' : 'doc');
+      }
+    } catch (err) {
+      console.error('Erro ao escolher arquivo:', err);
+    }
+  };
+
+  const handleRemoveAttachment = () => {
+    setAttachmentName('');
+    setAttachmentUri(null);
+  };
 
   return (
     <ScrollView
@@ -85,6 +125,7 @@ export default function ActivityFormScreen({
 
         <View style={[activityFormStyles.layout, isCompact ? activityFormStyles.layoutCompact : undefined]}>
           <View style={[activityFormStyles.mainColumn, isCompact ? activityFormStyles.mainColumnCompact : undefined]}>
+            {/* CARD 1: INFORMAÇÕES PRINCIPAIS */}
             <AppCard>
               <SectionHeader
                 compact
@@ -122,6 +163,7 @@ export default function ActivityFormScreen({
               </Text>
             </AppCard>
 
+            {/* CARD 2: ANEXO DE EXERCÍCIO (SELETOR REAL DE ARQUIVOS) */}
             <AppCard>
               <SectionHeader
                 compact
@@ -139,29 +181,13 @@ export default function ActivityFormScreen({
                   {messages.attachmentHint}
                 </Text>
 
-                <View style={activityFormStyles.badgeRow}>
-                  {ACTIVITY_FORM_ATTACHMENT_OPTIONS.map((option) => {
-                    const selected = attachmentName === option.name;
-
-                    return (
-                      <Pressable
-                        key={option.type}
-                        onPress={() => {
-                          setAttachmentName(option.name);
-                          setAttachmentType(option.type);
-                        }}
-                        style={({ pressed }) => [
-                          activityFormStyles.badgeChip,
-                          selected ? activityFormStyles.badgeChipSelected : undefined,
-                          pressed ? { opacity: 0.82 } : undefined,
-                        ]}
-                      >
-                        <Text style={[activityFormStyles.badgeChipText, selected ? activityFormStyles.badgeChipTextSelected : undefined]}>
-                          {option.label}
-                        </Text>
-                      </Pressable>
-                    );
-                  })}
+                <View style={{ marginTop: 12 }}>
+                  <AppButton
+                    label={attachmentName ? "Trocar Arquivo" : "Selecionar Documento (PDF/DOC)"}
+                    variant="secondary"
+                    iconLeft={<Paperclip size={16} color={theme.primary} />}
+                    onPress={handlePickDocument}
+                  />
                 </View>
               </View>
 
@@ -181,13 +207,15 @@ export default function ActivityFormScreen({
                     label={messages.removeAttachment}
                     variant="ghost"
                     size="small"
-                    onPress={() => setAttachmentName('')}
+                    iconLeft={<X size={14} color={theme.textMuted} />}
+                    onPress={handleRemoveAttachment}
                   />
                 </View>
               )}
             </AppCard>
           </View>
 
+          {/* COLUNA LATERAL */}
           <View style={[activityFormStyles.sideColumn, isCompact ? activityFormStyles.sideColumnCompact : undefined]}>
             <AppCard>
               <SectionHeader
@@ -200,7 +228,7 @@ export default function ActivityFormScreen({
               <Text style={[activityFormStyles.fieldLabel, { marginBottom: 9 }]}>{messages.audienceLabel}</Text>
 
               <View style={activityFormStyles.audienceRow}>
-                {ACTIVITY_FORM_AUDIENCES.map((audience) => {
+                {audienceOptions.map((audience) => {
                   const selected = className === audience;
 
                   return (
@@ -208,7 +236,7 @@ export default function ActivityFormScreen({
                       key={audience}
                       onPress={() => {
                         setClassName(audience);
-                        if (audience !== 'Alunos específicos') {
+                        if (audience !== SPECIFIC_STUDENTS_OPTION) {
                           setSelectedStudentNames([]);
                         }
                       }}
@@ -226,7 +254,7 @@ export default function ActivityFormScreen({
                 })}
               </View>
 
-              {className === 'Alunos específicos' && (
+              {className === SPECIFIC_STUDENTS_OPTION && (
                 <View style={[activityFormStyles.studentSelectionCard, !audienceIsValid ? activityFormStyles.studentSelectionCardInvalid : undefined]}>
                   <Text style={activityFormStyles.studentSelectionTitle}>{messages.studentSelectionTitle}</Text>
 
@@ -234,17 +262,13 @@ export default function ActivityFormScreen({
 
                   <View style={activityFormStyles.studentSelectionRow}>
                     {availableStudents.map((student) => {
-                      const selected = selectedStudentNames.includes(
-                        student.name
-                      );
+                      const selected = selectedStudentNames.includes(student.name);
 
                       return (
                         <Pressable
                           key={student.id}
                           accessibilityRole="checkbox"
-                          accessibilityState={{
-                            checked: selected,
-                          }}
+                          accessibilityState={{ checked: selected }}
                           accessibilityLabel={`${student.name}, ${student.className}`}
                           onPress={() => toggleStudent(student.name)}
                           style={({ pressed }) => [
@@ -332,11 +356,7 @@ export default function ActivityFormScreen({
             iconLeft={
               <Save
                 size={17}
-                color={
-                  formIsValid
-                    ? theme.primary
-                    : theme.textMuted
-                }
+                color={formIsValid ? theme.primary : theme.textMuted}
               />
             }
             onPress={() => handleSave('draft', onSave)}
@@ -352,11 +372,7 @@ export default function ActivityFormScreen({
             iconLeft={
               <Send
                 size={17}
-                color={
-                  formIsValid
-                    ? theme.white
-                    : theme.textMuted
-                }
+                color={formIsValid ? theme.white : theme.textMuted}
               />
             }
             onPress={() =>

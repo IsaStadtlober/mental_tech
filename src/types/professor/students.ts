@@ -9,7 +9,7 @@ export interface Student {
     completedActivities: number;
     pendingActivities: number;
     revisionActivities: number;
-    lastActivityAt?: string;
+    last_activity_at?: string | null;
     pendingCorrections?: number;
     trailPosition?: number;
 }

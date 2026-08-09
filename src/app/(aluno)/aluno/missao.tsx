@@ -1,32 +1,32 @@
-import * as DocumentPicker from 'expo-document-picker';
-import { useRouter } from 'expo-router';
-import { Clock, Coins, Download, Upload, X } from 'lucide-react-native';
-import { useState } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
-import { MissionFileCard } from '../../../components/aluno/MissionFileCard';
-import { StudentBottomSheet } from '../../../components/aluno/StudentBottomSheet';
-import { StudentScreenShell } from '../../../components/aluno/StudentScreenShell';
-import { PrimaryButton } from '../../../components/PrimaryButton';
-import { theme } from '../../../constants/theme';
-import { useStudentPrototype } from '../../../hooks/aluno/useStudentPrototype';
-import { ALUNO_ROUTES } from '../../../router/aluno.routes';
-import { alunoStyles as s } from '../../../styles/aluno';
-import { isRevision } from '../../../utils/aluno/mission';
+import * as DocumentPicker from "expo-document-picker";
+import { useRouter } from "expo-router";
+import { Clock, Coins, Download, Upload, X } from "lucide-react-native";
+import { useState } from "react";
+import { Text, TouchableOpacity, View } from "react-native";
+import { MissionFileCard } from "../../../components/aluno/MissionFileCard";
+import { StudentBottomSheet } from "../../../components/aluno/StudentBottomSheet";
+import { StudentScreenShell } from "../../../components/aluno/StudentScreenShell";
+import { PrimaryButton } from "../../../components/PrimaryButton";
+import { theme } from "../../../constants/theme";
+import { useStudentPrototype } from "../../../hooks/aluno/useStudentPrototype";
+import { ALUNO_ROUTES } from "../../../router/aluno.routes";
+import { alunoStyles as s } from "../../../styles/aluno";
+import { isRevision } from "../../../utils/aluno/mission";
 
 export default function MissionRoute() {
   const router = useRouter();
   const { mission, saveMission, submitMission } = useStudentPrototype();
-  const [file, setFile] = useState(mission.responseName || '');
+  const [file, setFile] = useState(mission.responseName || "");
   const [confirm, setConfirm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const revision = isRevision(mission);
   const pickResponseFile = async () => {
     const result = await DocumentPicker.getDocumentAsync({
       type: [
-        'application/pdf',
-        'image/*',
-        'application/msword',
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        "application/pdf",
+        "image/*",
+        "application/msword",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
       ],
       multiple: false,
       copyToCacheDirectory: true,
@@ -38,9 +38,9 @@ export default function MissionRoute() {
     setTimeout(() => {
       const result = submitMission(file);
       setSubmitting(false);
-      if (result.kind === 'invalid') return;
+      if (result.kind === "invalid") return;
       setConfirm(false);
-      if (result.kind === 'firstSubmission') router.replace(ALUNO_ROUTES.SENT);
+      if (result.kind === "firstSubmission") router.replace(ALUNO_ROUTES.SENT);
       else router.replace(ALUNO_ROUTES.RESENT);
     }, 450);
   };
@@ -48,7 +48,7 @@ export default function MissionRoute() {
     <>
       <StudentScreenShell
         onBack={() => router.back()}
-        footerPadding={178}
+        footerPadding={-10}
         footer={
           <View style={s.footerStack}>
             <PrimaryButton
@@ -57,10 +57,10 @@ export default function MissionRoute() {
               onPress={() => setConfirm(true)}
             >
               {submitting
-                ? 'Enviando...'
+                ? "Enviando..."
                 : revision
-                ? 'Reenviar correção'
-                : 'Enviar minha resposta'}
+                  ? "Reenviar correção"
+                  : "Enviar minha resposta"}
             </PrimaryButton>
             <TouchableOpacity
               onPress={() => {
@@ -79,7 +79,7 @@ export default function MissionRoute() {
         <View style={s.missionHeadingRow}>
           <View style={s.contentFlex}>
             <Text style={s.screenEyebrow}>
-              {revision ? 'MISSÃO EM REVISÃO' : 'MISSÃO ATUAL'}
+              {revision ? "MISSÃO EM REVISÃO" : "MISSÃO ATUAL"}
             </Text>
             <Text style={s.screenTitle}>{mission.title}</Text>
           </View>
@@ -111,7 +111,7 @@ export default function MissionRoute() {
           </View>
         )}
         <Text style={s.sectionLabel}>
-          {revision ? 'Envie a atividade corrigida' : 'Adicione sua resposta'}
+          {revision ? "Envie a atividade corrigida" : "Adicione sua resposta"}
         </Text>
         <TouchableOpacity
           accessibilityRole="button"
@@ -122,12 +122,12 @@ export default function MissionRoute() {
             <Upload size={25} color={file ? theme.primary : theme.textFaint} />
           </View>
           <Text style={s.uploadTitle}>
-            {file || 'Escolher foto, PDF ou documento'}
+            {file || "Escolher foto, PDF ou documento"}
           </Text>
           <Text style={s.uploadSubtitle}>
             {file
-              ? 'Arquivo pronto para enviar · toque para trocar'
-              : 'Você pode enviar uma foto ou um arquivo'}
+              ? "Arquivo pronto para enviar · toque para trocar"
+              : "Você pode enviar uma foto ou um arquivo"}
           </Text>
         </TouchableOpacity>
       </StudentScreenShell>
@@ -153,7 +153,7 @@ export default function MissionRoute() {
               </Text>
             </View>
             <PrimaryButton onPress={send} icon={false}>
-              {revision ? 'Reenviar agora' : 'Enviar agora'}
+              {revision ? "Reenviar agora" : "Enviar agora"}
             </PrimaryButton>
             <TouchableOpacity
               onPress={() => setConfirm(false)}

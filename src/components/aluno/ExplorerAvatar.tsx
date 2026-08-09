@@ -1,12 +1,12 @@
-import { LinearGradient } from 'expo-linear-gradient';
-import { Backpack, Glasses, Sparkles } from 'lucide-react-native';
-import { Text, View } from 'react-native';
-import Animated from 'react-native-reanimated';
-import { theme } from '../../constants/theme';
-import { usePop } from '../../hooks/useAnimations';
-import { alunoStyles as s } from '../../styles/aluno';
-import { authStyles as styles } from '../../styles/pages/auth';
-import type { EquippedBySlot } from '../../types/aluno';
+import { LinearGradient } from "expo-linear-gradient";
+import { Backpack, Glasses, Sparkles } from "lucide-react-native";
+import { Text, View } from "react-native";
+import Animated from "react-native-reanimated";
+import { theme } from "../../constants/theme";
+import { usePop } from "../../hooks/useAnimations";
+import { alunoStyles as s } from "../../styles/aluno";
+import { authStyles as styles } from "../../styles/pages/auth";
+import type { EquippedBySlot } from "../../types/aluno";
 
 export function ExplorerAvatar({
   equippedItemId,
@@ -26,15 +26,23 @@ export function ExplorerAvatar({
     equippedBySlot?.head ||
     null;
   const item =
-    activeItem === 'cosmic-backpack' ? (
+    activeItem === "cosmic-backpack" ? (
       <Backpack size={compact ? 18 : 25} color={theme.studentGoldAccent} />
-    ) : activeItem === 'explorer-glasses' ? (
+    ) : activeItem === "explorer-glasses" ? (
       <Glasses size={compact ? 18 : 25} color={theme.studentGoldAccent} />
     ) : (
       <Sparkles size={compact ? 25 : 44} color={theme.bg} strokeWidth={1.8} />
     );
   return (
     <View style={compact ? s.avatarCompactWrap : undefined}>
+      {!!name && (
+        <>
+          <Text numberOfLines={1} style={s.avatarName}>
+            {name}
+          </Text>
+          <View style={s.avatarNamePointer} />
+        </>
+      )}
       <Animated.View
         style={[
           compact ? s.explorerAvatarCompact : styles.explorerAvatar,
@@ -52,17 +60,12 @@ export function ExplorerAvatar({
           }
         >
           {item}
-          {(activeItem === 'green-cap' ||
-            equippedBySlot?.head === 'green-cap') && (
+          {(activeItem === "green-cap" ||
+            equippedBySlot?.head === "green-cap") && (
             <View style={s.avatarCap} />
           )}
         </LinearGradient>
       </Animated.View>
-      {!!name && (
-        <Text numberOfLines={1} style={s.avatarName}>
-          {name}
-        </Text>
-      )}
     </View>
   );
 }

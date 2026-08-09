@@ -1,11 +1,15 @@
 import {
-  CheckCircle, Clock3, FileText, Lock, RotateCcw
-} from 'lucide-react-native';
-import { memo } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
-import { theme } from '../../constants/theme';
-import { alunoStyles as s } from '../../styles/aluno';
-import type { MapNode, MapNodeState, MissionStatus } from '../../types/aluno';
+  CheckCircle,
+  Clock3,
+  FileText,
+  Lock,
+  RotateCcw,
+} from "lucide-react-native";
+import { memo } from "react";
+import { Text, TouchableOpacity, View } from "react-native";
+import { theme } from "../../constants/theme";
+import { alunoStyles as s } from "../../styles/aluno";
+import type { MapNode, MapNodeState, MissionStatus } from "../../types/aluno";
 
 export const MapLevel = memo(function MapLevel({
   node,
@@ -19,32 +23,32 @@ export const MapLevel = memo(function MapLevel({
   onPress?: () => void;
 }) {
   const Icon =
-    missionStatus === 'revision'
+    missionStatus === "revision"
       ? RotateCcw
-      : missionStatus === 'awaitingReview'
+      : missionStatus === "awaitingReview"
         ? Clock3
-        : state === 'completed'
+        : state === "completed"
           ? CheckCircle
-          : state === 'locked'
+          : state === "locked"
             ? Lock
             : FileText;
   const statusText =
-    missionStatus === 'revision'
-      ? 'Revisar'
-      : missionStatus === 'awaitingReview'
-        ? 'Aguardando'
-        : missionStatus === 'inProgress'
-          ? 'Em andamento'
-          : missionStatus === 'pending'
-            ? 'Nova missão'
+    missionStatus === "revision"
+      ? "Revisar"
+      : missionStatus === "awaitingReview"
+        ? "Aguardando"
+        : missionStatus === "inProgress"
+          ? "Em andamento"
+          : missionStatus === "pending"
+            ? "Nova missão"
             : undefined;
   return (
     <View style={s.mapNodePosition(node.x - 40, node.y - 40)}>
-      {state === 'current' && (
+      {state === "current" && (
         <View
           style={[
             s.mapNodeHalo,
-            missionStatus === 'revision' && s.mapNodeHaloRevision,
+            missionStatus === "revision" && s.mapNodeHaloRevision,
           ]}
         />
       )}
@@ -55,17 +59,17 @@ export const MapLevel = memo(function MapLevel({
         onPress={onPress}
         style={[
           s.mapNode,
-          state === 'completed' && s.mapNodeDone,
-          state === 'current' && s.mapNodeCurrent,
-          state === 'locked' && s.mapNodeLocked,
-          missionStatus === 'revision' && s.mapNodeRevision,
+          state === "completed" && s.mapNodeDone,
+          state === "current" && s.mapNodeCurrent,
+          state === "locked" && s.mapNodeLocked,
+          missionStatus === "revision" && s.mapNodeRevision,
         ]}
       >
         <Icon
-          size={state === 'locked' ? 24 : 28}
-          color={state === 'locked' ? theme.textFaint : theme.white}
+          size={state === "locked" ? 24 : 28}
+          color={state === "locked" ? theme.textFaint : theme.white}
         />
-        {missionStatus === 'pending' && (
+        {missionStatus === "pending" && (
           <View style={s.pendingBadge}>
             <Text style={s.pendingBadgeText}>!</Text>
           </View>
@@ -73,12 +77,22 @@ export const MapLevel = memo(function MapLevel({
       </TouchableOpacity>
       <View
         style={[
-          s.mapNodeLabel,
+          s.mapNodeLabelWrap,
           node.x > 170 ? s.mapLabelLeft : s.mapLabelRight,
         ]}
       >
-        <Text style={s.mapNodeTitle}>{node.label}</Text>
-        <Text style={s.mapNodeText}>{statusText || node.description}</Text>
+        <View style={s.mapNodeLabel}>
+          <Text style={s.mapNodeTitle}>{node.label}</Text>
+          <Text style={s.mapNodeText}>{statusText || node.description}</Text>
+        </View>
+        <View
+          style={[
+            s.mapNodeLabelPointer,
+            node.x > 170
+              ? s.mapNodeLabelPointerRight
+              : s.mapNodeLabelPointerLeft,
+          ]}
+        />
       </View>
     </View>
   );

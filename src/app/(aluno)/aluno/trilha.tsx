@@ -1,17 +1,21 @@
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useEffect } from 'react';
-import { View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { MissionCard } from '../../../components/aluno/MissionCard';
-import { StudentEmptyState } from '../../../components/aluno/StudentEmptyState';
-import { StudentMap } from '../../../components/aluno/StudentMap';
-import { StudentTopBar } from '../../../components/aluno/StudentTopBar';
-import { useStudentPrototype } from '../../../hooks/aluno/useStudentPrototype';
-import { ALUNO_ROUTES } from '../../../router/aluno.routes';
-import { alunoStyles as s } from '../../../styles/aluno';
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { useEffect } from "react";
+import { View } from "react-native";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
+import { MissionCard } from "../../../components/aluno/MissionCard";
+import { StudentEmptyState } from "../../../components/aluno/StudentEmptyState";
+import { StudentMap } from "../../../components/aluno/StudentMap";
+import { StudentTopBar } from "../../../components/aluno/StudentTopBar";
+import { useStudentPrototype } from "../../../hooks/aluno/useStudentPrototype";
+import { ALUNO_ROUTES } from "../../../router/aluno.routes";
+import { alunoStyles as s } from "../../../styles/aluno";
 
 export default function TrailRoute() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { explorerName } = useLocalSearchParams<{ explorerName?: string }>();
   const {
     session,
@@ -22,11 +26,14 @@ export default function TrailRoute() {
     setExplorerName,
   } = useStudentPrototype();
   useEffect(() => {
-    if (typeof explorerName === 'string' && explorerName.trim())
+    if (typeof explorerName === "string" && explorerName.trim())
       setExplorerName(explorerName.trim());
   }, [explorerName, setExplorerName]);
   return (
-    <SafeAreaView style={s.studentMapRoot} edges={['top', 'left', 'right']}>
+    <SafeAreaView
+      style={s.studentMapRoot}
+      edges={["top", "left", "right", "bottom"]}
+    >
       <StudentTopBar
         session={session}
         equippedBySlot={equippedBySlot}
@@ -47,7 +54,7 @@ export default function TrailRoute() {
           onPress={() => router.push(ALUNO_ROUTES.MISSION)}
         />
       ) : (
-        <View style={s.emptyMissionOverlay}>
+        <View style={[s.emptyMissionOverlay, { bottom: 16 + insets.bottom }]}>
           <StudentEmptyState
             onInventory={() => router.push(ALUNO_ROUTES.CUSTOMIZE)}
           />

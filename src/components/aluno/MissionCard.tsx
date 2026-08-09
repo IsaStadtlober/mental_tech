@@ -1,23 +1,32 @@
 import {
-  ChevronRight, Clock3, Coins, FileText, RotateCcw,
-} from 'lucide-react-native';
-import { Pressable, Text, View } from 'react-native';
-import { MISSION_PRESENTATION } from '../../constants/aluno/missionPresentation';
-import { theme } from '../../constants/theme';
-import { alunoStyles as s } from '../../styles/aluno';
-import type { MissionCardProps } from '../../types/aluno';
+  ChevronRight,
+  Clock3,
+  Coins,
+  FileText,
+  RotateCcw,
+} from "lucide-react-native";
+import { Pressable, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { MISSION_PRESENTATION } from "../../constants/aluno/missionPresentation";
+import { theme } from "../../constants/theme";
+import { alunoStyles as s } from "../../styles/aluno";
+import type { MissionCardProps } from "../../types/aluno";
 
 export function MissionCard({ mission, onPress }: MissionCardProps) {
   const presentation = MISSION_PRESENTATION[mission.status];
+  const insets = useSafeAreaInsets();
   const Icon =
-    mission.status === 'revision'
+    mission.status === "revision"
       ? RotateCcw
-      : mission.status === 'awaitingReview'
+      : mission.status === "awaitingReview"
         ? Clock3
         : FileText;
 
   return (
-    <View pointerEvents="box-none" style={s.missionOverlay}>
+    <View
+      pointerEvents="box-none"
+      style={[s.missionOverlay, { bottom: 16 + insets.bottom }]}
+    >
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={`${presentation.label}. ${mission.title}. ${presentation.action}`}
@@ -25,14 +34,14 @@ export function MissionCard({ mission, onPress }: MissionCardProps) {
         onPress={onPress}
         style={({ pressed }) => [
           s.missionFixedCard,
-          mission.status === 'revision' && s.missionCardRevision,
+          mission.status === "revision" && s.missionCardRevision,
           pressed && s.interactiveSurfacePressed,
         ]}
       >
         <View
           style={[
             s.missionFixedIcon,
-            mission.status === 'revision' && s.missionIconRevision,
+            mission.status === "revision" && s.missionIconRevision,
           ]}
         >
           <Icon size={21} color={theme.white} />
@@ -41,7 +50,7 @@ export function MissionCard({ mission, onPress }: MissionCardProps) {
           <Text
             style={[
               s.missionFixedEyebrow,
-              mission.status === 'revision' && s.missionEyebrowRevision,
+              mission.status === "revision" && s.missionEyebrowRevision,
             ]}
           >
             {presentation.label.toUpperCase()}
@@ -59,7 +68,7 @@ export function MissionCard({ mission, onPress }: MissionCardProps) {
           <ChevronRight
             size={18}
             color={
-              mission.status === 'revision' ? theme.warning : theme.primary
+              mission.status === "revision" ? theme.warning : theme.primary
             }
           />
         </View>

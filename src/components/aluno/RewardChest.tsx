@@ -38,10 +38,12 @@ export function RewardChest() {
     <View style={s.chestStage}>
       <Animated.View style={[s.rewardItem, itemStyle]}>
         <View style={s.rewardItemGlow} />
-        <Backpack size={54} color={theme.studentGoldAccent} />
-        <View style={s.exclusiveMissionPill}>
-          <Trophy size={12} color={theme.studentPurpleDeep} />
-          <Text style={s.exclusiveMissionText}>Exclusivo de Missão</Text>
+        <View style={s.rewardItemContent}>
+          <Backpack size={54} color={theme.studentGoldAccent} />
+          <View style={s.exclusiveMissionPill}>
+            <Trophy size={12} color={theme.studentPurpleDeep} />
+            <Text style={s.exclusiveMissionText}>Exclusivo de Missão</Text>
+          </View>
         </View>
       </Animated.View>
       <View style={s.chestBody}>

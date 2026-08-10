@@ -1,7 +1,6 @@
-import { useState } from 'react';
-import { Pressable, ScrollView, Text, TextInput, useWindowDimensions, View } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
-import { Save, Send, Paperclip, X } from 'lucide-react-native';
+import { Paperclip, Save, Send, X } from 'lucide-react-native';
+import { Pressable, ScrollView, Text, TextInput, useWindowDimensions, View } from 'react-native';
 
 import { theme } from '@/constants/theme';
 import { useActivityForm } from '@/hooks/professor/useActivityForm';

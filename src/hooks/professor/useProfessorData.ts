@@ -219,6 +219,6 @@ export function useProfessorData(): UseProfessorDataResult {
     notifications,
     loading,
     error,
-    classes: [], // Adicionei a propriedade classes como um array vazio para evitar erros de tipagem
+    classes,
   };
 }

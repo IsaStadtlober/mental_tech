@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
 import { PROFESSOR_PROFILE_MESSAGES } from '@/constants/professor/professor';
 import type { EducatorProfileData } from '@/types/professor';
+import { useMemo, useState } from 'react';
 
 // Valida se o formato do e-mail é válido.
 export function isValidEducatorEmail(email: string): boolean {
@@ -25,8 +25,8 @@ export function getProfileInitials(name: string): string {
 export function useEducatorProfileForm(initialName: string, initialEmail: string) {
     const { personalInfo, security } = PROFESSOR_PROFILE_MESSAGES;
 
-    const [displayName, setDisplayName] = useState(initialName);
-    const [displayEmail, setDisplayEmail] = useState(initialEmail);
+    const [displayName, setDisplayName] = useState(initialName || 'Professor');
+    const [displayEmail, setDisplayEmail] = useState(initialEmail || '');
     const [currentPassword, setCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmNewPassword, setConfirmNewPassword] = useState('');
@@ -39,11 +39,6 @@ export function useEducatorProfileForm(initialName: string, initialEmail: string
     const [largeText, setLargeText] = useState(false);
     const [highContrast, setHighContrast] = useState(false);
     const [reduceAnimations, setReduceAnimations] = useState(false);
-
-    useEffect(() => {
-        setDisplayName(initialName || 'Professor');
-        setDisplayEmail(initialEmail || '');
-    }, [initialName, initialEmail]);
 
     const nameIsValid = displayName.trim().length >= 3;
     const emailIsValid = isValidEducatorEmail(displayEmail);

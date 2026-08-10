@@ -66,13 +66,6 @@ export default function EducatorHeader({
     setMobileMenuOpen,
   ] = useState(false);
 
-  const firstName =
-    educatorName
-      .trim()
-      .split(' ')
-      .filter(Boolean)[0] ||
-    'Professor';
-
   const greetingName = educatorName?.trim() ? educatorName : 'Professor';
 
   const initials =

@@ -8,7 +8,7 @@ import {
   isValidEmail,
   sanitizeDigits,
 } from "@/utils/auth";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 const normalizeBirthDate = (value: string) => {
   const trimmedValue = value.trim();
@@ -48,13 +48,16 @@ export function useEducatorActivation() {
   const isFormValid =
     nameIsValid && emailIsValid && passwordIsValid && passwordsMatch;
 
-  const updateField = (field: keyof EducatorActivationData, value: string) => {
-    let nextValue = value;
-    if (field === "cpf") nextValue = formatCpf(value);
-    if (field === "phone") nextValue = formatPhoneNumber(value);
-    if (field === "birthDate") nextValue = formatBirthDate(value);
-    setForm((current) => ({ ...current, [field]: nextValue }));
-  };
+  const updateField = useCallback(
+    (field: keyof EducatorActivationData, value: string) => {
+      let nextValue = value;
+      if (field === "cpf") nextValue = formatCpf(value);
+      if (field === "phone") nextValue = formatPhoneNumber(value);
+      if (field === "birthDate") nextValue = formatBirthDate(value);
+      setForm((current) => ({ ...current, [field]: nextValue }));
+    },
+    [],
+  );
 
   /**
    * Registra o professor em auth.users e faz login automático

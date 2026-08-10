@@ -1,4 +1,4 @@
-﻿import { useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { GraduationCap } from "lucide-react-native";
 import { useEffect } from "react";
 import { Text, View } from "react-native";
@@ -40,7 +40,7 @@ export default function EducatorActivationRoute() {
     if (emailParam) {
       updateField("email", emailParam);
     }
-  }, [emailParam]);
+  }, [emailParam, updateField]);
 
   const handleActivate = async () => {
     setShowErrors(true);

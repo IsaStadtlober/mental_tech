@@ -1,11 +1,11 @@
 import { StyleSheet } from "react-native";
 import {
-    BANNER_H,
-    borderRadius,
-    fonts,
-    FRAME_H,
-    spacing,
-    theme,
+  BANNER_H,
+  borderRadius,
+  fonts,
+  FRAME_H,
+  spacing,
+  theme,
 } from "../../constants/theme";
 
 export const authStyles = StyleSheet.create({
@@ -18,44 +18,40 @@ export const authStyles = StyleSheet.create({
   },
   shellScroll: {
     flex: 1,
-    minHeight: 0,
+    backgroundColor: theme.card,
   },
   shellContentContainer: {
     flexGrow: 1,
-    paddingBottom: spacing.xxl,
+    paddingHorizontal: 20,
+    paddingTop: 30,
+    paddingBottom: 20,
   },
   formBanner: {
-    height: BANNER_H,
-    position: "relative",
+    height: 100,
     overflow: "hidden",
+    backgroundColor: theme.bg,
   },
   sheet: {
     flex: 1,
+    marginTop: -18,
     backgroundColor: theme.card,
-    borderTopLeftRadius: borderRadius.frame,
-    borderTopRightRadius: borderRadius.frame,
-    paddingHorizontal: spacing.xl,
-    paddingTop: spacing.xl,
-    paddingBottom: 0,
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
     overflow: "hidden",
     ...theme.shadowSheet,
   },
-  sheetBody: {
-    flex: 1,
-    minHeight: 0,
-  },
   sheetContent: {
     flexGrow: 1,
-    paddingBottom: spacing.xl,
+    paddingBottom: 0,
   },
   sheetFooter: {
-    marginTop: spacing.md,
-    paddingTop: spacing.md,
-    paddingBottom: 0,
+    minHeight: 118,
+    justifyContent: "center",
+    paddingHorizontal: 20,
+    paddingTop: 12,
     borderTopWidth: 1,
     borderTopColor: theme.border,
-    backgroundColor: theme.card,
-    flexShrink: 0,
+    backgroundColor: theme.whiteSoft,
   },
   footerOverlay: {
     position: "absolute",
@@ -208,6 +204,7 @@ export const authStyles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   loginLinks: {
+    marginTop: spacing.lg,
     alignItems: "center",
     gap: 18,
   },

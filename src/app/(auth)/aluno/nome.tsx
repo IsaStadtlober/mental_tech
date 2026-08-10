@@ -72,25 +72,29 @@ export default function StudentNameRoute() {
       />
 
       <View>
-        <Text style={styles.manualLabel}>Código de acesso do aluno</Text>
+        <View style={styles.formGroup}>
+          <Text style={styles.manualLabel}>Código de acesso do aluno</Text>
 
-        <FormField
-          value={accessCode}
-          onChangeText={setAccessCode}
-          placeholder="Código de acesso"
-          preset="student"
-        />
+          <FormField
+            value={accessCode}
+            onChangeText={setAccessCode}
+            placeholder="Código de acesso"
+            preset="student"
+          />
+        </View>
 
-        <Text style={styles.manualLabel}>
-          {STUDENT_AUTH_CONSTANTS.LABELS.EXPLORER_NAME}
-        </Text>
+        <View style={styles.formGroup}>
+          <Text style={styles.manualLabel}>
+            {STUDENT_AUTH_CONSTANTS.LABELS.EXPLORER_NAME}
+          </Text>
 
-        <FormField
-          value={name}
-          onChangeText={setName}
-          placeholder={STUDENT_AUTH_CONSTANTS.PLACEHOLDERS.EXPLORER_NAME}
-          preset="student"
-        />
+          <FormField
+            value={name}
+            onChangeText={setName}
+            placeholder={STUDENT_AUTH_CONSTANTS.PLACEHOLDERS.EXPLORER_NAME}
+            preset="student"
+          />
+        </View>
 
         {!!error && <Text style={styles.inputErrorText}>{error}</Text>}
       </View>

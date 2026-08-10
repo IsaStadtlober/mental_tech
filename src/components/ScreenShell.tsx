@@ -1,15 +1,27 @@
-import { ArrowLeft } from 'lucide-react-native';
-import { KeyboardAvoidingView, Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ArrowLeft } from "lucide-react-native";
+import {
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import Animated from "react-native-reanimated";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 
-import { theme } from '../constants/theme';
-import { styles } from '../styles';
+import { theme } from "../constants/theme";
+import { useFadeUp } from "../hooks/useAnimations";
+import { styles } from "../styles";
 import {
   FloatingBackButtonProps,
   FormBannerProps,
   ScreenShellProps,
-} from '../types/components';
-import { BackgroundScene } from './background/BackgroundScene';
+} from "../types/components";
+import { BackgroundScene } from "./background/BackgroundScene";
 
 // Botão flutuante de voltar compartilhado pelas telas de formulário
 export function FloatingBackButton({ onPress }: FloatingBackButtonProps) {
@@ -30,7 +42,7 @@ export function FloatingBackButton({ onPress }: FloatingBackButtonProps) {
 }
 
 // Banner superior que renderiza os cenários animados em vetor (nuvens, árvores, etc)
-export function FormBanner({ variant = 'clouds' }: FormBannerProps) {
+export function FormBanner({ variant = "clouds" }: FormBannerProps) {
   return (
     <View style={styles.formBanner}>
       <BackgroundScene variant={variant} />
@@ -43,43 +55,49 @@ export function ScreenShell({
   onBack,
   footer,
   children,
-  bannerVariant = 'clouds',
-  footerPadding = 10,
+  bannerVariant = "clouds",
+  footerPadding = 12,
 }: ScreenShellProps) {
   const insets = useSafeAreaInsets();
+  const sheetEntry = useFadeUp(40, 520);
 
   return (
-    <SafeAreaView style={[styles.shellRoot, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
+    <SafeAreaView
+      style={[styles.shellRoot, { paddingTop: insets.top }]}
+      edges={["top", "left", "right"]}
+    >
       <FloatingBackButton onPress={onBack} />
 
-      <View style={styles.shellFrame}>
-        <FormBanner variant={bannerVariant} />
+      <KeyboardAvoidingView
+        style={styles.shellRoot}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+      >
+        <View style={styles.formBanner}>
+          <BackgroundScene variant={bannerVariant} />
+        </View>
 
-        <View style={styles.sheet}>
-          <KeyboardAvoidingView
-            style={styles.keyboardView}
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            keyboardVerticalOffset={Platform.OS === 'ios' ? insets.top + 44 : insets.top + 24}
+        <Animated.View style={[styles.sheet, sheetEntry]}>
+          <ScrollView
+            style={styles.shellScroll}
+            contentContainerStyle={styles.shellContentContainer}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
           >
-            <View style={styles.sheetBody}>
-              <ScrollView
-                style={styles.shellScroll}
-                contentContainerStyle={styles.shellContentContainer}
-                showsVerticalScrollIndicator={false}
-                keyboardShouldPersistTaps="handled"
-              >
-                <View style={styles.sheetContent}>{children}</View>
-              </ScrollView>
-            </View>
-          </KeyboardAvoidingView>
+            <View style={styles.sheetContent}>{children}</View>
+          </ScrollView>
 
           {!!footer && (
-            <View style={[styles.sheetFooter, { paddingBottom: footerPadding + insets.bottom }]}> 
+            <View
+              style={[
+                styles.sheetFooter,
+                { paddingBottom: footerPadding + insets.bottom },
+              ]}
+            >
               {footer}
             </View>
           )}
-        </View>
-      </View>
+        </Animated.View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }

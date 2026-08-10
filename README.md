@@ -9,6 +9,7 @@ O Mental Tech é uma plataforma de tecnologia educacional voltada para promover 
 - **Expo Router** - Gerenciador de rotas baseado em arquivos.
 - **TypeScript** - Linguagem com tipagem estática para maior segurança e organização do código.
 - **ESLint** - Ferramenta de padronização e qualidade de código.
+- **Supabase** - Banco de dados Postgres, autenticação, sessões e integração de dados em tempo real.
 - **React Native Reanimated** - Biblioteca para animações fluidas e performáticas.
 - **React Native Gesture Handler** - Biblioteca para gestos nativos, swipes e interações por toque.
 - **React Native SVG** - Renderização de SVGs e ícones customizados.
@@ -16,11 +17,14 @@ O Mental Tech é uma plataforma de tecnologia educacional voltada para promover 
 - **Expo Splash Screen** - Controle da tela de carregamento inicial enquanto fontes e assets são preparados.
 - **Lucide React Native** - Biblioteca de ícones vetoriais.
 - **Expo Google Fonts** - Carregamento das fontes Quicksand e Atkinson Hyperlegible.
+- **EmailJS** - Envio de e-mails de convite e acesso para professores e responsáveis.
+- **BrasilAPI / ViaCEP** - Consulta de dados de CNPJ e endereço por CEP para preenchimento automático de cadastro.
 
 ## Dependências Principais
 
 - **@expo-google-fonts/quicksand** - Fonte usada em títulos, chamadas principais e elementos de destaque.
 - **@expo-google-fonts/atkinson-hyperlegible** - Fonte usada em textos corridos, descrições e labels.
+- **@supabase/supabase-js** - Cliente oficial para comunicação com o Supabase, autenticação e consultas ao banco.
 - **expo-font** - Necessário para carregamento das fontes customizadas.
 - **expo-splash-screen** - Controle do splash/loading enquanto as fontes carregam.
 - **expo-linear-gradient** - Gradientes usados em cards, badges e elementos de identidade visual.
@@ -35,6 +39,39 @@ O Mental Tech é uma plataforma de tecnologia educacional voltada para promover 
 - **expo-secure-store** - Armazenamento seguro de tokens, sessão e dados sensíveis.
 - **expo-document-picker** - Seleção de arquivos CSV/XLSX para importação de alunos.
 - **papaparse** - Leitura e validação de arquivos CSV.
+- **expo-constants** - Leitura de variáveis de ambiente e configuração de runtime do app.
+
+## Banco de dados e APIs
+
+### Banco de dados
+
+- **Supabase** é a principal base de dados do projeto, com modelo em PostgreSQL.
+- O sistema utiliza autenticação do Supabase para perfis de escola, professor, aluno e responsável.
+- As tabelas principais estão estruturadas para cadastro de escolas, professores, turmas, estudantes, atividades, submissões, shop de itens e inventário do avatar.
+- Também existe suporte a funções SQL e triggers para manutenção automática de campos como `updated_at` e onboarding de escola.
+
+### APIs e integrações externas
+
+- **Supabase API** - responsável por autenticação, persistência de sessão e consultas ao banco.
+- **EmailJS** - envio de e-mails de convite para professores e acesso para responsáveis de alunos.
+- **BrasilAPI** - consulta de dados da empresa com base no CNPJ durante o cadastro escolar.
+- **ViaCEP** - preenchimento automático de endereço com base no CEP.
+
+### Variáveis de ambiente
+
+O app utiliza variáveis de ambiente para conectar com o Supabase e com os serviços de e-mail, por exemplo:
+
+```bash
+EXPO_PUBLIC_SUPABASE_URL
+EXPO_PUBLIC_SUPABASE_ANON_KEY
+EXPO_PUBLIC_EMAILJS_SERVICE_ID
+EXPO_PUBLIC_EMAILJS_TEMPLATE_ID
+EXPO_PUBLIC_EMAILJS_PUBLIC_KEY
+EXPO_PUBLIC_EMAILJS_STUDENT_TEMPLATE_ID
+EXPO_PUBLIC_APP_URL
+```
+
+Essas variáveis devem ser configuradas no ambiente do projeto antes de executar o aplicativo em desenvolvimento.
 
 ## Estrutura do projeto
 

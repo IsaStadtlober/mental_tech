@@ -100,8 +100,6 @@ export default function EducatorLoginRoute() {
         {!!loginError && <Text style={styles.errorText}>{loginError}</Text>}
       </View>
 
-      <View style={styles.separator} />
-
       <View style={styles.loginLinks}>
         <TouchableOpacity
           onPress={() =>

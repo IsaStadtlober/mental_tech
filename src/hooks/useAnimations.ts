@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect } from "react";
 import {
   cancelAnimation,
   Easing,
@@ -8,8 +8,8 @@ import {
   withDelay,
   withRepeat,
   withTiming,
-} from 'react-native-reanimated';
-import { AnimStyleResult, PopStyleResult } from '../types/animations';
+} from "react-native-reanimated";
+import { AnimStyleResult, PopStyleResult } from "../types/animations";
 
 export const EASE_SLIDE = Easing.bezier(0.22, 1, 0.36, 1);
 export const EASE_POP = Easing.bezier(0.16, 0.84, 0.22, 1);
@@ -21,7 +21,7 @@ export function useLoopValue(
   to: number,
   duration: number,
   delay: number = 0,
-  isActive: boolean = true
+  isActive: boolean = true,
 ): SharedValue<number> {
   const v = useSharedValue(from);
 
@@ -40,8 +40,8 @@ export function useLoopValue(
           easing: Easing.inOut(Easing.ease),
         }),
         -1,
-        true
-      )
+        true,
+      ),
     );
 
     return () => {
@@ -53,7 +53,10 @@ export function useLoopValue(
 }
 
 // Semelhante aouseLoopValue, mas executa o loop de forma direta sem reverter o efeito
-export function useLoopValueOnce(duration: number, delay: number = 0): SharedValue<number> {
+export function useLoopValueOnce(
+  duration: number,
+  delay: number = 0,
+): SharedValue<number> {
   const v = useSharedValue(0);
 
   useEffect(() => {
@@ -65,8 +68,8 @@ export function useLoopValueOnce(duration: number, delay: number = 0): SharedVal
           easing: Easing.linear,
         }),
         -1,
-        false
-      )
+        false,
+      ),
     );
   }, [delay, duration, v]);
 
@@ -74,7 +77,10 @@ export function useLoopValueOnce(duration: number, delay: number = 0): SharedVal
 }
 
 // Fornece um estilo animado de surgimento suave de baixo para cima (Fade-in + TranslateY)
-export function useFadeUp(delay: number = 0, duration: number = 420): AnimStyleResult | any {
+export function useFadeUp(
+  delay: number = 0,
+  duration: number = 420,
+): AnimStyleResult | any {
   const t = useSharedValue(0);
 
   useEffect(() => {
@@ -83,7 +89,7 @@ export function useFadeUp(delay: number = 0, duration: number = 420): AnimStyleR
       withTiming(1, {
         duration,
         easing: EASE_STANDARD,
-      })
+      }),
     );
 
     return () => {
@@ -93,12 +99,15 @@ export function useFadeUp(delay: number = 0, duration: number = 420): AnimStyleR
 
   return useAnimatedStyle(() => ({
     opacity: t.value,
-    transform: [{ translateY: 10 * (1 - t.value) }],
+    transform: [{ translateY: 18 * (1 - t.value) }],
   }));
 }
 
 // Cria um efeito elástico de escala (Pop-in) muito usado em ícones, Badges e Avatares
-export function usePop(delay: number = 0, duration: number = 450): PopStyleResult | any {
+export function usePop(
+  delay: number = 0,
+  duration: number = 450,
+): PopStyleResult | any {
   const t = useSharedValue(0);
 
   useEffect(() => {
@@ -107,7 +116,7 @@ export function usePop(delay: number = 0, duration: number = 450): PopStyleResul
       withTiming(1, {
         duration,
         easing: EASE_POP,
-      })
+      }),
     );
 
     return () => {

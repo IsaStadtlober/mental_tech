@@ -23,7 +23,7 @@ function ReportsScreen({
     const { width } = useWindowDimensions();
     const isCompact = width < 780;
 
-    const { activities, submissions } = useProfessorData();
+    const { activities, submissions, students, classes } = useProfessorData();
     const {
         mode,
         setMode,
@@ -39,9 +39,16 @@ function ReportsScreen({
         summary,
         simulateShare,
         simulateExport,
-    } = useEducatorReports(activities, submissions);
+    } = useEducatorReports(activities, submissions, students, classes);
 
-    const selectedStudent = summary.students.find((student) => student.id === selectedStudentId) ?? summary.students[0];
+    const selectedStudent = summary.students.find((student) => student.id === selectedStudentId) ?? summary.students[0] ?? {
+        id: '',
+        name: 'Aluno indisponível',
+        participation: 0,
+        completed: 0,
+        pending: 0,
+        average: '0,0',
+    };
 
     return (
         <ScrollView

@@ -1,14 +1,14 @@
 import { theme } from "@/constants/theme";
 import type {
-  Activity,
-  Class,
-  ReportAttentionStudent,
-  ReportClassItem,
-  ReportPeriod,
-  ReportStudentSummary,
-  ReportSummary,
-  Student,
-  Submission,
+    Activity,
+    Class,
+    EducatorStudentOption,
+    ReportAttentionStudent,
+    ReportClassItem,
+    ReportPeriod,
+    ReportStudentSummary,
+    ReportSummary,
+    Submission,
 } from "@/types/professor";
 
 // Função auxiliar (mantida)
@@ -20,7 +20,7 @@ export function getReportPeriodLabel(period: ReportPeriod) {
 export function getReportSummary(
   activities: Activity[] = [],
   submissions: Submission[] = [],
-  students: Student[] = [],
+  students: EducatorStudentOption[] = [],
   classes: Class[] = [],
   period: ReportPeriod = "30",
 ): ReportSummary {

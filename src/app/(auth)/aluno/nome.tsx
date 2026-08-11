@@ -17,13 +17,12 @@ import { StudentNameSearchParams } from "../../../types/auth";
 export default function StudentNameRoute() {
   const router = useRouter();
   const { classId, schoolId } = useLocalSearchParams<StudentNameSearchParams>();
-  const { registerStudent, verifyStudentAccessCode } = useAuth();
-  const [name, setName] = useState("");
+  const { verifyStudentAccessCode } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [accessCode, setAccessCode] = useState("");
 
-  const canContinue = name.trim().length > 0 && accessCode.trim().length > 0;
+  const canContinue = accessCode.trim().length > 0;
 
   const handleDone = async () => {
     if (!canContinue || loading) return;
@@ -47,17 +46,13 @@ export default function StudentNameRoute() {
         throw new Error("Aluno não encontrado para este código de acesso.");
       }
 
-      // 2. Passamos os 4 parâmetros na ordem exata esperada: (studentId, fictionName, classId, schoolId)
-      await registerStudent(
-        accessData.studentId,
-        name.trim(),
-        classId as string,
-        schoolId as string,
-      );
+      // Se o aluno já tem nome cadastrado no sistema, usamos esse nome como 'explorerName'.
+      // Caso não tenha, seguimos sem nome (o app exibirá 'Explorador' como fallback).
+      const explorerName = accessData.name || '';
 
       router.push({
         pathname: "/aluno/concluido",
-        params: { explorerName: name.trim() },
+        params: { explorerName },
       });
     } catch (err: any) {
       console.error("❌ Erro ao validar/cadastrar aluno:", err);
@@ -94,19 +89,6 @@ export default function StudentNameRoute() {
             value={accessCode}
             onChangeText={setAccessCode}
             placeholder="Código de acesso"
-            preset="student"
-          />
-        </View>
-
-        <View style={styles.formGroup}>
-          <Text style={styles.manualLabel}>
-            {STUDENT_AUTH_CONSTANTS.LABELS.EXPLORER_NAME}
-          </Text>
-
-          <FormField
-            value={name}
-            onChangeText={setName}
-            placeholder={STUDENT_AUTH_CONSTANTS.PLACEHOLDERS.EXPLORER_NAME}
             preset="student"
           />
         </View>

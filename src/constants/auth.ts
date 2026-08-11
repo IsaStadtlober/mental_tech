@@ -17,8 +17,8 @@ export const STUDENT_AUTH_CONSTANTS = {
   TEXTS: {
     LOGIN_TITLE: "Entrar na aventura",
     LOGIN_SUBTITLE: "Peça o código e o PIN para sua professora.",
-    NAME_TITLE: "Qual é o nome do seu explorador?",
-    NAME_SUBTITLE: "Esse será o nome do seu companheiro em toda a jornada.",
+    NAME_TITLE: "Código de acesso do aluno",
+    NAME_SUBTITLE: "Insira o código que foi enviado pela escola ao responsável.",
     DONE_EYEBROW: "Tudo pronto",
     DONE_DESCRIPTION: "Vamos rumo à sua primeira missão.",
     BUTTON_ENTER: "Entrar",

@@ -18,36 +18,46 @@ export default function NewActivityRoute() {
 
       let targetClassId: string | undefined;
       let targetClassName = "";
+      let targetStudentIds: string[] | undefined = undefined; // 👈 Array para guardar os IDs dos alunos selecionados
 
       const safeStudents = Array.isArray(students) ? students : [];
       const safeClasses = Array.isArray(classes) ? classes : [];
 
-      // Passo A: Descobrir o NOME da turma que precisamos buscar
-      if (
+      const isSpecificStudents =
         formData.className === "Alunos específicos" ||
-        formData.className === "Alunos Específicos"
-      ) {
-        const firstStudentName = formData.studentNames?.[0];
-        const student = safeStudents.find(
-          (s: any) => s.name === firstStudentName,
+        formData.className === "Alunos Específicos";
+
+      // Passo A: Tratar "Alunos específicos" vs "Turma Inteira"
+      if (isSpecificStudents) {
+        const selectedNames: string[] = formData.studentNames || [];
+
+        // Busca os objetos dos alunos selecionados no estado local
+        const matchedStudents = safeStudents.filter((s: any) =>
+          selectedNames.includes(s.name),
         );
 
-        targetClassName = student?.className || "";
+        // Extrai os IDs dos alunos para envio direcionado
+        targetStudentIds = matchedStudents.map((s: any) => s.id);
+
+        // Pega o nome da turma a partir do primeiro aluno encontrado
+        const firstStudent = matchedStudents[0];
+        targetClassName = firstStudent?.className || "";
+
         console.log(
-          "1.1. Aluno selecionado:",
-          student?.name,
-          "| Turma do aluno:",
+          `1.1. Alunos específicos identificados (${targetStudentIds.length}):`,
+          selectedNames,
+          "| Turma vinculada:",
           targetClassName,
         );
       } else {
         targetClassName = formData.className;
       }
 
-      // Passo B: Tentar pegar o ID pelo estado local (que no seu log estava vazio)
+      // Passo B: Tentar pegar o ID da turma pelo estado local
       const localClass = safeClasses.find((c) => c.name === targetClassName);
       targetClassId = localClass?.id;
 
-      // Passo C: O SALVA-VIDAS! Se não achou o ID, busca direto no banco de dados
+      // Passo C: Se não achou localmente, busca direto no Supabase
       if (!targetClassId && targetClassName) {
         console.log(
           `1.2. Buscando ID da turma '${targetClassName}' direto no Supabase...`,
@@ -57,17 +67,17 @@ export default function NewActivityRoute() {
           .from("classes")
           .select("id")
           .eq("name", targetClassName)
-          .single();
+          .maybeSingle();
 
         if (dbClass) {
           targetClassId = dbClass.id;
           console.log("1.3. Turma encontrada no banco! ID:", targetClassId);
         } else {
-          console.log("⚠️ Erro na busca direta do banco:", dbError);
+          console.log("⚠️ Erro/Aviso na busca direta do banco:", dbError);
         }
       }
 
-      // Validação final: Se depois de tudo ainda não tem ID, é porque a turma não existe no banco
+      // Validação final de turma
       if (!targetClassId) {
         console.warn("⚠️ [AVISO] targetClassId não foi encontrado.");
         Alert.alert(
@@ -81,12 +91,16 @@ export default function NewActivityRoute() {
       console.log(
         "2. Iniciando envio para o Supabase com classId:",
         targetClassId,
+        "e targetStudentIds:",
+        targetStudentIds,
       );
 
+      // Passo D: Chama o serviço passando targetStudentIds
       const result = await saveActivityToSupabase({
         formData,
         classId: targetClassId,
         fileUriOrBlob: formData.attachmentUri,
+        targetStudentIds, // 👈 Se for undefined (turma inteira), a função envia pra todos
       });
 
       console.log("3. Sucesso ao salvar no Supabase:", result);

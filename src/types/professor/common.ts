@@ -22,9 +22,10 @@ export type ActivityStatus =
     | 'closed';
 
 export type SubmissionStatus =
-    | 'pending'
-    | 'approved'
-    | 'revision';
+  | 'not_submitted'
+  | 'pending'
+  | 'approved'
+  | 'revision';
 
 export type FileType =
     | 'pdf'

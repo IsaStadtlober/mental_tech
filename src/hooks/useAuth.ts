@@ -629,7 +629,8 @@ export function useAuth() {
   }
 
   async function registerStudent(
-    studentName: string,
+    studentId: string,
+    fictionName: string,
     classId: string,
     schoolId: string,
   ): Promise<StudentRegistrationResult> {
@@ -637,56 +638,33 @@ export function useAuth() {
     setError(null);
 
     try {
-      const normalizedName = studentName.trim();
-      if (!normalizedName) {
-        throw new Error("Nome do aluno é obrigatório.");
-      }
-      if (!classId || !schoolId) {
-        throw new Error("Dados da turma não encontrados.");
+      const normalizedFictionName = fictionName.trim();
+      if (!normalizedFictionName) {
+        throw new Error("O nome fictício é obrigatório.");
       }
 
-      const { data: existingStudent, error: existingError } = await supabase
+      const { data: updatedStudent, error: updateError } = await supabase
         .from("students")
-        .select("id")
-        .eq("name", normalizedName)
-        .eq("class_id", classId)
-        .maybeSingle();
-
-      if (existingError) throw existingError;
-      if (existingStudent?.id) {
-        return {
-          studentId: existingStudent.id,
-          classId,
-          schoolId,
-        };
-      }
-
-      const { data: insertedStudent, error: insertError } = await supabase
-        .from("students")
-        .insert([
-          {
-            school_id: schoolId,
-            class_id: classId,
-            name: normalizedName,
-            guardian_contact: null,
-          },
-        ])
+        .update({
+          fiction_name: normalizedFictionName,
+        })
+        .eq("id", studentId)
         .select("id")
         .single();
 
-      if (insertError) throw insertError;
-      if (!insertedStudent?.id) {
-        throw new Error("Não foi possível cadastrar o aluno.");
+      if (updateError) throw updateError;
+      if (!updatedStudent?.id) {
+        throw new Error("Não foi possível atualizar o perfil do aluno.");
       }
 
       return {
-        studentId: insertedStudent.id,
+        studentId: updatedStudent.id,
         classId,
         schoolId,
       };
     } catch (err: any) {
       setError(err.message);
-      console.error("Erro ao cadastrar aluno:", err);
+      console.error("Erro ao registrar nome fictício do aluno:", err);
       throw err;
     } finally {
       setLoading(false);

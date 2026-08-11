@@ -37,14 +37,29 @@ export default function StudentNameRoute() {
     setLoading(true);
 
     try {
-      await verifyStudentAccessCode(classId as string, accessCode.trim());
-      await registerStudent(name.trim(), classId, schoolId);
+      // 1. Pegamos o studentId retornado pelo código de acesso
+      const accessData = await verifyStudentAccessCode(
+        classId as string,
+        accessCode.trim(),
+      );
+
+      if (!accessData?.studentId) {
+        throw new Error("Aluno não encontrado para este código de acesso.");
+      }
+
+      // 2. Passamos os 4 parâmetros na ordem exata esperada: (studentId, fictionName, classId, schoolId)
+      await registerStudent(
+        accessData.studentId,
+        name.trim(),
+        classId as string,
+        schoolId as string,
+      );
+
       router.push({
         pathname: "/aluno/concluido",
         params: { explorerName: name.trim() },
       });
     } catch (err: any) {
-      // 💡 LOG ADICIONADO AQUI:
       console.error("❌ Erro ao validar/cadastrar aluno:", err);
       setError(err?.message || "Não foi possível cadastrar o aluno.");
     } finally {

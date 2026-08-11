@@ -130,18 +130,21 @@ function EducatorDashboardScreen({
             tone={pendingCorrectionsCount === 0 ? "success" : "warning"}
             onPress={onOpenCorrectionQueue}
           />
+
+          {/* 1. VALOR DINÂMICO DOS ALUNOS INATIVOS */}
           <MetricCard
             label={
               PROFESSOR_DASHBOARD_MESSAGES?.priorities?.metrics?.noActivity
                 ?.label ?? "Sem atividade"
             }
-            value={3}
+            value={inactiveStudentsCount}
             helper={
               PROFESSOR_DASHBOARD_MESSAGES?.priorities?.metrics?.noActivity
                 ?.helper
             }
-            tone="warning" // 👈 Se 'danger' não existir nos estilos do MetricCard, troque por 'warning'
+            tone={inactiveStudentsCount === 0 ? "success" : "warning"}
           />
+
           <MetricCard
             label={
               PROFESSOR_DASHBOARD_MESSAGES?.priorities?.metrics
@@ -151,17 +154,20 @@ function EducatorDashboardScreen({
             helper={PROFESSOR_DASHBOARD_MESSAGES?.priorities?.metrics?.publishedActivities?.helper?.(
               publishedActivitiesCount,
             )}
-            tone="info" // 👈 Se 'primary' não existir nos estilos do MetricCard, troque por 'info' ou 'default'
+            tone="info"
             onPress={onOpenActivities}
           />
+
+          {/* 2. VALOR DINÂMICO DA PARTICIPAÇÃO GERAL */}
           <MetricCard
             label={
               PROFESSOR_DASHBOARD_MESSAGES?.priorities?.metrics?.participation
                 ?.label ?? "Participação"
             }
             value={
-              PROFESSOR_DASHBOARD_MESSAGES?.priorities?.metrics?.participation
-                ?.value
+              typeof overallParticipation === "number"
+                ? `${overallParticipation}%`
+                : overallParticipation
             }
             helper={
               PROFESSOR_DASHBOARD_MESSAGES?.priorities?.metrics?.participation
@@ -244,6 +250,7 @@ function EducatorDashboardScreen({
               </View>
             </AppCard>
 
+            {/* 3. RESUMO DAS TURMAS DINÂMICO */}
             <AppCard>
               <SectionHeader
                 compact
@@ -252,29 +259,45 @@ function EducatorDashboardScreen({
                 style={educatorStyles.panelHeaderSpacing}
               />
               <View style={styles.classSummaryContainer}>
-                <View>
-                  <View style={styles.classSummaryRow}>
-                    <Text style={styles.classSummaryName}>5º Ano A</Text>
-                    <Text style={styles.classSummaryValuePrimary}>88%</Text>
-                  </View>
-                  <View style={styles.progressBarTrack}>
-                    <View
-                      style={[styles.progressBarFillPrimary, { width: "88%" }]}
-                    />
-                  </View>
-                </View>
+                {(classSummaries || []).length > 0 ? (
+                  classSummaries.map((classSummary: any, index: number) => {
+                    const percentage = classSummary.percentage ?? classSummary.participation ?? 0;
+                    const isHigh = percentage >= 80;
 
-                <View>
-                  <View style={styles.classSummaryRow}>
-                    <Text style={styles.classSummaryName}>5º Ano B</Text>
-                    <Text style={styles.classSummaryValueWarning}>76%</Text>
-                  </View>
-                  <View style={styles.progressBarTrack}>
-                    <View
-                      style={[styles.progressBarFillWarning, { width: "76%" }]}
-                    />
-                  </View>
-                </View>
+                    return (
+                      <View key={classSummary.id || classSummary.name || index}>
+                        <View style={styles.classSummaryRow}>
+                          <Text style={styles.classSummaryName}>
+                            {classSummary.name}
+                          </Text>
+                          <Text
+                            style={
+                              isHigh
+                                ? styles.classSummaryValuePrimary
+                                : styles.classSummaryValueWarning
+                            }
+                          >
+                            {percentage}%
+                          </Text>
+                        </View>
+                        <View style={styles.progressBarTrack}>
+                          <View
+                            style={[
+                              isHigh
+                                ? styles.progressBarFillPrimary
+                                : styles.progressBarFillWarning,
+                              { width: `${Math.min(Math.max(percentage, 0), 100)}%` },
+                            ]}
+                          />
+                        </View>
+                      </View>
+                    );
+                  })
+                ) : (
+                  <Text style={{ color: theme.textFaint, fontSize: 14 }}>
+                    Nenhuma turma cadastrada.
+                  </Text>
+                )}
               </View>
             </AppCard>
           </View>
@@ -360,10 +383,8 @@ function EducatorDashboardScreen({
 export default function DashboardRoute() {
   const router = useRouter();
 
-  // 1. Puxamos 'classes' do useProfessorData
   const { activities, students, submissions, classes } = useProfessorData();
 
-  // 2. Passamos students e classes para o hook e extraímos TODAS as variáveis
   const {
     pendingCorrectionsCount,
     publishedActivitiesCount,
@@ -373,10 +394,10 @@ export default function DashboardRoute() {
     metrics,
     messages,
   } = useEducatorDashboard(
-      activities as any, 
-      submissions as any, 
-      students as any,
-      classes as any
+    activities as any, 
+    submissions as any, 
+    students as any,
+    classes as any
   );
 
   return (

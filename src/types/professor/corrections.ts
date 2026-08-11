@@ -1,7 +1,11 @@
 import type { Reward } from './activities';
 import type { Submission } from './submissions';
+import type { SubmissionStatus } from './common';
 
-export type CorrectionFilter = 'all' | '5º Ano A' | '5º Ano B';
+export type CorrectionFilter = 'all' | (string & {});
+
+// Novo tipo para o filtro de status
+export type StatusFilter = 'all' | SubmissionStatus;
 
 export type CorrectionDecision = 'approved' | 'revision';
 
@@ -14,7 +18,7 @@ export interface CorrectionResult {
 }
 
 export interface CorrectionQueueScreenProps {
-    submissions: Submission[];
+    submissions?: Submission[];
     onBack: () => void;
     onOpenSubmission: (submissionId: string) => void;
 }

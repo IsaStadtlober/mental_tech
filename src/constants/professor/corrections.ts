@@ -1,11 +1,20 @@
 import type { FileType, SubmissionStatus } from '@/types/professor';
-import type { CorrectionFilter } from '@/types/professor/corrections';
+import type { CorrectionFilter, StatusFilter } from '@/types/professor/corrections';
 
-// Filtros de correção.
+// Filtros de turma.
 export const CORRECTION_CLASS_FILTERS: { value: CorrectionFilter; label: string }[] = [
     { value: 'all', label: 'Todas as turmas' },
     { value: '5º Ano A', label: '5º Ano A' },
     { value: '5º Ano B', label: '5º Ano B' },
+];
+
+// Filtros de status (Pílulas da tela)
+export const STATUS_FILTER_OPTIONS: { label: string; value: StatusFilter }[] = [
+    { label: 'Todos', value: 'all' },
+    { label: 'Pendentes', value: 'pending' },
+    { label: 'Não respondidos', value: 'not_submitted' },
+    { label: 'Respondidos', value: 'approved' },
+    { label: 'Em revisão', value: 'revision' },
 ];
 
 // Tipos de arquivos.
@@ -29,6 +38,7 @@ export const CORRECTION_MESSAGES = {
     },
     filters: {
         label: 'Filtrar por turma',
+        statusLabel: 'Filtrar por status',
     },
     emptyState: {
         title: 'Nada para corrigir',
@@ -61,8 +71,9 @@ export const CORRECTION_MESSAGES = {
     },
 };
 
-// Rótulos de decisão de correção.
-export const CORRECTION_DECISION_LABELS: Record<SubmissionStatus | 'pending', string> = {
+// Rótulos de status atualizados com todas as opções de SubmissionStatus
+export const CORRECTION_DECISION_LABELS: Record<SubmissionStatus, string> = {
+    not_submitted: 'Aguardando envio',
     pending: 'Pendente',
     approved: 'Aprovada',
     revision: 'Em revisão',

@@ -4,7 +4,10 @@ import BackButton from "@/components/professor/BackButton";
 import EmptyState from "@/components/professor/EmptyState";
 import { ProfessorRouteShell } from "@/components/professor/ProfessorRouteShell";
 import StatusChip from "@/components/professor/StatusChip";
-import { FILE_TYPE_LABELS, STATUS_FILTER_OPTIONS } from "@/constants/professor/corrections";
+import {
+  FILE_TYPE_LABELS,
+  STATUS_FILTER_OPTIONS,
+} from "@/constants/professor/corrections";
 import {
   getHorizontalPadding,
   isCompactWidth,

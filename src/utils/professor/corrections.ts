@@ -1,6 +1,9 @@
 import { CORRECTION_MESSAGES } from "@/constants/professor/corrections";
-import type { CorrectionFilter, StatusFilter } from "@/types/professor/corrections";
 import type { Submission } from "@/types/professor";
+import type {
+  CorrectionFilter,
+  StatusFilter,
+} from "@/types/professor/corrections";
 
 // Filtra as submissões pendentes com base em busca e turma selecionada.
 export function getFilteredSubmissions({
@@ -45,17 +48,15 @@ export function getFilteredSubmissions({
 // Contagem de submissões pendentes.
 export function getPendingSubmissionsLabel(
   count: number,
-  statusFilter: StatusFilter = 'pending',
+  statusFilter: StatusFilter = "pending",
 ): string {
-  if (statusFilter === 'pending') {
+  if (statusFilter === "pending") {
     return count === 1
       ? CORRECTION_MESSAGES.count.one
       : CORRECTION_MESSAGES.count.many;
   }
 
-  return count === 1
-    ? 'resultado encontrado'
-    : 'resultados encontrados';
+  return count === 1 ? "resultado encontrado" : "resultados encontrados";
 }
 
 // Contagem de submissões corrigidas.

@@ -8,13 +8,25 @@ export function studentPrototypeReducer(
   action: StudentPrototypeAction,
 ): StudentPrototypeState {
   switch (action.type) {
+    // ---> ADICIONE APENAS ESTE CASE NOVO <---
+    case 'loadSupabaseData':
+      return {
+        ...state,
+        session: {
+          ...state.session,
+          explorerName: action.explorerName || state.session.explorerName,
+          coins: action.coins ?? state.session.coins,
+        },
+        mission: action.mission ? action.mission : state.mission,
+      };
+
     case 'setExplorerName':
       return {
         ...state,
         session: { ...state.session, explorerName: action.name },
       };
     case 'saveMission':
-      return { ...state, mission: { ...state.mission, status: 'inProgress' } };
+      return { ...state, mission: { ...state.mission, status: 'not_submitted' } };
     case 'submitMission':
       return {
         ...state,
@@ -27,7 +39,7 @@ export function studentPrototypeReducer(
         mission: {
           ...state.mission,
           responseName: action.fileName,
-          status: 'awaitingReview',
+          status: 'pending',
           firstRewardGranted: true,
         },
         notifications: state.notifications.map((item) =>

@@ -1,14 +1,16 @@
 export type MissionStatus =
   | 'pending'
-  | 'inProgress'
-  | 'awaitingReview'
-  | 'revision'
-  | 'approved';
+  | 'submitted'
+  | 'not_submitted'
+  | 'corrected';
   
 export interface StudentMission {
+  id: string;
   title: string;
   instruction: string;
   attachmentName: string;
+  fileUrl?: string;
+  teacherName?: string;
   estimate: string;
   rewardCoins: number;
   status: MissionStatus;

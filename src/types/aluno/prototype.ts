@@ -40,7 +40,13 @@ export type StudentPrototypeAction =
   | { type: 'submitMission'; fileName: string; firstSubmission: boolean }
   | { type: 'buyOrEquip'; item: ShopItem }
   | { type: 'equipReward' }
-  | { type: 'markNotificationRead'; notificationId: string };
+  | { type: 'markNotificationRead'; notificationId: string }
+  | {
+      type: 'loadSupabaseData';
+      explorerName?: string;
+      coins?: number;
+      mission?: StudentMission;
+    };
 
 export interface MissionPresentation {
   label: string;

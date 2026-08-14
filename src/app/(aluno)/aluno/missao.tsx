@@ -2,7 +2,7 @@ import * as DocumentPicker from "expo-document-picker";
 import { useRouter } from "expo-router";
 import { Clock, Coins, Download, Upload, X } from "lucide-react-native";
 import { useState } from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { Alert, Linking, Text, TouchableOpacity, View } from "react-native";
 import { MissionFileCard } from "../../../components/aluno/MissionFileCard";
 import { StudentBottomSheet } from "../../../components/aluno/StudentBottomSheet";
 import { StudentScreenShell } from "../../../components/aluno/StudentScreenShell";
@@ -12,11 +12,19 @@ import { useStudentPrototype } from "../../../hooks/aluno/useStudentPrototype";
 import { ALUNO_ROUTES } from "../../../router/aluno.routes";
 import { alunoStyles as s } from "../../../styles/aluno";
 import { isRevision } from "../../../utils/aluno/mission";
+import * as FileSystem from "expo-file-system";
+import * as Sharing from "expo-sharing";
 
 export default function MissionRoute() {
   const router = useRouter();
   const { mission, saveMission, submitMission } = useStudentPrototype();
+  // 🔍 LOG 3: Vendo o que tem dentro da missão atual
+  console.log(
+    "📍 [Tela da Missão] Dados da mission:",
+    JSON.stringify(mission, null, 2),
+  );
   const [file, setFile] = useState(mission.responseName || "");
+  const [fileUri, setFileUri] = useState("");
   const [confirm, setConfirm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const revision = isRevision(mission);
@@ -31,18 +39,66 @@ export default function MissionRoute() {
       multiple: false,
       copyToCacheDirectory: true,
     });
-    if (!result.canceled && result.assets[0]) setFile(result.assets[0].name);
+
+    if (!result.canceled && result.assets[0]) {
+      setFile(result.assets[0].name); // Guarda o nome para exibir na tela
+      setFileUri(result.assets[0].uri); // Guarda a URI para realizar o upload
+    }
   };
-  const send = () => {
+  const send = async () => {
     setSubmitting(true);
-    setTimeout(() => {
-      const result = submitMission(file);
-      setSubmitting(false);
-      if (result.kind === "invalid") return;
-      setConfirm(false);
-      if (result.kind === "firstSubmission") router.replace(ALUNO_ROUTES.SENT);
-      else router.replace(ALUNO_ROUTES.RESENT);
-    }, 450);
+
+    // Passa a URI do arquivo e o nome
+    const result = await submitMission(fileUri, file);
+
+    setSubmitting(false);
+
+    if (result.kind === "invalid") {
+      Alert.alert("Ops!", result.message || "Erro ao enviar arquivo.");
+      return;
+    }
+
+    setConfirm(false);
+
+    if (result.kind === "firstSubmission") {
+      router.replace(ALUNO_ROUTES.SENT);
+    } else {
+      router.replace(ALUNO_ROUTES.RESENT);
+    }
+  };
+  const handleDownload = async () => {
+    if (!mission.fileUrl) {
+      Alert.alert("Ops!", "Nenhum arquivo disponível nesta missão.");
+      return;
+    }
+
+    try {
+      // 1. Limpa o nome do arquivo
+      const rawFileName = mission.attachmentName || "material-missao.pdf";
+      const cleanFileName = rawFileName.replace(/^\d+_/, "");
+      const fileSys = FileSystem as any;
+      // 🛡️ Garante um diretório válido mesmo se documentDirectory for null
+      const baseDir = fileSys.documentDirectory || fileSys.cacheDirectory || "";
+      const localUri = `${baseDir}${cleanFileName}`;
+
+      // 2. Faz o download do arquivo
+      const { uri } = await FileSystem.downloadAsync(mission.fileUrl, localUri);
+
+      // 3. Verifica e abre o compartilhamento
+      const isSharingAvailable = await Sharing.isAvailableAsync();
+
+      if (isSharingAvailable) {
+        await Sharing.shareAsync(uri);
+      } else {
+        Alert.alert(
+          "Erro",
+          "O seu dispositivo não suporta abrir a lista de aplicativos.",
+        );
+      }
+    } catch (error) {
+      console.error("Erro ao baixar/abrir arquivo:", error);
+      Alert.alert("Erro", "Não foi possível carregar o arquivo.");
+    }
   };
   return (
     <>
@@ -96,8 +152,15 @@ export default function MissionRoute() {
           </Text>
         </View>
         <Text style={s.sectionLabel}>Material da missão</Text>
-        <MissionFileCard name={mission.attachmentName} />
-        <TouchableOpacity style={s.studentDownloadButton}>
+        <MissionFileCard
+          name={mission.attachmentName}
+          fileUrl={mission.fileUrl}
+          teacherName={mission.teacherName}
+        />
+        <TouchableOpacity
+          style={s.studentDownloadButton}
+          onPress={handleDownload}
+        >
           <Download size={18} color={theme.primary} />
           <Text style={s.studentDownloadText}>Baixar arquivo</Text>
         </TouchableOpacity>

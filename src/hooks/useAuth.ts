@@ -16,6 +16,7 @@ import {
   generateStudentAccessCode,
 } from "@/utils/generators";
 import { useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // --- INTERFACES & PAYLOADS ---
 
@@ -628,6 +629,45 @@ export function useAuth() {
     }
   }
 
+  // 1. Atualizado: Salva no AsyncStorage ao verificar o código de acesso
+  async function verifyStudentAccessCode(
+    classId: string,
+    accessCode: string,
+  ): Promise<{ studentId?: string; name?: string }> {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const normalizedCode = accessCode
+        .replace(/[^A-Za-z0-9]/g, "")
+        .trim()
+        .toUpperCase();
+
+      if (!normalizedCode) throw new Error("Código de acesso inválido.");
+
+      const { data, error } = await supabase
+        .from("students")
+        .select("id, name, student_access_code")
+        .eq("class_id", classId)
+        .eq("student_access_code", normalizedCode)
+        .maybeSingle();
+
+      if (error) throw error;
+      if (!data) throw new Error("Código de acesso inválido.");
+
+      // 💾 Salva o ID do aluno localmente para manter a sessão ativa
+      await AsyncStorage.setItem("@student_id", data.id);
+
+      return { studentId: data.id, name: data.name };
+    } catch (err: any) {
+      setError(err.message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // 2. Atualizado: Garante o salvamento local ao registrar/atualizar o nome fictício
   async function registerStudent(
     studentId: string,
     fictionName: string,
@@ -657,6 +697,8 @@ export function useAuth() {
         throw new Error("Não foi possível atualizar o perfil do aluno.");
       }
 
+      await AsyncStorage.setItem("@student_id", updatedStudent.id);
+
       return {
         studentId: updatedStudent.id,
         classId,
@@ -664,63 +706,18 @@ export function useAuth() {
       };
     } catch (err: any) {
       setError(err.message);
-      console.error("Erro ao registrar nome fictício do aluno:", err);
       throw err;
     } finally {
       setLoading(false);
     }
   }
 
-  // Verifica se um código de acesso de aluno é válido para a turma
-  async function verifyStudentAccessCode(
-    classId: string,
-    accessCode: string,
-  ): Promise<{ studentId?: string; name?: string }> {
-    setLoading(true);
-    setError(null);
-
+  // 3. Nova função: Desconectar aluno (limpar armazenamento local)
+  async function signOutStudent() {
     try {
-      // Normaliza limpando caracteres especiais e colocando em CAIXA ALTA
-      const normalizedCode = accessCode
-        .replace(/[^A-Za-z0-9]/g, "")
-        .trim()
-        .toUpperCase();
-
-      console.log("🔍 Verificando código do aluno:", {
-        classId,
-        accessCodeDigitado: accessCode,
-        normalizedCode,
-      });
-
-      if (!normalizedCode) throw new Error("Código de acesso inválido.");
-
-      const { data, error } = await supabase
-        .from("students")
-        .select("id, name, student_access_code")
-        .eq("class_id", classId)
-        .eq("student_access_code", normalizedCode)
-        .maybeSingle();
-
-      if (error) {
-        console.error("❌ Erro retornado pelo Supabase (RLS ou Query):", error);
-        throw error;
-      }
-
-      if (!data) {
-        console.warn(
-          "⚠️ Nenhum aluno encontrado com este código para esta turma.",
-        );
-        throw new Error("Código de acesso inválido.");
-      }
-
-      console.log("✅ Aluno encontrado com sucesso:", data);
-      return { studentId: data.id, name: data.name };
-    } catch (err: any) {
-      console.error("❌ Erro em verifyStudentAccessCode:", err.message || err);
-      setError(err.message);
-      throw err;
-    } finally {
-      setLoading(false);
+      await AsyncStorage.removeItem("@student_id");
+    } catch (err) {
+      console.error("Erro ao remover sessão do aluno:", err);
     }
   }
 
@@ -737,5 +734,6 @@ export function useAuth() {
     validateStudentAccess,
     registerStudent,
     verifyStudentAccessCode,
+    signOutStudent,
   };
 }

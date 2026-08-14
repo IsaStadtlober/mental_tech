@@ -218,7 +218,7 @@ export function StudentPrototypeProvider({
             estimate: "20 min",
             rewardCoins: activity.reward_coins ?? 30,
             status: frontendStatus,
-            responseName: activeSub.attachment_url,
+            responseName: activeSub.student_answers || activeSub.attachment_url || "",
             firstRewardGranted:
               dbStatus === "corrected" || dbStatus === "approved",
           },
@@ -240,7 +240,6 @@ export function StudentPrototypeProvider({
       fileUriOrName: string,
       fileName?: string,
     ): Promise<SubmissionResult> => {
-      // 💡 Se passou 2 parâmetros (uri e nome), usa os dois. Se passou só 1, trata como o nome.
       const actualFileName = fileName ? fileName : fileUriOrName;
       const actualFileUri = fileName ? fileUriOrName : "";
 
@@ -266,14 +265,21 @@ export function StudentPrototypeProvider({
 
         let uploadedUrl = "";
 
-        // 1. Se houver uma URI local de arquivo, faz o upload para o Storage
-        if (actualFileUri && actualFileUri.startsWith("file://")) {
-          console.log("📤 Enviando arquivo para o Supabase Storage...");
+        // 1. Verifica se é um arquivo local válido (file:// ou content:// do Android)
+        const isLocalFile =
+          actualFileUri &&
+          (actualFileUri.startsWith("file://") ||
+            actualFileUri.startsWith("content://") ||
+            actualFileUri.startsWith("blob:"));
+
+        if (isLocalFile) {
+          console.log("📤 Enviando resposta para exercicios/respostas/...");
           const fileResponse = await fetch(actualFileUri);
           const uploadBody = await fileResponse.arrayBuffer();
 
           const sanitizedName = actualFileName.replace(/[^a-zA-Z0-9._-]/g, "_");
-          const filePath = `respostas/${activeStudentId}/${Date.now()}_${sanitizedName}`;
+          // 📁 Caminho organizado: exercicios > respostas / ID_ALUNO / ID_ATIVIDADE / arquivo.ext
+          const filePath = `respostas/${activeStudentId}/${state.mission.id}/${Date.now()}_${sanitizedName}`;
 
           const { error: uploadError } = await supabase.storage
             .from("exercicios")
@@ -296,12 +302,12 @@ export function StudentPrototypeProvider({
           uploadedUrl = publicUrlData.publicUrl;
         }
 
-        // 2. Atualiza o status para 'pending' na tabela 'submissions'
+        // 2. Grava na coluna student_answer e atualiza status para pending
         const { error: dbError } = await supabase
           .from("submissions")
           .update({
             status: "pending",
-            ...(uploadedUrl ? { attachment_url: uploadedUrl } : {}),
+            student_answers: uploadedUrl || actualFileName, // 👈 Salva a URL da resposta do aluno aqui
             submitted_at: new Date().toISOString(),
           })
           .eq("student_id", activeStudentId)

@@ -52,7 +52,7 @@ function CorrectionScreen({
       JSON.stringify(submission.attachment, null, 2),
     );
 
-    const fileUrl = submission.attachment?.url || submission.attachment?.uri;
+    const fileUrl = submission.attachment?.uri || submission.attachment?.uri;
 
     console.log("=== 2. URL ENCONTRADA ===", fileUrl);
 

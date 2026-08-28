@@ -1,7 +1,7 @@
 import type { FileType, SubmissionStatus } from "@/types/professor";
 import type {
-    CorrectionFilter,
-    StatusFilter,
+  CorrectionFilter,
+  StatusFilter,
 } from "@/types/professor/corrections";
 
 // Filtros de turma.
@@ -19,7 +19,7 @@ export const STATUS_FILTER_OPTIONS: { label: string; value: StatusFilter }[] = [
   { label: "Todos", value: "all" },
   { label: "Pendentes", value: "pending" },
   { label: "Não respondidos", value: "not_submitted" },
-  { label: "Respondidos", value: "submitted" },
+  { label: "Respondidos", value: "revision" },
   { label: "Corrigidos", value: "corrected" },
 ];
 
@@ -83,6 +83,6 @@ export const CORRECTION_MESSAGES = {
 export const CORRECTION_DECISION_LABELS: Record<SubmissionStatus, string> = {
   not_submitted: "Aguardando envio",
   pending: "Pendente",
-  submitted: "Respondido",
+  revision: "Respondido",
   corrected: "Corrigido",
 };

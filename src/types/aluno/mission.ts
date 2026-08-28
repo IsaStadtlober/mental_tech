@@ -1,9 +1,6 @@
 export type MissionStatus =
-  | 'pending'
-  | 'submitted'
-  | 'not_submitted'
-  | 'corrected';
-  
+  "pending" | "revision" | "not_submitted" | "corrected";
+
 export interface StudentMission {
   id: string;
   title: string;

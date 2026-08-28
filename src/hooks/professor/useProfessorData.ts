@@ -9,6 +9,7 @@ import type {
 } from "@/types/professor";
 import {
   getProfessorProfile,
+  getStudentSubmissionFileUrl,
   listProfessorActivities,
   listProfessorClasses,
   listProfessorStudents,
@@ -93,23 +94,35 @@ function mapStudentSummary(
   };
 }
 
-function mapRealSubmissions(
+async function mapRealSubmissions(
   dbSubmissions: ProfessorSubmissionSummary[],
   activities: Activity[],
   students: EducatorStudentOption[],
-): Submission[] {
+): Promise<Submission[]> {
   const activityById = new Map(activities.map((a) => [a.id, a]));
   const studentById = new Map(students.map((s) => [s.id, s]));
 
-  return dbSubmissions
-    .map((sub) => {
+  // Usamos Promise.all pois a busca no storage é assíncrona
+  return Promise.all(
+    dbSubmissions.map(async (sub) => {
       const student = studentById.get(sub.student_id);
       const activity = activityById.get(sub.activity_id);
       const studentName = student?.name || "Aluno desvinculado";
 
-      // Mapeamento explícito para compatibilidade com a tipagem SubmissionStatus
-      const mappedStatus: Submission["status"] = sub.status;
-      const isPending = sub.status === "pending" || sub.status === "submitted";
+      // Tenta pegar a URL do banco ou busca diretamente no bucket 'respostas'
+      let fileUrl =
+        typeof sub.student_answers === "string"
+          ? sub.student_answers
+          : sub.student_answers?.url || undefined;
+
+      // Se não veio no banco, busca na pasta 'respostas/{student_id}/{activity_id}'
+      if (!fileUrl && sub.status !== "not_submitted") {
+        fileUrl =
+          (await getStudentSubmissionFileUrl(
+            sub.student_id,
+            sub.activity_id,
+          )) || undefined;
+      }
 
       return {
         id: sub.id,
@@ -119,19 +132,26 @@ function mapRealSubmissions(
         activityId: sub.activity_id,
         activityTitle: activity?.title || "Atividade sem título",
         className: student?.className || "Turma sem nome",
-        status: mappedStatus,
-        submittedAt: formatDate(sub.submitted_at || sub.corrected_at) || "Hoje",
+        status: sub.status as Submission["status"],
+        submittedAt: formatDate(sub.submitted_at) || "Não entregue",
         waitingTimeLabel:
-          isPending ? "Aguardando correção" : "Corrigido",
+          sub.status === "not_submitted"
+            ? "Não respondido"
+            : sub.status === "pending"
+              ? "Aguardando correção"
+              : sub.status === "revision"
+                ? "Revisão solicitada"
+                : "Corrigido",
         attachment: {
           id: `attachment-${sub.id}`,
-          name: sub.content_url ? "Resposta enviada" : "Sem arquivo anexado",
+          name: fileUrl ? "Resposta anexada" : "Sem arquivo anexado",
           type: "pdf",
-          sizeLabel: sub.content_url ? "Ver arquivo" : "N/A",
-          url: sub.content_url || undefined,
+          sizeLabel: fileUrl ? "Ver arquivo" : "N/A",
+          url: fileUrl,
         },
       };
-    });
+    }),
+  );
 }
 
 function buildNotifications(
@@ -223,7 +243,7 @@ export function useProfessorData(): UseProfessorDataResult {
           mapActivitySummary(activity, classNameById),
         );
         const mappedStudents = (studentsResponse ?? []).map(mapStudentSummary);
-        const mappedSubmissions = mapRealSubmissions(
+        const mappedSubmissions = await mapRealSubmissions(
           submissionsResponse ?? [],
           mappedActivities,
           mappedStudents,

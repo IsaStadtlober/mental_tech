@@ -1,3 +1,5 @@
+import { supabase } from "@/service/supabase";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, {
   createContext,
   useCallback,
@@ -7,7 +9,6 @@ import React, {
   useReducer,
   useRef,
 } from "react";
-import { supabase } from "@/service/supabase";
 import { INITIAL_STUDENT_PROTOTYPE_STATE } from "../../constants/aluno/fixtures";
 import type {
   PurchaseResult,
@@ -16,7 +17,6 @@ import type {
   SubmissionResult,
 } from "../../types/aluno";
 import { studentPrototypeReducer } from "./studentPrototypeReducer";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const StudentPrototypeContext =
   createContext<StudentPrototypeContextValue | null>(null);
@@ -108,10 +108,8 @@ export function StudentPrototypeProvider({
 
         // A missão ATIVA é a primeira da lista que não está finalizada/aprovada
         const activeSub =
-          submissions.find(
-            (sub: any) =>
-              sub.status !== "corrected" && sub.status !== "approved",
-          ) || submissions[0];
+          submissions.find((sub: any) => sub.status !== "corrected") ||
+          submissions[0];
 
         console.log("🔍 [3] Buscando detalhes da atividade atual...");
         console.log(
@@ -164,9 +162,11 @@ export function StudentPrototypeProvider({
 
         // Regra de status visual do Mapa
         let frontendStatus: any = "pending";
-        if (dbStatus === "submitted" || dbStatus === "pending") {
+        if (dbStatus === "revision") {
+          frontendStatus = "revision";
+        } else if (dbStatus === "pending") {
           frontendStatus = "awaitingReview";
-        } else if (dbStatus === "corrected" || dbStatus === "approved") {
+        } else if (dbStatus === "corrected") {
           frontendStatus = "approved";
         }
 
@@ -218,9 +218,9 @@ export function StudentPrototypeProvider({
             estimate: "20 min",
             rewardCoins: activity.reward_coins ?? 30,
             status: frontendStatus,
-            responseName: activeSub.student_answers || activeSub.attachment_url || "",
-            firstRewardGranted:
-              dbStatus === "corrected" || dbStatus === "approved",
+            responseName:
+              activeSub.student_answers || activeSub.attachment_url || "",
+            firstRewardGranted: dbStatus === "corrected",
           },
         });
       } catch (err) {

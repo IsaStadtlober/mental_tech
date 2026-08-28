@@ -9,16 +9,16 @@ import { STUDENT_PROFILE_STATUS_CONFIG } from "@/constants/professor/students";
 import { theme } from "@/constants/theme";
 import { useStudentProfile } from "@/hooks/professor/useStudentProfile";
 import { PROFESSOR_ROUTES } from "@/router/professor.routes";
-import { studentsStyles } from "@/styles/professor/students";
 import { supabase } from "@/service/supabase";
+import { studentsStyles } from "@/styles/professor/students";
 import type {
-  StudentHistoryItem,
-  StudentProfile,
-  StudentProfileScreenProps,
+    StudentHistoryItem,
+    StudentProfile,
+    StudentProfileScreenProps,
 } from "@/types/professor";
 import {
-  listProfessorActivities,
-  listProfessorStudents,
+    listProfessorActivities,
+    listProfessorStudents,
 } from "@/utils/professor";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Send } from "lucide-react-native";
@@ -137,10 +137,7 @@ function StudentProfileScreen({
           return {
             id: submission.id,
             title: activity?.title || "Atividade sem título",
-            status:
-              submission.status === "corrected"
-                ? "approved"
-                : ("pending" as "approved" | "pending"),
+            status: submission.status,
             dateLabel: formatDate(submission.submitted_at),
             grade: submission.status === "corrected" ? "100%" : undefined,
           } satisfies StudentHistoryItem;
@@ -149,14 +146,13 @@ function StudentProfileScreen({
         const completedActivities = submissions.filter(
           (submission) => submission.status === "approved",
         ).length;
-        const pendingActivities = classActivities.filter(
-          (activity) =>
-            !(submissionsData ?? []).some(
-              (submission) => submission.activity_id === activity.id,
-            ),
+        const pendingActivities = submissions.filter(
+          (submission) =>
+            submission.status === "not_submitted" ||
+            submission.status === "pending",
         ).length;
         const revisionActivities = submissions.filter(
-          (submission) => submission.status === "pending",
+          (submission) => submission.status === "revision",
         ).length;
         const participation = Math.min(
           100,

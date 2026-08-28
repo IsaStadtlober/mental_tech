@@ -126,6 +126,7 @@ export async function saveActivityToSupabase({
         activity_id: newActivity.id,
         student_id: studentId,
         status: "not_submitted",
+        submitted_at: new Date().toISOString(),
       }));
 
       const { error: submissionError } = await supabase

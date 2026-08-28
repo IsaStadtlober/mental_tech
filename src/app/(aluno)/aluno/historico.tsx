@@ -60,7 +60,7 @@ export default function HistoryRoute() {
 }
 function ActivityRow({ activity: a }: { activity: RecentActivity }) {
   const Icon =
-    a.status === 'approved'
+    a.status === 'corrected'
       ? CheckCircle2
       : a.status === 'revision'
       ? RotateCcw

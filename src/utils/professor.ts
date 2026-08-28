@@ -82,7 +82,7 @@ export interface ProfessorSubmissionSummary {
   id: string;
   activity_id: string;
   student_id: string;
-  status: "not_submitted" | "pending" | "submitted" | "corrected";
+  status: "not_submitted" | "pending" | "revision" | "corrected";
   student_answers?: any; // ou a estrutura exata do seu JSONB (ex: { url: string })
   submitted_at?: string | null;
   teacher_feedback?: string | null;
@@ -503,6 +503,40 @@ export async function listProfessorActivities(
   if (activitiesError) throw activitiesError;
 
   return (activities ?? []) as ProfessorActivitySummary[];
+}
+
+/**
+ * Busca a URL do arquivo de resposta do aluno no bucket 'respostas'.
+ * Estrutura no bucket: respostas/{student_id}/{activity_id}/{filename}
+ */
+export async function getStudentSubmissionFileUrl(
+  studentId: string,
+  activityId: string,
+): Promise<string | null> {
+  try {
+    const folderPath = `${studentId}/${activityId}`;
+
+    // 1. Lista os arquivos dentro da pasta do aluno + atividade
+    const { data: files, error } = await supabase.storage
+      .from("respostas")
+      .list(folderPath, { limit: 1 });
+
+    if (error || !files || files.length === 0) {
+      return null;
+    }
+
+    const fileName = files[0].name;
+    const filePath = `${folderPath}/${fileName}`;
+
+    // 2. Gera a URL para visualizar/baixar o arquivo
+    // Se o bucket for PÚBLICO:
+    const { data } = supabase.storage.from("respostas").getPublicUrl(filePath);
+
+    return data.publicUrl;
+  } catch (err) {
+    console.error("Erro ao buscar arquivo de resposta no storage:", err);
+    return null;
+  }
 }
 
 /**

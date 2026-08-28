@@ -200,11 +200,10 @@ function CorrectionQueueScreen({
         ) : (
           <View style={correctionsStyles.listStack}>
             {filteredSubmissions.map((submission) => {
-              const isPending =
-                submission.status === "pending";
+              const isPending = submission.status === "pending";
+              const isRevision = submission.status === "revision";
               const isNotSubmitted = submission.status === "not_submitted";
-              const isCorrected =
-                submission.status === "corrected";
+              const isCorrected = submission.status === "corrected";
 
               const fileUrl =
                 submission.attachment?.uri || submission.attachment?.uri;
@@ -212,20 +211,24 @@ function CorrectionQueueScreen({
               // Usa 'isCorrected' na atribuição do tom do chip
               const chipTone = isPending
                 ? "warning"
-                : isNotSubmitted
-                  ? "danger"
-                  : isCorrected
-                    ? "success"
-                    : "neutral";
+                : isRevision
+                  ? "info"
+                  : isNotSubmitted
+                    ? "danger"
+                    : isCorrected
+                      ? "success"
+                      : "neutral";
 
               // Usa 'isCorrected' na definição do rótulo
               const statusLabel = isNotSubmitted
                 ? "Não respondido"
                 : isPending
                   ? "Aguardando correção"
-                  : isCorrected
-                    ? "Corrigido"
-                    : "Pendente";
+                  : isRevision
+                    ? "Revisão solicitada"
+                    : isCorrected
+                      ? "Corrigido"
+                      : "Pendente";
 
               return (
                 <AppCard key={submission.id} elevated={false}>

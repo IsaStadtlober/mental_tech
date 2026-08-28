@@ -25,7 +25,7 @@ export function MissionCard({ mission, onPress }: MissionCardProps) {
   const Icon =
     displayStatus === "not_submitted"
       ? RotateCcw
-      : displayStatus === "submitted"
+      : displayStatus === "revision"
         ? Clock3
         : FileText;
 
@@ -82,7 +82,9 @@ export function MissionCard({ mission, onPress }: MissionCardProps) {
         <View style={[s.interactiveChevron]}>
           <ChevronRight
             size={18}
-            color={displayStatus === "not_submitted" ? theme.warning : theme.primary}
+            color={
+              displayStatus === "not_submitted" ? theme.warning : theme.primary
+            }
           />
         </View>
       </Pressable>

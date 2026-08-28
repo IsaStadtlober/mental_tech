@@ -125,7 +125,7 @@ export async function saveActivityToSupabase({
       const submissionsToInsert = studentsToAssign.map((studentId) => ({
         activity_id: newActivity.id,
         student_id: studentId,
-        status: "pending",
+        status: "not_submitted",
       }));
 
       const { error: submissionError } = await supabase

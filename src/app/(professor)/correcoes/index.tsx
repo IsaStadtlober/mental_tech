@@ -39,7 +39,6 @@ function CorrectionQueueScreen({
   const { width } = useWindowDimensions();
 
   const isCompact = isCompactWidth(width);
-
   const horizontalPadding = getHorizontalPadding(width);
 
   const {
@@ -77,7 +76,6 @@ function CorrectionQueueScreen({
         </View>
 
         {/* Identificação da tela */}
-
         <View style={correctionsStyles.headerSection}>
           <Text
             style={[
@@ -95,7 +93,6 @@ function CorrectionQueueScreen({
         </View>
 
         {/* Busca e filtros */}
-
         <AppCard style={correctionsStyles.filterCard}>
           <Text style={correctionsStyles.fieldLabel}>
             {messages.search.label}
@@ -128,9 +125,7 @@ function CorrectionQueueScreen({
                 <Pressable
                   key={option.value}
                   accessibilityRole="button"
-                  accessibilityState={{
-                    selected: active,
-                  }}
+                  accessibilityState={{ selected: active }}
                   onPress={() => setClassFilter(option.value)}
                   style={({ pressed }) => [
                     correctionsStyles.filterChipButton,
@@ -168,9 +163,7 @@ function CorrectionQueueScreen({
                 <Pressable
                   key={option.value}
                   accessibilityRole="button"
-                  accessibilityState={{
-                    selected: active,
-                  }}
+                  accessibilityState={{ selected: active }}
                   onPress={() => setStatusFilter(option.value)}
                   style={({ pressed }) => [
                     correctionsStyles.filterChipButton,
@@ -193,7 +186,6 @@ function CorrectionQueueScreen({
         </AppCard>
 
         {/* Resultado da busca */}
-
         <Text style={correctionsStyles.countText}>
           {filteredSubmissions.length} {resultsLabel}
         </Text>
@@ -207,141 +199,172 @@ function CorrectionQueueScreen({
           </AppCard>
         ) : (
           <View style={correctionsStyles.listStack}>
-            {filteredSubmissions.map((submission, index) => (
-              <AppCard key={submission.id} elevated={false}>
-                <View
-                  style={[
-                    correctionsStyles.cardContent,
-                    isCompact
-                      ? correctionsStyles.cardContentCompact
-                      : correctionsStyles.cardContentRow,
-                  ]}
-                >
+            {filteredSubmissions.map((submission) => {
+              const isPending =
+                submission.status === "pending";
+              const isNotSubmitted = submission.status === "not_submitted";
+              const isCorrected =
+                submission.status === "corrected";
+
+              const fileUrl =
+                submission.attachment?.uri || submission.attachment?.uri;
+
+              // Usa 'isCorrected' na atribuição do tom do chip
+              const chipTone = isPending
+                ? "warning"
+                : isNotSubmitted
+                  ? "danger"
+                  : isCorrected
+                    ? "success"
+                    : "neutral";
+
+              // Usa 'isCorrected' na definição do rótulo
+              const statusLabel = isNotSubmitted
+                ? "Não respondido"
+                : isPending
+                  ? "Aguardando correção"
+                  : isCorrected
+                    ? "Corrigido"
+                    : "Pendente";
+
+              return (
+                <AppCard key={submission.id} elevated={false}>
                   <View
-                    style={{
-                      flex: 1,
-                      minWidth: 0,
-
-                      flexDirection: "row",
-
-                      alignItems: "center",
-
-                      gap: 13,
-                    }}
+                    style={[
+                      correctionsStyles.cardContent,
+                      isCompact
+                        ? correctionsStyles.cardContentCompact
+                        : correctionsStyles.cardContentRow,
+                    ]}
                   >
                     <View
-                      style={[
-                        correctionsStyles.avatar,
-                        index === 0
-                          ? correctionsStyles.avatarPrimary
-                          : correctionsStyles.avatarNeutral,
-                      ]}
+                      style={{
+                        flex: 1,
+                        minWidth: 0,
+                        flexDirection: "row",
+                        alignItems: "center",
+                        gap: 13,
+                      }}
                     >
-                      <Text
-                        style={
-                          index === 0
-                            ? correctionsStyles.avatarTextActive
-                            : correctionsStyles.avatarText
-                        }
-                      >
-                        {submission.studentInitials ??
-                          submission.studentName
-                            .split(" ")
-                            .filter(Boolean)
-                            .slice(0, 2)
-                            .map((part) => part.charAt(0))
-                            .join("")
-                            .toUpperCase()}
-                      </Text>
-                    </View>
-
-                    <View style={correctionsStyles.submissionMeta}>
+                      {/* Avatar com cor diferenciada */}
                       <View
-                        style={{
-                          flexDirection: "row",
-
-                          alignItems: "center",
-
-                          flexWrap: "wrap",
-
-                          gap: 8,
-                        }}
+                        style={[
+                          correctionsStyles.avatar,
+                          isPending
+                            ? correctionsStyles.avatarPrimary
+                            : correctionsStyles.avatarNeutral,
+                        ]}
                       >
-                        <Text style={correctionsStyles.submissionTitle}>
-                          {submission.studentName}
+                        <Text
+                          style={
+                            isPending
+                              ? correctionsStyles.avatarTextActive
+                              : correctionsStyles.avatarText
+                          }
+                        >
+                          {submission.studentInitials ??
+                            submission.studentName
+                              .split(" ")
+                              .filter(Boolean)
+                              .slice(0, 2)
+                              .map((part) => part.charAt(0))
+                              .join("")
+                              .toUpperCase()}
                         </Text>
-
-                        {index === 0 && (
-                          <StatusChip
-                            label={messages.actions.moreOld}
-                            tone="warning"
-                          />
-                        )}
                       </View>
 
-                      <Text
-                        numberOfLines={1}
-                        style={correctionsStyles.submissionSubtitle}
-                      >
-                        {submission.activityTitle}
-                        {" · "}
-                        {submission.className}
-                      </Text>
+                      <View style={correctionsStyles.submissionMeta}>
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                            flexWrap: "wrap",
+                            gap: 8,
+                          }}
+                        >
+                          <Text style={correctionsStyles.submissionTitle}>
+                            {submission.studentName}
+                          </Text>
 
-                      <View style={correctionsStyles.chipsRow}>
-                        <StatusChip
-                          label={submission.waitingTimeLabel}
-                          tone={index === 0 ? "warning" : "info"}
-                          dot
-                        />
-
-                        {submission.attachment?.uri ? (
-                          <>
+                          {isPending && (
                             <StatusChip
-                              label={fileTypeLabels[submission.attachment.type]}
-                              tone="neutral"
+                              label={messages.actions.moreOld}
+                              tone="warning"
                             />
+                          )}
+                        </View>
 
+                        <Text
+                          numberOfLines={1}
+                          style={correctionsStyles.submissionSubtitle}
+                        >
+                          {submission.activityTitle}
+                          {" · "}
+                          {submission.className}
+                        </Text>
+
+                        <View style={correctionsStyles.chipsRow}>
+                          {/* Chip com tom e rótulo corretos */}
+                          <StatusChip label={statusLabel} tone={chipTone} dot />
+
+                          {!isNotSubmitted && fileUrl ? (
+                            <>
+                              <StatusChip
+                                label={
+                                  fileTypeLabels[submission.attachment?.type] ||
+                                  "Arquivo"
+                                }
+                                tone="neutral"
+                              />
+
+                              <Text
+                                numberOfLines={1}
+                                style={correctionsStyles.attachmentText}
+                              >
+                                {submission.attachment?.name ||
+                                  "Resposta em anexo"}
+                              </Text>
+                            </>
+                          ) : (
                             <Text
                               numberOfLines={1}
                               style={correctionsStyles.attachmentText}
                             >
-                              {submission.attachment.name}
+                              {isNotSubmitted
+                                ? "Aguardando envio do aluno"
+                                : "Sem arquivo anexado"}
                             </Text>
-                          </>
-                        ) : (
-                          <Text
-                            numberOfLines={1}
-                            style={correctionsStyles.attachmentText}
-                          >
-                            Nenhum arquivo enviado
-                          </Text>
-                        )}
+                          )}
+                        </View>
                       </View>
                     </View>
-                  </View>
 
-                  {/* Checa se existe a URL do arquivo ou se foi enviado de fato */}
-                  {submission.attachment?.uri ? (
-                    <AppButton
-                      label={messages.actions.correct}
-                      onPress={() => onOpenSubmission(submission.id)}
-                      iconLeft={<CheckSquare2 size={17} color={theme.white} />}
-                    />
-                  ) : (
-                    <Text
-                      style={{
-                        color: theme.textFaint,
-                        fontSize: 13,
-                        fontStyle: "italic",
-                      }}
-                    >
-                      Aguardando envio do aluno...
-                    </Text>
-                  )}
-                </View>
-              </AppCard>
-            ))}
+                    {/* Botão de ação ou aviso de não entregue */}
+                    {isNotSubmitted ? (
+                      <Text
+                        style={{
+                          color: theme.textFaint,
+                          fontSize: 13,
+                          fontStyle: "italic",
+                        }}
+                      >
+                        Pendente de entrega
+                      </Text>
+                    ) : (
+                      <AppButton
+                        label={
+                          isPending ? messages.actions.correct : "Ver Correção"
+                        }
+                        onPress={() => onOpenSubmission(submission.id)}
+                        iconLeft={
+                          <CheckSquare2 size={17} color={theme.white} />
+                        }
+                      />
+                    )}
+                  </View>
+                </AppCard>
+              );
+            })}
           </View>
         )}
       </View>

@@ -24,8 +24,8 @@ export type ActivityStatus =
 export type SubmissionStatus =
   | 'not_submitted'
   | 'pending'
-  | 'approved'
-  | 'revision';
+  | 'submitted'
+  | 'corrected';
 
 export type FileType =
     | 'pdf'

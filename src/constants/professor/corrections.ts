@@ -19,8 +19,8 @@ export const STATUS_FILTER_OPTIONS: { label: string; value: StatusFilter }[] = [
   { label: "Todos", value: "all" },
   { label: "Pendentes", value: "pending" },
   { label: "Não respondidos", value: "not_submitted" },
-  { label: "Respondidos", value: "approved" },
-  { label: "Em revisão", value: "revision" },
+  { label: "Respondidos", value: "submitted" },
+  { label: "Corrigidos", value: "corrected" },
 ];
 
 // Tipos de arquivos.
@@ -83,6 +83,6 @@ export const CORRECTION_MESSAGES = {
 export const CORRECTION_DECISION_LABELS: Record<SubmissionStatus, string> = {
   not_submitted: "Aguardando envio",
   pending: "Pendente",
-  approved: "Aprovada",
-  revision: "Em revisão",
+  submitted: "Respondido",
+  corrected: "Corrigido",
 };

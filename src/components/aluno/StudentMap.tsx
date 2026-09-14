@@ -23,9 +23,14 @@ export function StudentMap({
   explorerName: string;
   onOpenMission(): void;
 }) {
-  const current = status === "approved" ? 2 : 1;
-  const state = (id: number): MapNodeState =>
-    id < current ? "completed" : id === current ? "current" : "locked";
+  // Determina a fase ativa com base no status da atividade
+  const current = status === "corrected" ? 2 : 1;
+
+  const state = (id: number): MapNodeState => {
+    if (id < current) return "completed";
+    if (id === current) return "current";
+    return "locked";
+  };
   return (
     <ScrollView
       style={s.flexOne}

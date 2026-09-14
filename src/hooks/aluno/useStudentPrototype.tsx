@@ -167,7 +167,7 @@ export function StudentPrototypeProvider({
         } else if (dbStatus === "pending") {
           frontendStatus = "awaitingReview";
         } else if (dbStatus === "corrected") {
-          frontendStatus = "approved";
+          frontendStatus = "corrected";
         }
 
         console.log("🚀 [4] Tudo pronto! Montando a missão:", activity.title);

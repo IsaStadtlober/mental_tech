@@ -1,8 +1,10 @@
 import * as DocumentPicker from "expo-document-picker";
+import * as FileSystem from "expo-file-system";
 import { useRouter } from "expo-router";
+import * as Sharing from "expo-sharing";
 import { Clock, Coins, Download, Upload, X } from "lucide-react-native";
 import { useState } from "react";
-import { Alert, Linking, Text, TouchableOpacity, View } from "react-native";
+import { Alert, Text, TouchableOpacity, View } from "react-native";
 import { MissionFileCard } from "../../../components/aluno/MissionFileCard";
 import { StudentBottomSheet } from "../../../components/aluno/StudentBottomSheet";
 import { StudentScreenShell } from "../../../components/aluno/StudentScreenShell";
@@ -12,8 +14,7 @@ import { useStudentPrototype } from "../../../hooks/aluno/useStudentPrototype";
 import { ALUNO_ROUTES } from "../../../router/aluno.routes";
 import { alunoStyles as s } from "../../../styles/aluno";
 import { isRevision } from "../../../utils/aluno/mission";
-import * as FileSystem from "expo-file-system";
-import * as Sharing from "expo-sharing";
+import { formatFileName } from "../../../utils/file";
 
 export default function MissionRoute() {
   const router = useRouter();
@@ -23,7 +24,8 @@ export default function MissionRoute() {
     "📍 [Tela da Missão] Dados da mission:",
     JSON.stringify(mission, null, 2),
   );
-  const [file, setFile] = useState(mission.responseName || "");
+  // ✅ LINHA NOVA
+  const [file, setFile] = useState(formatFileName(mission.responseName) || "");
   const [fileUri, setFileUri] = useState("");
   const [confirm, setConfirm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -184,8 +186,8 @@ export default function MissionRoute() {
           <View style={s.uploadIconCircle}>
             <Upload size={25} color={file ? theme.primary : theme.textFaint} />
           </View>
-          <Text style={s.uploadTitle}>
-            {file || "Escolher foto, PDF ou documento"}
+          <Text style={s.uploadTitle} numberOfLines={1} ellipsizeMode="middle">
+            {formatFileName(file) || "Escolher foto, PDF ou documento"}
           </Text>
           <Text style={s.uploadSubtitle}>
             {file
@@ -212,7 +214,7 @@ export default function MissionRoute() {
             <View style={s.confirmFile}>
               <FileTextIcon />
               <Text numberOfLines={1} style={s.confirmFileText}>
-                {file}
+                {formatFileName(file)}
               </Text>
             </View>
             <PrimaryButton onPress={send} icon={false}>

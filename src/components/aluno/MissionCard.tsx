@@ -23,9 +23,9 @@ export function MissionCard({ mission, onPress }: MissionCardProps) {
   const presentation = MISSION_PRESENTATION[displayStatus];
 
   const Icon =
-    displayStatus === "not_submitted"
+    displayStatus === "revision"
       ? RotateCcw
-      : displayStatus === "revision"
+      : displayStatus === "pending" || displayStatus === "not_submitted"
         ? Clock3
         : FileText;
 
@@ -38,14 +38,14 @@ export function MissionCard({ mission, onPress }: MissionCardProps) {
         onPress={onPress}
         style={({ pressed }) => [
           s.missionFixedCard,
-          displayStatus === "not_submitted" && s.missionCardRevision,
+          displayStatus === "revision" && s.missionCardRevision,
           pressed && s.interactiveSurfacePressed,
         ]}
       >
         <View
           style={[
             s.missionFixedIcon,
-            displayStatus === "not_submitted" && s.missionIconRevision,
+            displayStatus === "revision" && s.missionIconRevision,
           ]}
         >
           <Icon size={21} color={theme.white} />
@@ -83,7 +83,7 @@ export function MissionCard({ mission, onPress }: MissionCardProps) {
           <ChevronRight
             size={18}
             color={
-              displayStatus === "not_submitted" ? theme.warning : theme.primary
+              displayStatus === "revision" ? theme.warning : theme.primary
             }
           />
         </View>

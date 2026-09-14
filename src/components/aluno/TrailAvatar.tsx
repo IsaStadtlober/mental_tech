@@ -17,13 +17,17 @@ export function TrailAvatar({
   equippedBySlot: EquippedBySlot;
   name: string;
 }) {
-  const x = useSharedValue(TRAIL_AVATAR_POSITIONS[status].left);
-  const y = useSharedValue(TRAIL_AVATAR_POSITIONS[status].top);
+  const pos =
+    TRAIL_AVATAR_POSITIONS[status] || TRAIL_AVATAR_POSITIONS.not_submitted;
+
+  const x = useSharedValue(pos.left);
+  const y = useSharedValue(pos.top);
+
   useEffect(() => {
-    x.value = withSpring(TRAIL_AVATAR_POSITIONS[status].left, { damping: 16 });
-    y.value = withSpring(TRAIL_AVATAR_POSITIONS[status].top - 26, {
-      damping: 16,
-    });
+    const targetPos =
+      TRAIL_AVATAR_POSITIONS[status] || TRAIL_AVATAR_POSITIONS.not_submitted;
+    x.value = withSpring(targetPos.left, { damping: 16 });
+    y.value = withSpring(targetPos.top, { damping: 16 });
   }, [status, x, y]);
   const style = useAnimatedStyle(() => ({
     transform: [{ translateX: x.value }, { translateY: y.value }],

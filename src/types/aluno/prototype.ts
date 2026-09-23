@@ -18,6 +18,8 @@ export interface StudentPrototypeState {
   session: StudentSession;
   mission: StudentMission;
   missionAvailable: boolean;
+  shopItems: ShopItem[];
+  
   ownedItemIds: string[];
   equippedBySlot: EquippedBySlot;
   notifications: StudentNotification[];
@@ -42,11 +44,14 @@ export type StudentPrototypeAction =
   | { type: 'equipReward' }
   | { type: 'markNotificationRead'; notificationId: string }
   | {
-      type: 'loadSupabaseData';
-      explorerName?: string;
-      coins?: number;
-      mission?: StudentMission;
-    };
+      type: "loadSupabaseData";
+      explorerName: string;
+      coins: number;
+      shopItems?: ShopItem[];
+      ownedItemIds?: string[];
+      equippedBySlot?: Record<string, string>; // ou Record<ShopCategory, string>
+      mission: any;
+    }
 
 export interface MissionPresentation {
   label: string;

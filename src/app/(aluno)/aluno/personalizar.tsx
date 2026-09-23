@@ -10,7 +10,6 @@ import { StudentBottomSheet } from '../../../components/aluno/StudentBottomSheet
 import { StudentScreenShell } from '../../../components/aluno/StudentScreenShell';
 import { SimpleCenteredHeader } from '../../../components/Headers';
 import { PrimaryButton } from '../../../components/PrimaryButton';
-import { SHOP_ITEMS } from '../../../constants/aluno/shop';
 import { theme } from '../../../constants/theme';
 import { useStudentPrototype } from '../../../hooks/aluno/useStudentPrototype';
 import { alunoStyles as s } from '../../../styles/aluno';
@@ -19,19 +18,29 @@ import { canAcquire } from '../../../utils/aluno/shop';
 
 export default function CustomizeRoute() {
   const router = useRouter();
-  const onBack = () => router.back();
-  const { session, ownedItemIds, equippedBySlot, acquireOrEquip } =
-    useStudentPrototype();
+  const { 
+    session, 
+    ownedItemIds, 
+    equippedBySlot, 
+    acquireOrEquip, 
+    shopItems = [], // 👈 Recebe a lista do banco via Hook
+    saveAvatar,     // 👈 Função para persistir no Supabase tabela 'avatars'
+  } = useStudentPrototype();
+
   const [tab, setTab] = useState<ShopTab>('inventory');
   const [cat, setCat] = useState<ShopCategory>('head');
   const [pending, setPending] = useState<ShopItem | null>(null);
+  const [saving, setSaving] = useState(false);
+
+  // 🔄 Filtra os itens do BANCO em vez das constantes estáticas
   const items = useMemo(
     () =>
-      SHOP_ITEMS.filter((i) =>
+      shopItems.filter((i) =>
         tab === 'inventory' ? ownedItemIds.includes(i.id) : i.category === cat
       ),
-    [cat, ownedItemIds, tab]
+    [cat, ownedItemIds, shopItems, tab]
   );
+
   const choose = (item: ShopItem) => {
     const owned = ownedItemIds.includes(item.id);
     if (owned) {
@@ -41,6 +50,7 @@ export default function CustomizeRoute() {
     if (item.missionOnly) return;
     setPending(item);
   };
+
   const confirm = () => {
     if (pending) {
       acquireOrEquip(pending);
@@ -48,13 +58,27 @@ export default function CustomizeRoute() {
       setTab('inventory');
     }
   };
+
+  const handleSaveAndBack = async () => {
+    setSaving(true);
+    if (saveAvatar) {
+      await saveAvatar();
+    }
+    setSaving(false);
+    router.back();
+  };
+
   return (
     <>
       <StudentScreenShell
-        onBack={onBack}
+        onBack={() => router.back()}
         footer={
-          <PrimaryButton onPress={onBack} icon={false}>
-            Salvar visual
+          <PrimaryButton 
+            disabled={saving} 
+            onPress={handleSaveAndBack} 
+            icon={false}
+          >
+            {saving ? 'Salvando...' : 'Salvar visual'}
           </PrimaryButton>
         }
       >
@@ -70,7 +94,9 @@ export default function CustomizeRoute() {
           <Coins size={17} color={theme.studentGold} />
           <Text style={s.shopBalanceLargeText}>{session.coins} moedas</Text>
         </View>
+
         <ShopTabs value={tab} onChange={setTab} />
+
         {tab === 'shop' && (
           <>
             <ShopCategoryBar value={cat} onChange={setCat} />
@@ -79,6 +105,7 @@ export default function CustomizeRoute() {
             </Text>
           </>
         )}
+
         {tab === 'inventory' && items.length === 0 ? (
           <View style={s.inventoryEmpty}>
             <SparklesEmpty />
@@ -111,6 +138,7 @@ export default function CustomizeRoute() {
           </View>
         )}
       </StudentScreenShell>
+
       {!!pending && (
         <StudentBottomSheet onClose={() => setPending(null)}>
           <View style={s.confirmSheet}>
@@ -156,6 +184,7 @@ export default function CustomizeRoute() {
     </>
   );
 }
+
 function SparklesEmpty() {
   return (
     <View style={s.inventoryEmptyIcon}>

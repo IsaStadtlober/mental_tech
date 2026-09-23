@@ -9,14 +9,14 @@ export const PROTOTYPE_HISTORY: RecentActivity[] = [
   {
     id: 'history-1',
     title: 'Mapa dos Biomas',
-    status: 'approved',
+    status: 'corrected',
     grade: 10,
     dateLabel: 'Ontem',
   },
   {
     id: 'history-2',
     title: 'Cadeia Alimentar',
-    status: 'approved',
+    status: 'corrected',
     grade: 9,
     dateLabel: '22 jul',
   },
@@ -67,6 +67,7 @@ export const PROTOTYPE_NOTIFICATIONS: StudentNotification[] = [
 export const INITIAL_STUDENT_PROTOTYPE_STATE: StudentPrototypeState = {
   session: { explorerName: '', coins: INITIAL_COINS },
   mission: { ...INITIAL_MISSION },
+  shopItems: [],
   missionAvailable: true,
   ownedItemIds: [...INITIAL_OWNED_ITEMS],
   equippedBySlot: { head: 'green-cap' },

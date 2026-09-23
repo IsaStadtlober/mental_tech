@@ -1,52 +1,58 @@
 import type {
-  StudentPrototypeAction, StudentPrototypeState
-} from '../../types/aluno';
-import { MISSION_REWARD_ITEM_ID } from '../../constants/aluno/mission';
+  StudentPrototypeAction,
+  StudentPrototypeState,
+} from "../../types/aluno";
+import { MISSION_REWARD_ITEM_ID } from "../../constants/aluno/mission";
 
 export function studentPrototypeReducer(
   state: StudentPrototypeState,
   action: StudentPrototypeAction,
 ): StudentPrototypeState {
   switch (action.type) {
-    // ---> ADICIONE APENAS ESTE CASE NOVO <---
-    case 'loadSupabaseData':
+    case "loadSupabaseData":
       return {
         ...state,
         session: {
           ...state.session,
-          explorerName: action.explorerName || state.session.explorerName,
-          coins: action.coins ?? state.session.coins,
+          explorerName: action.explorerName,
+          coins: action.coins,
         },
-        mission: action.mission ? action.mission : state.mission,
+        shopItems: action.shopItems || [],
+        ownedItemIds: action.ownedItemIds || [],
+        equippedBySlot: action.equippedBySlot || {},
+        mission: action.mission,
       };
 
-    case 'setExplorerName':
+    case "setExplorerName":
       return {
         ...state,
         session: { ...state.session, explorerName: action.name },
       };
-    case 'saveMission':
-      return { ...state, mission: { ...state.mission, status: 'not_submitted' } };
-    case 'submitMission':
+    case "saveMission":
+      return {
+        ...state,
+        mission: { ...state.mission, status: "not_submitted" },
+      };
+    case "submitMission":
       return {
         ...state,
         session: action.firstSubmission
           ? {
-            ...state.session,
-            coins: state.session.coins + state.mission.rewardCoins,
-          }
+              ...state.session,
+              coins: state.session.coins + state.mission.rewardCoins,
+            }
           : state.session,
         mission: {
           ...state.mission,
           responseName: action.fileName,
-          status: 'pending',
+          status: "pending",
           firstRewardGranted: true,
         },
         notifications: state.notifications.map((item) =>
-          item.category === 'mission' ? { ...item, read: true } : item,
+          item.category === "mission" ? { ...item, read: true } : item,
         ),
       };
-    case 'buyOrEquip': {
+    case "buyOrEquip": {
       const owned = state.ownedItemIds.includes(action.item.id);
       if (
         !owned &&
@@ -58,9 +64,9 @@ export function studentPrototypeReducer(
         session: owned
           ? state.session
           : {
-            ...state.session,
-            coins: state.session.coins - action.item.price,
-          },
+              ...state.session,
+              coins: state.session.coins - action.item.price,
+            },
         ownedItemIds: owned
           ? state.ownedItemIds
           : [...state.ownedItemIds, action.item.id],
@@ -70,7 +76,7 @@ export function studentPrototypeReducer(
         },
       };
     }
-    case 'equipReward':
+    case "equipReward":
       return {
         ...state,
         equippedBySlot: {
@@ -78,7 +84,7 @@ export function studentPrototypeReducer(
           accessories: MISSION_REWARD_ITEM_ID,
         },
       };
-    case 'markNotificationRead':
+    case "markNotificationRead":
       return {
         ...state,
         notifications: state.notifications.map((item) =>

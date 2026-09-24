@@ -1,34 +1,39 @@
-import { useRouter } from 'expo-router';
-import { Coins, X } from 'lucide-react-native';
-import { useMemo, useState } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
-import { ExplorerAvatar } from '../../../components/aluno/ExplorerAvatar';
-import { ShopCategoryBar } from '../../../components/aluno/ShopCategoryBar';
-import { ShopItemCard } from '../../../components/aluno/ShopItemCard';
-import { ShopTabs } from '../../../components/aluno/ShopTabs';
-import { StudentBottomSheet } from '../../../components/aluno/StudentBottomSheet';
-import { StudentScreenShell } from '../../../components/aluno/StudentScreenShell';
-import { SimpleCenteredHeader } from '../../../components/Headers';
-import { PrimaryButton } from '../../../components/PrimaryButton';
-import { theme } from '../../../constants/theme';
-import { useStudentPrototype } from '../../../hooks/aluno/useStudentPrototype';
-import { alunoStyles as s } from '../../../styles/aluno';
-import type { ShopCategory, ShopItem, ShopTab } from '../../../types/aluno';
-import { canAcquire } from '../../../utils/aluno/shop';
+import { useRouter } from "expo-router";
+import { Coins, X } from "lucide-react-native";
+import { useMemo, useState } from "react";
+import { Text, TouchableOpacity, View } from "react-native";
+import { ExplorerAvatar } from "../../../components/aluno/ExplorerAvatar";
+import { ShopCategoryBar } from "../../../components/aluno/ShopCategoryBar";
+import { ShopItemCard } from "../../../components/aluno/ShopItemCard";
+import { ShopTabs } from "../../../components/aluno/ShopTabs";
+import { StudentBottomSheet } from "../../../components/aluno/StudentBottomSheet";
+import { StudentScreenShell } from "../../../components/aluno/StudentScreenShell";
+import { SimpleCenteredHeader } from "../../../components/Headers";
+import { PrimaryButton } from "../../../components/PrimaryButton";
+import { theme } from "../../../constants/theme";
+import { useStudentPrototype } from "../../../hooks/aluno/useStudentPrototype";
+import { alunoStyles as s } from "../../../styles/aluno";
+import type { ShopCategory, ShopItem, ShopTab } from "../../../types/aluno";
+import { canAcquire } from "../../../utils/aluno/shop";
 
 export default function CustomizeRoute() {
   const router = useRouter();
-  const { 
-    session, 
-    ownedItemIds, 
-    equippedBySlot, 
-    acquireOrEquip, 
+  const {
+    session,
+    ownedItemIds,
+    equippedBySlot,
+    acquireOrEquip,
     shopItems = [], // 👈 Recebe a lista do banco via Hook
-    saveAvatar,     // 👈 Função para persistir no Supabase tabela 'avatars'
+    saveAvatar, // 👈 Função para persistir no Supabase tabela 'avatars'
   } = useStudentPrototype();
+  console.log(
+    "Categorias no Banco:",
+    shopItems.map((i) => i.category),
+  );
+  console.log("Itens equipados:", equippedBySlot);
 
-  const [tab, setTab] = useState<ShopTab>('inventory');
-  const [cat, setCat] = useState<ShopCategory>('head');
+  const [tab, setTab] = useState<ShopTab>("inventory");
+  const [cat, setCat] = useState<ShopCategory>("head");
   const [pending, setPending] = useState<ShopItem | null>(null);
   const [saving, setSaving] = useState(false);
 
@@ -36,36 +41,41 @@ export default function CustomizeRoute() {
   const items = useMemo(
     () =>
       shopItems.filter((i) =>
-        tab === 'inventory' ? ownedItemIds.includes(i.id) : i.category === cat
+        tab === "inventory" ? ownedItemIds.includes(i.id) : i.category === cat,
       ),
-    [cat, ownedItemIds, shopItems, tab]
+    [cat, ownedItemIds, shopItems, tab],
   );
 
-  const choose = (item: ShopItem) => {
+  const choose = async (item: ShopItem) => {
     const owned = ownedItemIds.includes(item.id);
     if (owned) {
-      acquireOrEquip(item);
+      await acquireOrEquip(item);
       return;
     }
     if (item.missionOnly) return;
     setPending(item);
   };
 
-  const confirm = () => {
+  const confirm = async () => {
     if (pending) {
-      acquireOrEquip(pending);
+      await acquireOrEquip(pending);
       setPending(null);
-      setTab('inventory');
+      setTab("inventory");
     }
   };
 
   const handleSaveAndBack = async () => {
     setSaving(true);
-    if (saveAvatar) {
-      await saveAvatar();
+    try {
+      if (saveAvatar) {
+        await saveAvatar();
+      }
+      router.back();
+    } catch (error) {
+      console.error("Erro ao salvar avatar:", error);
+    } finally {
+      setSaving(false);
     }
-    setSaving(false);
-    router.back();
   };
 
   return (
@@ -73,12 +83,12 @@ export default function CustomizeRoute() {
       <StudentScreenShell
         onBack={() => router.back()}
         footer={
-          <PrimaryButton 
-            disabled={saving} 
-            onPress={handleSaveAndBack} 
+          <PrimaryButton
+            disabled={saving}
+            onPress={handleSaveAndBack}
             icon={false}
           >
-            {saving ? 'Salvando...' : 'Salvar visual'}
+            {saving ? "Salvando..." : "Salvar visual"}
           </PrimaryButton>
         }
       >
@@ -88,6 +98,7 @@ export default function CustomizeRoute() {
         />
         <ExplorerAvatar
           equippedBySlot={equippedBySlot}
+          shopItems={shopItems} // 👈 Adicione este prop aqui
           name={session.explorerName}
         />
         <View style={s.shopBalanceLarge}>
@@ -97,7 +108,7 @@ export default function CustomizeRoute() {
 
         <ShopTabs value={tab} onChange={setTab} />
 
-        {tab === 'shop' && (
+        {tab === "shop" && (
           <>
             <ShopCategoryBar value={cat} onChange={setCat} />
             <Text style={s.shopHelper}>
@@ -106,7 +117,7 @@ export default function CustomizeRoute() {
           </>
         )}
 
-        {tab === 'inventory' && items.length === 0 ? (
+        {tab === "inventory" && items.length === 0 ? (
           <View style={s.inventoryEmpty}>
             <SparklesEmpty />
             <Text style={s.inventoryEmptyTitle}>
@@ -115,7 +126,7 @@ export default function CustomizeRoute() {
             <Text style={s.inventoryEmptyText}>
               Complete missões e use moedas para conquistar novos itens.
             </Text>
-            <TouchableOpacity onPress={() => setTab('shop')}>
+            <TouchableOpacity onPress={() => setTab("shop")}>
               <Text style={s.inventoryEmptyLink}>Explorar a loja</Text>
             </TouchableOpacity>
           </View>
@@ -175,7 +186,7 @@ export default function CustomizeRoute() {
               <Text style={s.secondaryActionText}>
                 {pending && session.coins < pending.price
                   ? `Faltam ${pending.price - session.coins} moedas`
-                  : 'Agora não'}
+                  : "Agora não"}
               </Text>
             </TouchableOpacity>
           </View>

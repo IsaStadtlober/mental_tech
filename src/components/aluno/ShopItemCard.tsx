@@ -1,11 +1,16 @@
 import {
-  CheckCircle, Coins, Gift, LockKeyhole,
-  ShoppingBag, Sparkles, Trophy
-} from 'lucide-react-native';
-import { Text, TouchableOpacity, View } from 'react-native';
-import { theme } from '../../constants/theme';
-import { alunoStyles as s } from '../../styles/aluno';
-import type { ShopItem } from '../../types/aluno';
+  CheckCircle,
+  Coins,
+  Gift,
+  LockKeyhole,
+  ShoppingBag,
+  Sparkles,
+  Trophy,
+} from "lucide-react-native";
+import { Image, Text, TouchableOpacity, View } from "react-native";
+import { theme } from "../../constants/theme";
+import { alunoStyles as s } from "../../styles/aluno";
+import type { ShopItem } from "../../types/aluno";
 
 export function ShopItemCard({
   item,
@@ -20,18 +25,32 @@ export function ShopItemCard({
   available: boolean;
   onPress(): void;
 }) {
+  // 🔴 Substitua as constantes problemáticas por estas:
+
+  const iconName = item.icon ?? (item as any).icon;
   const Icon =
-    item.icon === 'gift' ? Gift : item.icon === 'bag' ? ShoppingBag : Sparkles;
+    iconName === "gift" ? Gift : iconName === "bag" ? ShoppingBag : Sparkles;
+
+  // Pega o caminho do banco
+  const rawImageUrl = item.imageUrl ?? item.image_url;
+
+  // Monta a URL completa para o React Native conseguir carregar a imagem
+  const finalImageUrl = rawImageUrl
+    ? `https://yvwhncioydhpjdaeudpt.supabase.co/storage/v1/object/public/avatar-items/${rawImageUrl}`
+    : null;
+
   const lacking = Math.max(0, item.price);
+  const isMissionOnly = item.missionOnly ?? (item as any).mission_only;
   return (
     <TouchableOpacity
       accessibilityRole="button"
-      accessibilityLabel={`${item.name}. ${item.missionOnly
-          ? 'Exclusivo de missão'
+      accessibilityLabel={`${item.name}. ${
+        isMissionOnly
+          ? "Exclusivo de missão"
           : owned
-            ? 'Item adquirido'
+            ? "Item adquirido"
             : `${item.price} moedas`
-        }`}
+      }`}
       onPress={onPress}
       style={[
         s.shopItemCard,
@@ -47,8 +66,13 @@ export function ShopItemCard({
           !available && !item.missionOnly && s.shopItemIconLocked,
         ]}
       >
-        {item.missionOnly && !owned ? (
+        {isMissionOnly && !owned ? (
           <LockKeyhole size={22} color={theme.studentPurple} />
+        ) : finalImageUrl ? (
+          <Image
+            source={{ uri: finalImageUrl }}
+            style={{ width: 40, height: 40, resizeMode: "contain" }}
+          />
         ) : (
           <Icon
             size={25}

@@ -28,7 +28,7 @@ export default function ProfileRoute() {
   const onBack = () => router.back();
   const onCustomize = () => router.push(ALUNO_ROUTES.CUSTOMIZE);
   const onHistory = () => router.push(ALUNO_ROUTES.HISTORY);
-  const { session, mission, equippedBySlot, ownedItemIds } =
+  const { session, mission, equippedBySlot, ownedItemIds, shopItems } =
     useStudentPrototype();
 
   return (
@@ -37,7 +37,7 @@ export default function ProfileRoute() {
         title={PROFILE_SCREEN_COPY.title}
         subtitle={PROFILE_SCREEN_COPY.subtitle}
       />
-      <ExplorerAvatar equippedBySlot={equippedBySlot} />
+      <ExplorerAvatar equippedBySlot={equippedBySlot} shopItems={shopItems} name={session.explorerName} />
       <View style={s.profileStats}>
         <Stat
           icon={<Coins size={17} color={theme.studentGold} />}

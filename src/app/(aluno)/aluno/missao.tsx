@@ -4,7 +4,7 @@ import { useRouter } from "expo-router";
 import * as Sharing from "expo-sharing";
 import { Clock, Coins, Download, Upload, X } from "lucide-react-native";
 import { useState } from "react";
-import { Alert, Text, TouchableOpacity, View } from "react-native";
+import { Alert, Text, TouchableOpacity, View, Linking, Platform } from "react-native";
 import { MissionFileCard } from "../../../components/aluno/MissionFileCard";
 import { StudentBottomSheet } from "../../../components/aluno/StudentBottomSheet";
 import { StudentScreenShell } from "../../../components/aluno/StudentScreenShell";
@@ -75,20 +75,26 @@ export default function MissionRoute() {
     }
 
     try {
-      // 1. Limpa o nome do arquivo
+      // 🌐 1. Se estiver rodando na WEB, abre o arquivo direto em uma nova aba
+      if (Platform.OS === "web") {
+        if (typeof window !== "undefined") {
+          window.open(mission.fileUrl, "_blank");
+        } else {
+          await Linking.openURL(mission.fileUrl);
+        }
+        return;
+      }
+
+      // 📱 2. Se for aplicativo NATIVO (iOS / Android), faz o download local
       const rawFileName = mission.attachmentName || "material-missao.pdf";
       const cleanFileName = rawFileName.replace(/^\d+_/, "");
       const fileSys = FileSystem as any;
-      // 🛡️ Garante um diretório válido mesmo se documentDirectory for null
       const baseDir = fileSys.documentDirectory || fileSys.cacheDirectory || "";
       const localUri = `${baseDir}${cleanFileName}`;
 
-      // 2. Faz o download do arquivo
       const { uri } = await FileSystem.downloadAsync(mission.fileUrl, localUri);
 
-      // 3. Verifica e abre o compartilhamento
       const isSharingAvailable = await Sharing.isAvailableAsync();
-
       if (isSharingAvailable) {
         await Sharing.shareAsync(uri);
       } else {

@@ -23,7 +23,7 @@ export function StudentTopBar({
   return (
     <View style={s.studentTopBar}>
       <TouchableOpacity onPress={onProfile}>
-        <ExplorerAvatar compact equippedBySlot={equippedBySlot} />
+        <ExplorerAvatar compact equippedBySlot={equippedBySlot} shopItems={[]} />
       </TouchableOpacity>
       <View style={s.topIdentity}>
         <Text style={s.mapHello}>

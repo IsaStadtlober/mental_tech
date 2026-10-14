@@ -85,20 +85,22 @@ export async function saveActivityToSupabase({
   }
 
   // 4. Salvar na tabela 'activities'
-  const { data: newActivity, error: dbError } = await supabase
-    .from("activities")
-    .insert([
-      {
-        teacher_id: teacher.id,
-        class_id: classId,
-        title: formData.title,
-        description: formData.instruction || null,
-        content_url: contentUrl,
-        status: formData.status,
-        published_at:
-          formData.status === "published" ? new Date().toISOString() : null,
-      },
-    ])
+const { data: newActivity, error: dbError } = await supabase
+  .from("activities")
+  .insert([
+    {
+      teacher_id: teacher.id,
+      class_id: classId,
+      title: formData.title,
+      description: formData.instruction || null,
+      content_url: contentUrl,
+      status: formData.status,
+      reward_mode: formData.rewardType || "fixed",         // 👈 ADICIONADO
+      reward_base_coins: formData.rewardBaseCoins ?? 30,  // 👈 ADICIONADO
+      published_at:
+        formData.status === "published" ? new Date().toISOString() : null,
+    },
+  ])
     .select()
     .single();
 

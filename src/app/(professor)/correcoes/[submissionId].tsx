@@ -52,7 +52,8 @@ function CorrectionScreen({
       JSON.stringify(submission.attachment, null, 2),
     );
 
-    const fileUrl = submission.attachment?.uri || submission.attachment?.uri;
+    const fileUrl =
+      (submission.attachment as any)?.url || submission.attachment?.uri;
 
     console.log("=== 2. URL ENCONTRADA ===", fileUrl);
 
@@ -380,8 +381,8 @@ function CorrectionScreen({
                     {reward.name}
                   </Text>
                   <Text style={correctionsStyles.rewardHint}>
-                    Nenhuma moeda é concedida nesta etapa. As moedas já foram
-                    creditadas no envio da resposta.
+                    Ao aprovar a missão, as moedinhas serão creditadas
+                    diretamente no saldo e no extrato do aluno.
                   </Text>
                 </View>
               )}
@@ -465,6 +466,40 @@ export default function CorrectionRoute() {
                 "Não foi possível atualizar o status desta submissão.",
               );
               return;
+            }
+            if (result.decision === "approved" && submission) {
+              const targetStudentId =
+                submission.studentId ?? (submission as any).student_id;
+              const targetActivityId =
+                submission.activityId ?? (submission as any).activity_id;
+
+              const rewardMode =
+                (activity as any)?.reward_mode ??
+                (activity as any)?.rewardMode ??
+                "fixed";
+              const rewardCoins =
+                (activity as any)?.reward_base_coins ??
+                (activity as any)?.rewardBaseCoins ??
+                30;
+
+              // Credita as moedinhas e gera o extrato no Supabase
+              const { error: rewardError } = await supabase.rpc(
+                "reward_student_mission",
+                {
+                  p_student_id: targetStudentId,
+                  p_mission_id: targetActivityId,
+                  p_reward_mode: rewardMode,
+                  p_base_coins: rewardCoins,
+                  p_mission_title: activity?.title || "Missão Concluída",
+                },
+              );
+
+              if (rewardError) {
+                console.error(
+                  "❌ Erro ao creditar moedas para o aluno:",
+                  rewardError,
+                );
+              }
             }
 
             router.replace(PROFESSOR_ROUTES.CORRECTIONS);

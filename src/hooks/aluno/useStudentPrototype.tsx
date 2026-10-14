@@ -33,6 +33,8 @@ export function StudentPrototypeProvider({
   const studentIdRef = useRef<string | null>(null);
 
   useEffect(() => {
+    let channel: ReturnType<typeof supabase.channel> | null = null;
+
     async function loadFromSupabase() {
       try {
         console.log("🔍 [1] Buscando usuário logado no Supabase...");
@@ -200,7 +202,9 @@ export function StudentPrototypeProvider({
                 fileUrl: finalFileUrl,
                 teacherName: resolvedTeacherName,
                 estimate: "20 min",
-                rewardCoins: activity.reward_coins ?? 30,
+                rewardCoins:
+                  activity.reward_base_coins ?? activity.reward_coins ?? 30,
+                rewardMode: activity.reward_mode ?? "fixed",
                 status: frontendStatus,
                 responseName:
                   activeSub.student_answers || activeSub.attachment_url || "",
@@ -208,12 +212,63 @@ export function StudentPrototypeProvider({
               }
             : INITIAL_STUDENT_PROTOTYPE_STATE.mission,
         });
+
+        // ⚡ INSCRIÇÃO NO SUPABASE REALTIME
+        if (studentId && !channel) {
+          console.log(
+            "⚡ [Realtime] Inscrevendo no canal do aluno:",
+            studentId,
+          );
+          channel = supabase
+            .channel(`student_realtime_${studentId}`)
+            .on(
+              "postgres_changes",
+              {
+                event: "UPDATE",
+                schema: "public",
+                table: "students",
+                filter: `id=eq.${studentId}`,
+              },
+              (payload) => {
+                console.log(
+                  "⚡ [Realtime] Moedas alteradas no banco:",
+                  payload.new,
+                );
+                loadFromSupabase();
+              },
+            )
+            .on(
+              "postgres_changes",
+              {
+                event: "*",
+                schema: "public",
+                table: "submissions",
+                filter: `student_id=eq.${studentId}`,
+              },
+              (payload) => {
+                console.log(
+                  "⚡ [Realtime] Submissão/Correção atualizada:",
+                  payload.new,
+                );
+                loadFromSupabase();
+              },
+            )
+            .subscribe();
+        }
       } catch (err) {
         console.error("💥 Erro fatal ao conectar Supabase:", err);
       }
     }
 
     loadFromSupabase();
+
+    // Limpeza da conexão ao desmontar
+    return () => {
+      if (channel) {
+        console.log("⚡ [Realtime] Encerrando canal de tempo real...");
+        supabase.removeChannel(channel);
+      }
+    };
   }, []);
 
   const setExplorerName = useCallback(
@@ -229,7 +284,10 @@ export function StudentPrototypeProvider({
     if (!activeStudentId) return;
 
     try {
-      console.log("💾 Salvando avatar equipado no Supabase...", state.equippedBySlot);
+      console.log(
+        "💾 Salvando avatar equipado no Supabase...",
+        state.equippedBySlot,
+      );
       const { error } = await supabase.from("avatars").upsert({
         student_id: activeStudentId,
         equipped_items: state.equippedBySlot,
@@ -338,50 +396,60 @@ export function StudentPrototypeProvider({
     ],
   );
 
-  // 🛒 COMPRA E EQUIPA ITENS PERSISTINDO NO SUPABASE
+  // 🛒 COMPRA E EQUIPA ITENS PERSISTINDO NO SUPABASE (VIA RPC ATÔMICA)
   const acquireOrEquip = useCallback(
     async (item: ShopItem): Promise<PurchaseResult> => {
       const owned = state.ownedItemIds.includes(item.id);
-      if (!owned && item.missionOnly) return { kind: "missionExclusive" };
-      if (!owned && state.session.coins < item.price)
+
+      // 1. Se já possui, apenas equipa/desequipa no estado local
+      if (owned) {
+        dispatch({ type: "buyOrEquip", item });
+        return { kind: "equipped" };
+      }
+
+      // 2. Trava para itens exclusivos de missão
+      if (item.missionOnly) {
+        return { kind: "missionExclusive" };
+      }
+
+      // 3. Checagem prévia no frontend para evitar requisição desnecessária
+      if (state.session.coins < item.price) {
         return {
           kind: "insufficientFunds",
           missingCoins: item.price - state.session.coins,
         };
-
-      const activeStudentId = studentIdRef.current;
-
-      // Se não possui, realiza a compra no Supabase
-      if (!owned && activeStudentId) {
-        // 1. Registra o item no inventário do aluno
-        const { error: invError } = await supabase
-          .from("student_inventories")
-          .insert({ student_id: activeStudentId, item_id: item.id });
-
-        if (invError) {
-          console.error("❌ Erro ao adicionar ao inventário:", invError);
-        }
-
-        // 2. Deduz as moedas do aluno
-        const remainingCoins = state.session.coins - item.price;
-        const { error: coinError } = await supabase
-          .from("students")
-          .update({ coins: remainingCoins })
-          .eq("id", activeStudentId);
-
-        if (coinError) {
-          console.error("❌ Erro ao atualizar moedas:", coinError);
-        }
       }
 
+      const activeStudentId = studentIdRef.current;
+      if (!activeStudentId) {
+        return { kind: "insufficientFunds", missingCoins: item.price };
+      }
+
+      // 4. Executa a compra ATÔMICA no banco (Desconta moeda + Add Inventário + Gera Extrato)
+      const { data, error } = await supabase.rpc("purchase_shop_item", {
+        p_student_id: activeStudentId,
+        p_item_id: item.id,
+      });
+
+      // Se o banco recusar (saldo insuficiente real, erro de transação, etc.)
+      if (error || !data?.success) {
+        console.error(
+          "❌ Erro na transação de compra:",
+          error || data?.message,
+        );
+        return {
+          kind: "insufficientFunds",
+          missingCoins: item.price - state.session.coins,
+        };
+      }
+
+      // 5. Atualiza o estado local apenas após confirmação do banco
       dispatch({ type: "buyOrEquip", item });
 
-      return owned
-        ? { kind: "equipped" }
-        : {
-            kind: "purchased",
-            remainingCoins: state.session.coins - item.price,
-          };
+      return {
+        kind: "purchased",
+        remainingCoins: data.remaining_coins,
+      };
     },
     [state.ownedItemIds, state.session.coins],
   );

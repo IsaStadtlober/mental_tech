@@ -1,10 +1,17 @@
 import * as DocumentPicker from "expo-document-picker";
-import * as FileSystem from "expo-file-system";
+import * as FileSystem from "expo-file-system/legacy";
 import { useRouter } from "expo-router";
 import * as Sharing from "expo-sharing";
 import { Clock, Coins, Download, Upload, X } from "lucide-react-native";
 import { useState } from "react";
-import { Alert, Text, TouchableOpacity, View, Linking, Platform } from "react-native";
+import {
+  Alert,
+  Text,
+  TouchableOpacity,
+  View,
+  Linking,
+  Platform,
+} from "react-native";
 import { MissionFileCard } from "../../../components/aluno/MissionFileCard";
 import { StudentBottomSheet } from "../../../components/aluno/StudentBottomSheet";
 import { StudentScreenShell } from "../../../components/aluno/StudentScreenShell";
@@ -68,6 +75,7 @@ export default function MissionRoute() {
       router.replace(ALUNO_ROUTES.RESENT);
     }
   };
+  // 🔴 Substitua a função handleDownload por esta versão limpa e universal:
   const handleDownload = async () => {
     if (!mission.fileUrl) {
       Alert.alert("Ops!", "Nenhum arquivo disponível nesta missão.");
@@ -75,36 +83,15 @@ export default function MissionRoute() {
     }
 
     try {
-      // 🌐 1. Se estiver rodando na WEB, abre o arquivo direto em uma nova aba
-      if (Platform.OS === "web") {
-        if (typeof window !== "undefined") {
-          window.open(mission.fileUrl, "_blank");
-        } else {
-          await Linking.openURL(mission.fileUrl);
-        }
-        return;
-      }
-
-      // 📱 2. Se for aplicativo NATIVO (iOS / Android), faz o download local
-      const rawFileName = mission.attachmentName || "material-missao.pdf";
-      const cleanFileName = rawFileName.replace(/^\d+_/, "");
-      const fileSys = FileSystem as any;
-      const baseDir = fileSys.documentDirectory || fileSys.cacheDirectory || "";
-      const localUri = `${baseDir}${cleanFileName}`;
-
-      const { uri } = await FileSystem.downloadAsync(mission.fileUrl, localUri);
-
-      const isSharingAvailable = await Sharing.isAvailableAsync();
-      if (isSharingAvailable) {
-        await Sharing.shareAsync(uri);
+      // Abre o arquivo direto no visualizador/navegador do dispositivo (Android, iOS e Web)
+      const supported = await Linking.canOpenURL(mission.fileUrl);
+      if (supported) {
+        await Linking.openURL(mission.fileUrl);
       } else {
-        Alert.alert(
-          "Erro",
-          "O seu dispositivo não suporta abrir a lista de aplicativos.",
-        );
+        Alert.alert("Erro", "Não foi possível abrir o link do arquivo.");
       }
     } catch (error) {
-      console.error("Erro ao baixar/abrir arquivo:", error);
+      console.error("Erro ao abrir arquivo:", error);
       Alert.alert("Erro", "Não foi possível carregar o arquivo.");
     }
   };

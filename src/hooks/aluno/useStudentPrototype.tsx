@@ -91,10 +91,19 @@ export function StudentPrototypeProvider({
 
         // 🛍️ 2. BUSCAR ITENS DA LOJA (shop_items)
         console.log("🔍 [Shop] Buscando catálogo de itens...");
-        const { data: shopItemsData } = await supabase
+        const { data: shopItemsData, error: shopError } = await supabase
           .from("shop_items")
           .select("*")
           .order("price", { ascending: true });
+
+        if (shopError) {
+          console.error("❌ Erro ao buscar shop_items:", shopError);
+        } else {
+          console.log(
+            "📦 Itens retornados da loja:",
+            shopItemsData?.length || 0,
+          );
+        }
 
         // 🎒 3. BUSCAR INVENTÁRIO DO ALUNO (student_inventories)
         console.log("🔍 [Shop] Buscando inventário do aluno...");
@@ -103,7 +112,7 @@ export function StudentPrototypeProvider({
           .select("item_id")
           .eq("student_id", studentId);
 
-        const ownedItemIds = inventoryData?.map((i) => i.item_id) || [];
+        const ownedItemIds = inventoryData?.map((i) => String(i.item_id)) || [];
 
         // 👕 4. BUSCAR AVATAR EQUIPADO (avatars)
         console.log("🔍 [Shop] Buscando visual equipado...");
@@ -115,8 +124,10 @@ export function StudentPrototypeProvider({
 
         const equippedBySlot = avatarData?.equipped_items || {};
 
-        // 📜 5. BUSCAR TRILHA DE MISSÕES
-        console.log("🔍 [2] Buscando submissões...");
+        // 📜 5. BUSCAR TRILHA DE MISSÕES E ATIVIDADES
+        console.log("🔍 [2] Buscando atividades e submissões do aluno...");
+
+        // A. Busca todas as submissões do aluno
         const { data: submissions, error: subError } = await supabase
           .from("submissions")
           .select("*")
@@ -124,46 +135,63 @@ export function StudentPrototypeProvider({
 
         if (subError) console.error("❌ Erro nas submissões:", subError);
 
-        const activeSub =
-          submissions?.find((sub: any) => sub.status !== "corrected") ||
-          submissions?.[0];
+        // B. Busca todas as atividades (ordenadas pela ordem de criação/trilha)
+        const { data: allActivities, error: actError } = await supabase
+          .from("activities")
+          .select("*")
+          .order("created_at", { ascending: true });
 
+        if (actError) console.error("❌ Erro ao buscar atividades:", actError);
+
+        // C. Identifica qual é a atividade ATUAL da trilha
         let activity: any = null;
-        let resolvedTeacherName = "Professor";
+        let activeSub: any = null;
 
-        if (activeSub?.activity_id) {
-          const { data: actData } = await supabase
-            .from("activities")
-            .select("*")
-            .eq("id", activeSub.activity_id)
-            .maybeSingle();
+        if (allActivities && allActivities.length > 0) {
+          // Percorre as atividades na ordem da trilha
+          for (const act of allActivities) {
+            const sub = submissions?.find(
+              (s: any) => String(s.activity_id) === String(act.id),
+            );
 
-          activity = actData;
-
-          if (activity?.teacher_id) {
-            const { data: teacherData } = await supabase
-              .from("teachers")
-              .select("profile_id")
-              .eq("id", activity.teacher_id)
-              .maybeSingle();
-
-            if (teacherData?.profile_id) {
-              const { data: profileData } = await supabase
-                .from("profiles")
-                .select("full_name")
-                .eq("id", teacherData.profile_id)
-                .maybeSingle();
-
-              if (profileData?.full_name) {
-                resolvedTeacherName = profileData.full_name;
-              }
+            // Se a atividade ainda não tem submissão OU está em análise/revisão (não concluída), esta é a missão atual!
+            if (!sub || sub.status !== "corrected") {
+              activity = act;
+              activeSub = sub;
+              break; // Interrompe no primeiro exercício pendente/novo
             }
           }
         }
 
+        // D. Resolve nome do professor se houver atividade ativa
+        let resolvedTeacherName = "Professor";
+
+        if (activity?.teacher_id) {
+          const { data: teacherData } = await supabase
+            .from("teachers")
+            .select("profile_id")
+            .eq("id", activity.teacher_id)
+            .maybeSingle();
+
+          if (teacherData?.profile_id) {
+            const { data: profileData } = await supabase
+              .from("profiles")
+              .select("full_name")
+              .eq("id", teacherData.profile_id)
+              .maybeSingle();
+
+            if (profileData?.full_name) {
+              resolvedTeacherName = profileData.full_name;
+            }
+          }
+        }
+
+        // E. Define o status do frontend com base na submissão da atividade atual
         const dbStatus = activeSub?.status ?? "not_submitted";
         let frontendStatus: any = "pending";
-        if (dbStatus === "revision") frontendStatus = "revision";
+
+        if (dbStatus === "not_submitted") frontendStatus = "pending";
+        else if (dbStatus === "revision") frontendStatus = "revision";
         else if (dbStatus === "pending") frontendStatus = "awaitingReview";
         else if (dbStatus === "corrected") frontendStatus = "corrected";
 
@@ -207,10 +235,16 @@ export function StudentPrototypeProvider({
                 rewardMode: activity.reward_mode ?? "fixed",
                 status: frontendStatus,
                 responseName:
-                  activeSub.student_answers || activeSub.attachment_url || "",
+                  activeSub?.student_answers || activeSub?.attachment_url || "",
                 firstRewardGranted: dbStatus === "corrected",
               }
-            : INITIAL_STUDENT_PROTOTYPE_STATE.mission,
+            : {
+                ...INITIAL_STUDENT_PROTOTYPE_STATE.mission,
+                title: "Todas as atividades concluídas!",
+                instruction:
+                  "Parabéns! Você completou todas as missões disponíveis. Aguarde seu professor anexar novos exercícios.",
+                status: "corrected",
+              },
         });
 
         // ⚡ INSCRIÇÃO NO SUPABASE REALTIME

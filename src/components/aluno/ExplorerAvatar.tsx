@@ -1,6 +1,5 @@
-import { LinearGradient } from "expo-linear-gradient";
-import { Backpack, Glasses, Sparkles } from "lucide-react-native";
-import { Image, Text, View } from "react-native";
+import { Sparkles } from "lucide-react-native";
+import { Image, Text, StyleSheet, View } from "react-native";
 import Animated from "react-native-reanimated";
 import { theme } from "../../constants/theme";
 import { usePop } from "../../hooks/useAnimations";
@@ -14,20 +13,15 @@ export function ExplorerAvatar({
   shopItems = [],
   name,
   compact = false,
-}: {
-  equippedItemId?: string | null;
-  equippedBySlot?: EquippedBySlot;
-  shopItems?: ShopItem[];
-  name?: string;
-  compact?: boolean;
-}) {
-  const popStyle = usePop(120);
+}: ExplorerAvatarProps) {
+  // 🔍 LOG DE DIAGNÓSTICO PARA O CELULAR:
+  console.log("📱 [Avatar Nativo] Equipados:", JSON.stringify(equippedBySlot));
+  console.log("📱 [Avatar Nativo] Total itens loja:", shopItems.length);
 
-  // URL base do Supabase Storage
+  const popStyle = usePop(120);
   const SUPABASE_STORAGE_BASE =
     "https://yvwhncioydhpjdaeudpt.supabase.co/storage/v1/object/public/avatar-items";
 
-  // Ordem correta das camadas (de baixo para cima)
   const SLOT_ORDER: (keyof EquippedBySlot)[] = [
     "body",
     "legs",
@@ -35,22 +29,32 @@ export function ExplorerAvatar({
     "accessories",
   ];
 
-  // Busca as imagens completas dos itens equipados
   const equippedImages = SLOT_ORDER.map((slot) => {
     const itemId = equippedBySlot[slot];
     if (!itemId) return null;
 
-    const item = shopItems.find((i) => i.id === itemId);
-    const rawPath = item?.imageUrl ?? item?.image_url;
+    // Compara convertendo ambos para String
+    const item = shopItems.find((i) => String(i.id) === String(itemId));
+
+    const rawPath =
+      item?.imageUrl ??
+      item?.image_url ??
+      (typeof (item as any)?.image === "string" ? (item as any)?.image : null);
 
     if (!rawPath) return null;
 
-    return rawPath.startsWith("http")
-      ? rawPath
-      : `${SUPABASE_STORAGE_BASE}/${rawPath}`;
+    if (rawPath.startsWith("http")) return rawPath;
+
+    // Limpa barras duplicadas para a URL ficar perfeita no Android
+    const cleanPath = rawPath.replace(/^\/+/, "");
+    return `${SUPABASE_STORAGE_BASE}/${cleanPath}`;
   }).filter(Boolean) as string[];
 
-  const hasEquippedItems = equippedImages.length > 0;
+  console.log("📱 [Avatar Nativo] URLs de imagens geradas:", equippedImages);
+
+  // Define um tamanho numérico fixo para o Android/iOS nunca colapsar
+  const avatarSize = compact ? 80 : 160;
+
   return (
     <View style={compact ? s.avatarCompactWrap : undefined}>
       {!!name && (
@@ -64,28 +68,33 @@ export function ExplorerAvatar({
       <Animated.View
         style={[
           compact ? s.explorerAvatarCompact : styles.explorerAvatar,
+          {
+            width: compact ? 80 : 160,
+            height: compact ? 80 : 160,
+            alignItems: "center",
+            justifyContent: "center",
+            position: "relative",
+            overflow: "hidden", // 👈 Impede que as pernas/cabeça saiam da caixa branca
+          },
           popStyle,
         ]}
       >
-        {hasEquippedItems ? (
-          <View style={{ width: "100%", height: "100%", position: "relative" }}>
-            {equippedImages.map((uri, index) => (
-              <Image
-                key={index}
-                source={{ uri }}
-                style={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  width: "100%",
-                  height: "100%",
-                  resizeMode: "contain",
-                }}
-              />
-            ))}
-          </View>
+        {equippedImages.length > 0 ? (
+          equippedImages.map((uri, index) => (
+            <Image
+              key={`${index}-${uri}`}
+              source={{ uri }}
+              resizeMode="contain" // 👈 Propriedade direta no Image (garante proporção exata)
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+              }}
+            />
+          ))
         ) : (
-          // Fallback quando nenhum item estiver equipado
           <Sparkles
             size={compact ? 25 : 44}
             color={theme.bg}

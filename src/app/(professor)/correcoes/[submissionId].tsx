@@ -372,20 +372,34 @@ function CorrectionScreen({
                 </>
               )}
 
-              {decision === "approved" && (
-                <View style={correctionsStyles.rewardCard}>
-                  <Text style={correctionsStyles.rewardTitle}>
-                    Recompensa que será liberada
-                  </Text>
-                  <Text style={correctionsStyles.rewardValue}>
-                    {reward.name}
-                  </Text>
-                  <Text style={correctionsStyles.rewardHint}>
-                    Ao aprovar a missão, as moedinhas serão creditadas
-                    diretamente no saldo e no extrato do aluno.
-                  </Text>
-                </View>
-              )}
+              {decision === "approved" &&
+                (() => {
+                  const parsedGrade = Math.min(
+                    10,
+                    Math.max(0, parseFloat(grade.replace(",", ".")) || 10),
+                  );
+                  const estimatedCoins = grade.trim()
+                    ? Math.round(30 * (parsedGrade / 10))
+                    : 30;
+
+                  return (
+                    <View style={correctionsStyles.rewardCard}>
+                      <Text style={correctionsStyles.rewardTitle}>
+                        Recompensa que será liberada
+                      </Text>
+                      <Text style={correctionsStyles.rewardValue}>
+                        {grade.trim()
+                          ? `${estimatedCoins} moedas (Nota ${parsedGrade})`
+                          : `${reward.name}`}
+                      </Text>
+                      <Text style={correctionsStyles.rewardHint}>
+                        Ao aprovar a missão, as moedinhas serão creditadas
+                        diretamente no saldo e no extrato do aluno
+                        proporcionalmente à nota.
+                      </Text>
+                    </View>
+                  );
+                })()}
 
               {!revisionIsValid && (
                 <View style={correctionsStyles.validationHint}>
@@ -482,7 +496,11 @@ export default function CorrectionRoute() {
                 (activity as any)?.rewardBaseCoins ??
                 30;
 
-              // Credita as moedinhas e gera o extrato no Supabase
+              // 🔴 Converte a nota digitada (ex: "8.5" ou "8,5") para número. Se vazio, assume 10.0
+              const numericGrade =
+                parseFloat(result.grade.replace(",", ".")) || 10.0;
+
+              // Credita as moedinhas proporcionalmente à nota e gera o extrato no Supabase
               const { error: rewardError } = await supabase.rpc(
                 "reward_student_mission",
                 {
@@ -491,6 +509,7 @@ export default function CorrectionRoute() {
                   p_reward_mode: rewardMode,
                   p_base_coins: rewardCoins,
                   p_mission_title: activity?.title || "Missão Concluída",
+                  p_grade: numericGrade, // 👈 NOTA REPASSADA PARA O BANCO
                 },
               );
 

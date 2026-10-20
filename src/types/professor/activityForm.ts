@@ -11,6 +11,8 @@ export interface ActivityFormData {
     attachmentUri: string | null;
     rewardName: string;
     rewardType: RewardType;
+    rewardBaseCoins?: number; 
+    rewardBonusCoins?: number;
     status: ActivityStatus;
 }
 

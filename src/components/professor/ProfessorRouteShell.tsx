@@ -1,17 +1,28 @@
+import React from 'react';
+import { View } from 'react-native';
+import { ProfessorLoadingScreen } from './ProfessorLoadingScreen';
 import { useProfessorData } from '@/hooks/professor/useProfessorData';
 import { PROFESSOR_ROUTES } from '@/router/professor.routes';
 import type { ProfessorRouteShellProps } from '@/types/professor/professorRouteShell';
 import { useRouter } from 'expo-router';
 import EducatorScreen from './EducatorScreen';
 
+
 export function ProfessorRouteShell({
   children,
   currentDestination = 'dashboard',
+  loading: propLoading = false,
 }: ProfessorRouteShellProps) {
   const router = useRouter();
-  const { profileName, schoolName, notifications } = useProfessorData();
+  const { profileName, schoolName, notifications, loading: dataLoading } = useProfessorData();
 
   const subtitle = `${schoolName}`;
+
+  const isLoading = propLoading || dataLoading;
+  
+  if (isLoading) {
+    return <ProfessorLoadingScreen />;
+  }
 
   return (
     <EducatorScreen

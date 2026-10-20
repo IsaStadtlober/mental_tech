@@ -1,62 +1,67 @@
-import type { ActivityStatus, FileType, RewardType } from './common';
+import type { ActivityStatus, FileType, RewardType } from "./common";
 
 export interface ActivityAttachment {
-    id: string;
-    name: string;
-    type: FileType;
-    sizeLabel?: string;
-    uri?: string;
+  id: string;
+  name: string;
+  type: FileType;
+  sizeLabel?: string;
+  uri?: string;
 }
 
 export interface Reward {
-    id: string;
-    name: string;
-    type: RewardType;
+  id: string;
+  name: string;
+  type: RewardType;
+  baseCoins?: number;
+  bonusCoins?: number;
 }
 
 export interface Activity {
-    id: string;
-    title: string;
-    instruction: string;
-    className: string;
-    studentNames?: string[];
-    status: ActivityStatus;
-    dueDate?: string;
-    createdAt: string;
-    publishedAt?: string;
-    attachment: ActivityAttachment;
-    reward: Reward;
-    submissionsCount: number;
-    studentsCount: number;
-    correctedCount: number;
+  id: string;
+  title: string;
+  instruction: string;
+  className: string;
+  studentNames?: string[];
+  status: ActivityStatus;
+  dueDate?: string;
+  createdAt: string;
+  publishedAt?: string;
+  attachment: ActivityAttachment;
+  reward: Reward;
+  rewardMode?: RewardType;
+  rewardBaseCoins?: number;
+  rewardBonusCoins?: number;
+  submissionsCount: number;
+  studentsCount: number;
+  correctedCount: number;
 }
 
 export interface ActivityMetricCardData {
-    label: string;
-    value: number | string;
-    helper: string;
-    tone: 'info' | 'success' | 'warning';
+  label: string;
+  value: number | string;
+  helper: string;
+  tone: "info" | "success" | "warning";
 }
 
 export interface ActivityConfigurationRow {
-    label: string;
-    value: string;
+  label: string;
+  value: string;
 }
 
 export interface ActivityDetailScreenProps {
-    activity: Activity;
-    onBack: () => void;
-    onEdit: () => void;
-    onOpenCorrectionQueue: () => void;
+  activity: Activity;
+  onBack: () => void;
+  onEdit: () => void;
+  onOpenCorrectionQueue: () => void;
 }
 
-export type ActivityFilter = 'all' | ActivityStatus;
+export type ActivityFilter = "all" | ActivityStatus;
 
 export interface ActivitiesScreenProps {
-    activities: Activity[];
-    onBack: () => void;
-    onCreateActivity: () => void;
-    onOpenActivity: (activityId: string) => void;
-    onEditActivity: (activityId: string) => void;
-    onDeleteActivity: (activityId: string) => void;
+  activities: Activity[];
+  onBack: () => void;
+  onCreateActivity: () => void;
+  onOpenActivity: (activityId: string) => void;
+  onEditActivity: (activityId: string) => void;
+  onDeleteActivity: (activityId: string) => void;
 }

@@ -1,18 +1,24 @@
-import * as DocumentPicker from 'expo-document-picker';
-import { Paperclip, Save, Send, X } from 'lucide-react-native';
-import { Pressable, ScrollView, Text, TextInput, useWindowDimensions, View } from 'react-native';
+import * as DocumentPicker from "expo-document-picker";
+import { Coins, Paperclip, Save, Send, X } from "lucide-react-native";
+import {
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  useWindowDimensions,
+  View,
+} from "react-native";
 
-import { theme } from '@/constants/theme';
-import { useActivityForm } from '@/hooks/professor/useActivityForm';
-import { activityFormStyles } from '@/styles/professor/activityForm';
-import type { ActivityFormScreenProps } from '@/types/professor/activityForm';
+import { theme } from "@/constants/theme";
+import { useActivityForm } from "@/hooks/professor/useActivityForm";
+import { activityFormStyles } from "@/styles/professor/activityForm";
+import type { ActivityFormScreenProps } from "@/types/professor/activityForm";
 
-import AppButton from '@/components/professor/AppButton';
-import AppCard from '@/components/professor/AppCard';
-import BackButton from '@/components/professor/BackButton';
-import SectionHeader from '@/components/professor/SectionHeader';
-import StatusChip from '@/components/professor/StatusChip';
-import { ACTIVITY_FORM_REWARD_OPTIONS } from '@/constants/professor/activityForm';
+import AppButton from "@/components/professor/AppButton";
+import AppCard from "@/components/professor/AppCard";
+import BackButton from "@/components/professor/BackButton";
+import SectionHeader from "@/components/professor/SectionHeader";
+import { formatDateMask } from "@/utils/professor/activityForm";
 
 export default function ActivityFormScreen({
   availableStudents,
@@ -26,7 +32,7 @@ export default function ActivityFormScreen({
   const isCompact = width < 760;
 
   // 1. Unificou a string para evitar divergência de maiúsculas/minúsculas
-  const SPECIFIC_STUDENTS_OPTION = 'Alunos específicos';
+  const SPECIFIC_STUDENTS_OPTION = "Alunos específicos";
 
   const audienceOptions = [
     ...classes.map((c) => c.name),
@@ -66,9 +72,9 @@ export default function ActivityFormScreen({
     try {
       const result = await DocumentPicker.getDocumentAsync({
         type: [
-          'application/pdf',
-          'application/msword',
-          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          "application/pdf",
+          "application/msword",
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         ],
         copyToCacheDirectory: true,
       });
@@ -77,15 +83,15 @@ export default function ActivityFormScreen({
         const file = result.assets[0];
         setAttachmentName(file.name);
         setAttachmentUri(file.uri);
-        setAttachmentType(file.mimeType?.includes('pdf') ? 'pdf' : 'doc');
+        setAttachmentType(file.mimeType?.includes("pdf") ? "pdf" : "doc");
       }
     } catch (err) {
-      console.error('Erro ao escolher arquivo:', err);
+      console.error("Erro ao escolher arquivo:", err);
     }
   };
 
   const handleRemoveAttachment = () => {
-    setAttachmentName('');
+    setAttachmentName("");
     setAttachmentUri(null);
   };
 
@@ -113,7 +119,10 @@ export default function ActivityFormScreen({
         {!activity && initialStudentName && (
           <View style={activityFormStyles.banner}>
             <Text style={activityFormStyles.bannerTitle}>
-              {messages.individualTitle.replace('{name}', initialStudentName ?? '')}
+              {messages.individualTitle.replace(
+                "{name}",
+                initialStudentName ?? "",
+              )}
             </Text>
 
             <Text style={activityFormStyles.bannerSubtitle}>
@@ -122,8 +131,18 @@ export default function ActivityFormScreen({
           </View>
         )}
 
-        <View style={[activityFormStyles.layout, isCompact ? activityFormStyles.layoutCompact : undefined]}>
-          <View style={[activityFormStyles.mainColumn, isCompact ? activityFormStyles.mainColumnCompact : undefined]}>
+        <View
+          style={[
+            activityFormStyles.layout,
+            isCompact ? activityFormStyles.layoutCompact : undefined,
+          ]}
+        >
+          <View
+            style={[
+              activityFormStyles.mainColumn,
+              isCompact ? activityFormStyles.mainColumnCompact : undefined,
+            ]}
+          >
             {/* CARD 1: INFORMAÇÕES PRINCIPAIS */}
             <AppCard>
               <SectionHeader
@@ -133,7 +152,9 @@ export default function ActivityFormScreen({
                 style={activityFormStyles.sectionHeaderSpacing}
               />
 
-              <Text style={activityFormStyles.fieldLabel}>{messages.titleLabel}</Text>
+              <Text style={activityFormStyles.fieldLabel}>
+                {messages.titleLabel}
+              </Text>
 
               <TextInput
                 value={title}
@@ -141,10 +162,22 @@ export default function ActivityFormScreen({
                 placeholder={messages.titlePlaceholder}
                 placeholderTextColor={theme.textFaint}
                 maxLength={80}
-                style={[activityFormStyles.textInput, !titleIsValid && title.length > 0 ? activityFormStyles.textInputInvalid : undefined]}
+                style={[
+                  activityFormStyles.textInput,
+                  !titleIsValid && title.length > 0
+                    ? activityFormStyles.textInputInvalid
+                    : undefined,
+                ]}
               />
 
-              <Text style={[activityFormStyles.fieldLabel, activityFormStyles.fieldLabelTop]}>{messages.instructionLabel}</Text>
+              <Text
+                style={[
+                  activityFormStyles.fieldLabel,
+                  activityFormStyles.fieldLabelTop,
+                ]}
+              >
+                {messages.instructionLabel}
+              </Text>
 
               <TextInput
                 value={instruction}
@@ -154,7 +187,12 @@ export default function ActivityFormScreen({
                 multiline
                 maxLength={150}
                 textAlignVertical="top"
-                style={[activityFormStyles.textArea, !instructionIsValid && instruction.length > 0 ? activityFormStyles.textAreaInvalid : undefined]}
+                style={[
+                  activityFormStyles.textArea,
+                  !instructionIsValid && instruction.length > 0
+                    ? activityFormStyles.textAreaInvalid
+                    : undefined,
+                ]}
               />
 
               <Text style={activityFormStyles.helperText}>
@@ -182,7 +220,11 @@ export default function ActivityFormScreen({
 
                 <View style={{ marginTop: 12 }}>
                   <AppButton
-                    label={attachmentName ? "Trocar Arquivo" : "Selecionar Documento (PDF/DOC)"}
+                    label={
+                      attachmentName
+                        ? "Trocar Arquivo"
+                        : "Selecionar Documento (PDF/DOC)"
+                    }
                     variant="secondary"
                     iconLeft={<Paperclip size={16} color={theme.primary} />}
                     onPress={handlePickDocument}
@@ -193,7 +235,10 @@ export default function ActivityFormScreen({
               {!!attachmentName && (
                 <View style={activityFormStyles.attachmentSummary}>
                   <View style={activityFormStyles.attachmentSummaryContent}>
-                    <Text numberOfLines={1} style={activityFormStyles.attachmentSummaryName}>
+                    <Text
+                      numberOfLines={1}
+                      style={activityFormStyles.attachmentSummaryName}
+                    >
                       {attachmentName}
                     </Text>
 
@@ -215,7 +260,12 @@ export default function ActivityFormScreen({
           </View>
 
           {/* COLUNA LATERAL */}
-          <View style={[activityFormStyles.sideColumn, isCompact ? activityFormStyles.sideColumnCompact : undefined]}>
+          <View
+            style={[
+              activityFormStyles.sideColumn,
+              isCompact ? activityFormStyles.sideColumnCompact : undefined,
+            ]}
+          >
             <AppCard>
               <SectionHeader
                 compact
@@ -224,7 +274,11 @@ export default function ActivityFormScreen({
                 style={activityFormStyles.sectionHeaderSpacing}
               />
 
-              <Text style={[activityFormStyles.fieldLabel, { marginBottom: 9 }]}>{messages.audienceLabel}</Text>
+              <Text
+                style={[activityFormStyles.fieldLabel, { marginBottom: 9 }]}
+              >
+                {messages.audienceLabel}
+              </Text>
 
               <View style={activityFormStyles.audienceRow}>
                 {audienceOptions.map((audience) => {
@@ -241,11 +295,20 @@ export default function ActivityFormScreen({
                       }}
                       style={({ pressed }) => [
                         activityFormStyles.audienceChip,
-                        selected ? activityFormStyles.audienceChipSelected : undefined,
+                        selected
+                          ? activityFormStyles.audienceChipSelected
+                          : undefined,
                         pressed ? { opacity: 0.82 } : undefined,
                       ]}
                     >
-                      <Text style={[activityFormStyles.audienceChipText, selected ? activityFormStyles.audienceChipTextSelected : undefined]}>
+                      <Text
+                        style={[
+                          activityFormStyles.audienceChipText,
+                          selected
+                            ? activityFormStyles.audienceChipTextSelected
+                            : undefined,
+                        ]}
+                      >
                         {audience}
                       </Text>
                     </Pressable>
@@ -254,14 +317,27 @@ export default function ActivityFormScreen({
               </View>
 
               {className === SPECIFIC_STUDENTS_OPTION && (
-                <View style={[activityFormStyles.studentSelectionCard, !audienceIsValid ? activityFormStyles.studentSelectionCardInvalid : undefined]}>
-                  <Text style={activityFormStyles.studentSelectionTitle}>{messages.studentSelectionTitle}</Text>
+                <View
+                  style={[
+                    activityFormStyles.studentSelectionCard,
+                    !audienceIsValid
+                      ? activityFormStyles.studentSelectionCardInvalid
+                      : undefined,
+                  ]}
+                >
+                  <Text style={activityFormStyles.studentSelectionTitle}>
+                    {messages.studentSelectionTitle}
+                  </Text>
 
-                  <Text style={activityFormStyles.studentSelectionSubtitle}>{messages.studentSelectionSubtitle}</Text>
+                  <Text style={activityFormStyles.studentSelectionSubtitle}>
+                    {messages.studentSelectionSubtitle}
+                  </Text>
 
                   <View style={activityFormStyles.studentSelectionRow}>
                     {availableStudents.map((student) => {
-                      const selected = selectedStudentNames.includes(student.name);
+                      const selected = selectedStudentNames.includes(
+                        student.name,
+                      );
 
                       return (
                         <Pressable
@@ -272,15 +348,31 @@ export default function ActivityFormScreen({
                           onPress={() => toggleStudent(student.name)}
                           style={({ pressed }) => [
                             activityFormStyles.studentOption,
-                            selected ? activityFormStyles.studentOptionSelected : undefined,
+                            selected
+                              ? activityFormStyles.studentOptionSelected
+                              : undefined,
                             pressed ? { opacity: 0.8 } : undefined,
                           ]}
                         >
-                          <Text style={[activityFormStyles.studentOptionText, selected ? activityFormStyles.studentOptionTextSelected : undefined]}>
+                          <Text
+                            style={[
+                              activityFormStyles.studentOptionText,
+                              selected
+                                ? activityFormStyles.studentOptionTextSelected
+                                : undefined,
+                            ]}
+                          >
                             {student.name}
                           </Text>
 
-                          <Text style={[activityFormStyles.studentOptionSubtext, selected ? activityFormStyles.studentOptionSubtextSelected : undefined]}>
+                          <Text
+                            style={[
+                              activityFormStyles.studentOptionSubtext,
+                              selected
+                                ? activityFormStyles.studentOptionSubtextSelected
+                                : undefined,
+                            ]}
+                          >
                             {student.className}
                           </Text>
                         </Pressable>
@@ -288,54 +380,93 @@ export default function ActivityFormScreen({
                     })}
                   </View>
 
-                  <Text style={[activityFormStyles.studentSelectionState, selectedStudentNames.length > 0 ? activityFormStyles.studentSelectionStateValid : activityFormStyles.studentSelectionStateInvalid]}>
+                  <Text
+                    style={[
+                      activityFormStyles.studentSelectionState,
+                      selectedStudentNames.length > 0
+                        ? activityFormStyles.studentSelectionStateValid
+                        : activityFormStyles.studentSelectionStateInvalid,
+                    ]}
+                  >
                     {studentSelectionLabel}
                   </Text>
                 </View>
               )}
 
-              <Text style={[activityFormStyles.fieldLabel, { marginTop: 20, marginBottom: 7 }]}>{messages.dueDateLabel}</Text>
+              <Text
+                style={[
+                  activityFormStyles.fieldLabel,
+                  { marginTop: 20, marginBottom: 7 },
+                ]}
+              >
+                {messages.dueDateLabel}
+              </Text>
 
               <TextInput
                 value={dueDate}
-                onChangeText={setDueDate}
+                onChangeText={(text) => setDueDate(formatDateMask(text))} // 👈 Aplica a máscara DD/MM/AAAA enquanto digita
                 placeholder={messages.dueDatePlaceholder}
                 placeholderTextColor={theme.textFaint}
+                keyboardType="numeric"
+                maxLength={10} // 👈 Limita ao formato 00/00/0000
                 style={activityFormStyles.textInput}
               />
 
-              <Text style={[activityFormStyles.fieldLabel, { marginTop: 20, marginBottom: 9 }]}>{messages.rewardLabel}</Text>
+              <Text
+                style={[
+                  activityFormStyles.fieldLabel,
+                  { marginTop: 20, marginBottom: 8 },
+                ]}
+              >
+                {messages.rewardLabel || "Modelo de Recompensa"}
+              </Text>
 
-              <View style={activityFormStyles.rewardRow}>
-                {ACTIVITY_FORM_REWARD_OPTIONS.map((reward) => {
-                  const selected = rewardName === reward.label;
+              <View
+                style={{
+                  backgroundColor: "rgba(16, 185, 129, 0.08)",
+                  borderColor: "rgba(16, 185, 129, 0.25)",
+                  borderWidth: 1,
+                  borderRadius: 12,
+                  padding: 14,
+                }}
+              >
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: 8,
+                    marginBottom: 6,
+                  }}
+                >
+                  <Coins size={18} color={theme.primary} />
+                  <Text
+                    style={{
+                      fontWeight: "600",
+                      fontSize: 14,
+                      color: theme.text,
+                    }}
+                  >
+                    Recompensa por Desempenho
+                  </Text>
+                </View>
 
-                  return (
-                    <Pressable
-                      key={reward.label}
-                      onPress={() => {
-                        setRewardName(reward.label);
-                        setRewardType(reward.type);
-                      }}
-                      style={({ pressed }) => [
-                        activityFormStyles.rewardOption,
-                        selected ? activityFormStyles.rewardOptionSelected : undefined,
-                        pressed ? { opacity: 0.84 } : undefined,
-                      ]}
-                    >
-                      <Text style={activityFormStyles.rewardOptionText}>
-                        {reward.label}
-                      </Text>
-
-                      {selected && (
-                        <StatusChip
-                          label={messages.rewardSelected}
-                          tone="success"
-                        />
-                      )}
-                    </Pressable>
-                  );
-                })}
+                <Text
+                  style={{
+                    fontSize: 12,
+                    color: theme.textMuted,
+                    lineHeight: 17,
+                  }}
+                >
+                  O aluno receberá{" "}
+                  <Text style={{ fontWeight: "700", color: theme.text }}>
+                    10 moedas base
+                  </Text>{" "}
+                  pela entrega + até{" "}
+                  <Text style={{ fontWeight: "700", color: theme.text }}>
+                    40 moedas bônus
+                  </Text>{" "}
+                  de acordo com a nota (0 a 10) atribuída na correção.
+                </Text>
               </View>
             </AppCard>
           </View>
@@ -343,7 +474,9 @@ export default function ActivityFormScreen({
 
         {!formIsValid && (
           <View style={activityFormStyles.validationCard}>
-            <Text style={activityFormStyles.validationText}>{messages.validationMessage}</Text>
+            <Text style={activityFormStyles.validationText}>
+              {messages.validationMessage}
+            </Text>
           </View>
         )}
 
@@ -358,12 +491,12 @@ export default function ActivityFormScreen({
                 color={formIsValid ? theme.primary : theme.textMuted}
               />
             }
-            onPress={() => handleSave('draft', onSave)}
+            onPress={() => handleSave("draft", onSave)}
           />
 
           <AppButton
             label={
-              activity?.status === 'published'
+              activity?.status === "published"
                 ? messages.saveChanges
                 : messages.publishAction
             }
@@ -376,8 +509,8 @@ export default function ActivityFormScreen({
             }
             onPress={() =>
               handleSave(
-                activity?.status === 'closed' ? 'closed' : 'published',
-                onSave
+                activity?.status === "closed" ? "closed" : "published",
+                onSave,
               )
             }
           />

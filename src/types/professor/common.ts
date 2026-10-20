@@ -20,7 +20,7 @@ export type SubmissionStatus =
 
 export type FileType = "pdf" | "doc" | "image";
 
-export type RewardType = "random" | "fixed";
+export type RewardType = 'fixed' | 'random' | 'performance' | 'item' | 'coin';
 
 export interface EducatorMetric {
   id: string;

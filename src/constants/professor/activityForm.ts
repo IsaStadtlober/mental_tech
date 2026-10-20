@@ -6,7 +6,6 @@ export const ACTIVITY_FORM_AUDIENCES = [
   "Alunos específicos",
 ] as const;
 
-// Filtros de atividade.
 export const ACTIVITY_FORM_ATTACHMENT_OPTIONS: {
   label: string;
   name: string;
@@ -33,38 +32,35 @@ export const ACTIVITY_FORM_REWARD_OPTIONS: {
   label: string;
   type: RewardType;
   baseCoins: number;
+  bonusCoins: number;
+  description: string;
 }[] = [
   {
-    label: "Missão Padrão (30 moedas)",
-    type: "fixed",
-    baseCoins: 30,
-  },
-  {
-    label: "Missão Desafio (75 moedas)",
-    type: "fixed",
-    baseCoins: 75,
-  },
-  {
-    label: "Baú Surpresa (10 a 75 moedas)",
-    type: "random",
-    baseCoins: 0,
+    label: "Recompensa por Desempenho (Até 50 moedas)",
+    type: "performance",
+    baseCoins: 10,
+    bonusCoins: 40,
+    description:
+      "10 moedas base pela entrega + até 40 moedas calculadas de acordo com a nota (0 a 10).",
   },
 ];
 
+// ⚙️ Padrões do formulário alinhados
 export const ACTIVITY_FORM_DEFAULTS = {
-    audience: '5º Ano A' as (typeof ACTIVITY_FORM_AUDIENCES)[number],
-    rewardName: 'Missão Padrão (30 moedas)',
-    rewardType: 'fixed' as RewardType,
-    rewardBaseCoins: 30,
+  audience: "5º Ano A" as (typeof ACTIVITY_FORM_AUDIENCES)[number],
+  rewardName: "Recompensa por Desempenho (Até 50 moedas)",
+  rewardType: "performance" as RewardType,
+  rewardBaseCoins: 10,
+  rewardBonusCoins: 40,
 };
 
-// Mensagens de atividade
+// 💬 Mensagens e textos da tela de criação/edição
 export const ACTIVITY_FORM_MESSAGES = {
   backLabel: "Atividades",
   headerTitle: "Criar nova missão",
   headerTitleEdit: "Editar atividade",
   headerSubtitle:
-    "Configure o material, os destinatários e a recompensa da atividade.",
+    "Configure o material, os destinatários e as regras da atividade.",
   individualTitle: "Missão individual para {name}",
   individualSubtitle:
     "O destinatário foi preenchido a partir do perfil do aluno.",
@@ -89,8 +85,11 @@ export const ACTIVITY_FORM_MESSAGES = {
     "Escolha um ou mais alunos para receber esta missão.",
   dueDateLabel: "Data de entrega",
   dueDatePlaceholder: "DD/MM/AAAA",
-  rewardLabel: "Recompensa ao aprovar",
-  rewardSelected: "Selecionada",
+  rewardSectionTitle: "Sistema de Recompensa",
+  rewardSectionSubtitle:
+    "O aluno recebe as moedas automaticamente após você avaliar e dar a nota da entrega.",
+  rewardLabel: "Modelo de Avaliação",
+  rewardSelected: "Ativo",
   validationMessage:
     "Preencha título, instrução, destinatário e material para continuar.",
   saveDraft: "Salvar rascunho",

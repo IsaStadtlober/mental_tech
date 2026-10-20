@@ -5,7 +5,7 @@ interface SaveActivityOptions {
   formData: ActivityFormData;
   classId: string;
   fileUriOrBlob?: string | Blob;
-  targetStudentIds?: string[]; // Opcional: Se quiser enviar para alunos específicos
+  targetStudentIds?: string[];
 }
 
 export async function saveActivityToSupabase({
@@ -36,11 +36,9 @@ export async function saveActivityToSupabase({
 
   // 3. Upload do arquivo para o Storage (se houver)
   if (fileUriOrBlob && formData.attachmentName) {
-    // 1. Identifica a extensão
     const fileExt =
       formData.attachmentName.split(".").pop()?.toLowerCase() || "";
 
-    // 2. Valida formatos permitidos
     const allowedExtensions = ["pdf", "doc", "docx"];
     if (!allowedExtensions.includes(fileExt)) {
       throw new Error(
@@ -51,21 +49,19 @@ export async function saveActivityToSupabase({
     const contentType =
       fileExt === "pdf" ? "application/pdf" : "application/msword";
 
-    // 3. Sanitiza o nome: remove acentos, o caractere '+' e outros símbolos especiais
     const sanitizedName = formData.attachmentName
       .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "") // Remove acentos
-      .replace(/[^a-zA-Z0-9._-]/g, "_"); // Troca +, espaços e símbolos por _
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-zA-Z0-9._-]/g, "_");
 
     const fileName = `${Date.now()}_${sanitizedName}`;
     const filePath = `${teacher.id}/${fileName}`;
 
-    // 4. Prepara o corpo do upload como ArrayBuffer (garante que os bytes do PDF vão íntegros)
     let uploadBody: ArrayBuffer | Blob | FormData = fileUriOrBlob as any;
 
     if (typeof fileUriOrBlob === "string") {
       const response = await fetch(fileUriOrBlob);
-      uploadBody = await response.arrayBuffer(); // <-- ArrayBuffer previne corrupção de binários no Expo/RN
+      uploadBody = await response.arrayBuffer();
     }
 
     const { error: uploadError } = await supabase.storage
@@ -84,34 +80,34 @@ export async function saveActivityToSupabase({
     contentUrl = publicUrlData.publicUrl;
   }
 
-  // 4. Salvar na tabela 'activities'
-const { data: newActivity, error: dbError } = await supabase
-  .from("activities")
-  .insert([
-    {
-      teacher_id: teacher.id,
-      class_id: classId,
-      title: formData.title,
-      description: formData.instruction || null,
-      content_url: contentUrl,
-      status: formData.status,
-      reward_mode: formData.rewardType || "fixed",         // 👈 ADICIONADO
-      reward_base_coins: formData.rewardBaseCoins ?? 30,  // 👈 ADICIONADO
-      published_at:
-        formData.status === "published" ? new Date().toISOString() : null,
-    },
-  ])
+  // 4. Salvar na tabela 'activities' (Com suporte ao Modelo 3: Base + Bônus)
+  const { data: newActivity, error: dbError } = await supabase
+    .from("activities")
+    .insert([
+      {
+        teacher_id: teacher.id,
+        class_id: classId,
+        title: formData.title,
+        description: formData.instruction || null,
+        content_url: contentUrl,
+        status: formData.status,
+        reward_mode: formData.rewardType || "performance",
+        reward_base_coins: formData.rewardBaseCoins ?? 10,
+        reward_bonus_coins: formData.rewardBonusCoins ?? 40,
+        published_at:
+          formData.status === "published" ? new Date().toISOString() : null,
+      },
+    ])
     .select()
     .single();
 
   if (dbError)
     throw new Error("Falha ao salvar a atividade no banco de dados.");
 
-  // 5. 🎯 NOVA LÓGICA: Se a atividade foi PUBLICADA, distribuir para os alunos na tabela 'submissions'
+  // 5. Se a atividade foi PUBLICADA, atribuir para a tabela 'submissions'
   if (formData.status === "published") {
     let studentsToAssign = targetStudentIds || [];
 
-    // Se não passou uma lista específica de alunos, busca todos os alunos da turma
     if (studentsToAssign.length === 0) {
       const { data: classStudents, error: studentsError } = await supabase
         .from("students")
@@ -122,7 +118,6 @@ const { data: newActivity, error: dbError } = await supabase
       studentsToAssign = classStudents.map((s) => s.id);
     }
 
-    // Cria as entradas pendentes na tabela 'submissions'
     if (studentsToAssign.length > 0) {
       const submissionsToInsert = studentsToAssign.map((studentId) => ({
         activity_id: newActivity.id,

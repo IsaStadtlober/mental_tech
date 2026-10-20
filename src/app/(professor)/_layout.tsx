@@ -1,10 +1,10 @@
-import { ProfessorPrototypeProvider } from '@/hooks/professor/useProfessorPrototype';
-import { Stack } from 'expo-router';
+import { Slot } from "expo-router";
+import { ProfessorProvider } from "@/contexts/ProfessorContext";
 
 export default function ProfessorLayout() {
-    return (
-        <ProfessorPrototypeProvider>
-            <Stack screenOptions={{ headerShown: false }} />
-        </ProfessorPrototypeProvider>
-    );
+  return (
+    <ProfessorProvider>
+      <Slot />
+    </ProfessorProvider>
+  );
 }

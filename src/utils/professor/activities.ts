@@ -58,7 +58,43 @@ export async function submitTeacherCorrection({
     reward_bonus_coins: number;
   };
 }) {
-  // 1. Calcula o total de moedas com base na nota
+  // 1. Trava de segurança: Busca a submissão atual no banco para validar o status
+  const { data: currentSubmission, error: fetchError } = await supabase
+    .from("submissions")
+    .select("status, grade")
+    .eq("id", submissionId)
+    .single();
+
+  if (fetchError || !currentSubmission) {
+    throw new Error("Submissão não encontrada no banco de dados.");
+  }
+
+  // Se já foi corrigida anteriormente, impede crédito duplicado de moedas
+  if (currentSubmission.status === "corrected") {
+    throw new Error("Esta atividade já foi corrigida anteriormente.");
+  }
+
+  // 2. Tenta atualizar a submissão primeiro
+  const { data: updatedSub, error: subError } = await supabase
+    .from("submissions")
+    .update({
+      status: "corrected",
+      grade: Number(grade),
+      teacher_feedback: feedback || null,
+      corrected_at: new Date().toISOString(),
+    })
+    .eq("id", submissionId)
+    .select() // 👈 Obrigatório para confirmar se a linha REALMENTE foi alterada
+    .single();
+
+  if (subError || !updatedSub) {
+    console.error("Erro no Supabase ao atualizar submissão:", subError);
+    throw new Error(
+      "Não foi possível salvar a nota. Verifique as permissões (RLS) da tabela submissions.",
+    );
+  }
+
+  // 3. APENAS se a submissão foi atualizada com sucesso, calcula e credita as moedas
   const totalEarnedCoins = calculateEarnedCoins({
     rewardMode: activity.reward_mode,
     baseCoins: activity.reward_base_coins,
@@ -66,20 +102,6 @@ export async function submitTeacherCorrection({
     grade,
   });
 
-  // 2. Atualiza a submissão no banco
-  const { error: subError } = await supabase
-    .from("submissions")
-    .update({
-      status: "corrected",
-      grade,
-      teacher_feedback: feedback || null,
-      corrected_at: new Date().toISOString(),
-    })
-    .eq("id", submissionId);
-
-  if (subError) throw new Error("Erro ao salvar a correção do professor.");
-
-  // 3. Busca o saldo atual do aluno e soma o valor calculado
   const { data: studentData } = await supabase
     .from("students")
     .select("coins")
@@ -93,9 +115,12 @@ export async function submitTeacherCorrection({
     .update({ coins: currentCoins + totalEarnedCoins })
     .eq("id", studentId);
 
-  if (coinsError) throw new Error("Erro ao creditar as moedas do aluno.");
+  if (coinsError) {
+    console.error("Erro ao creditar moedas:", coinsError);
+    throw new Error("Nota salva, mas ocorreu um erro ao creditar as moedas.");
+  }
 
-  return { totalEarnedCoins };
+  return { totalEarnedCoins, updatedSubmission: updatedSub };
 }
 
 // ==========================================

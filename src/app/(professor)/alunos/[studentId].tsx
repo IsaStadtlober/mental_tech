@@ -12,13 +12,13 @@ import { PROFESSOR_ROUTES } from "@/router/professor.routes";
 import { supabase } from "@/service/supabase";
 import { studentsStyles } from "@/styles/professor/students";
 import type {
-    StudentHistoryItem,
-    StudentProfile,
-    StudentProfileScreenProps,
+  StudentHistoryItem,
+  StudentProfile,
+  StudentProfileScreenProps,
 } from "@/types/professor";
 import {
-    listProfessorActivities,
-    listProfessorStudents,
+  listProfessorActivities,
+  listProfessorStudents,
 } from "@/utils/professor";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Send } from "lucide-react-native";
@@ -144,13 +144,17 @@ function StudentProfileScreen({
         });
 
         const completedActivities = submissions.filter(
-          (submission) => submission.status === "approved",
+          (submission) =>
+            submission.status === "corrected" ||
+            submission.status === "approved",
         ).length;
+
         const pendingActivities = submissions.filter(
           (submission) =>
             submission.status === "not_submitted" ||
             submission.status === "pending",
         ).length;
+
         const revisionActivities = submissions.filter(
           (submission) => submission.status === "revision",
         ).length;
@@ -379,7 +383,29 @@ function StudentProfileScreen({
               />
 
               {history.map((item, index) => {
-                const itemStatus = historyStatusConfig[item.status];
+                const currentStatus = item.status as string;
+
+                // Busca do mapa ou usa fallback seguro
+                const itemStatus = historyStatusConfig[
+                  item.status as keyof typeof historyStatusConfig
+                ] || {
+                  label:
+                    currentStatus === "corrected" ||
+                    currentStatus === "approved"
+                      ? "Corrigido"
+                      : currentStatus === "revision"
+                        ? "Revisão"
+                        : currentStatus === "pending"
+                          ? "Aguardando"
+                          : "Não entregue",
+                  tone:
+                    currentStatus === "corrected" ||
+                    currentStatus === "approved"
+                      ? "success"
+                      : currentStatus === "revision"
+                        ? "warning"
+                        : "neutral",
+                };
 
                 return (
                   <View
@@ -398,26 +424,19 @@ function StudentProfileScreen({
                         },
                       ]}
                     >
-                      <View
-                        style={{
-                          flex: 1,
-                          minWidth: 0,
-                        }}
-                      >
+                      <View style={{ flex: 1, minWidth: 0 }}>
                         <Text style={studentsStyles.historyTitle}>
                           {item.title}
                         </Text>
-
                         <Text style={studentsStyles.historyMeta}>
                           {item.dateLabel}
-
                           {item.grade ? ` · Nota: ${item.grade}` : ""}
                         </Text>
                       </View>
 
                       <StatusChip
                         label={itemStatus.label}
-                        tone={itemStatus.tone}
+                        tone={itemStatus.tone as any}
                       />
                     </View>
                   </View>

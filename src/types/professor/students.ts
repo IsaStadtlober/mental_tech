@@ -33,7 +33,7 @@ export interface StudentProfile {
 export interface StudentHistoryItem {
     id: string;
     title: string;
-    status: 'approved' | 'pending' | 'revision';
+    status: "not_submitted" | "pending" | "revision" | "corrected" | "approved";
     dateLabel: string;
     grade?: string;
 }

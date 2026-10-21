@@ -1,11 +1,11 @@
 import { Sparkles } from "lucide-react-native";
-import { Image, Text, StyleSheet, View } from "react-native";
+import { Image, Text, View } from "react-native";
 import Animated from "react-native-reanimated";
 import { theme } from "../../constants/theme";
 import { usePop } from "../../hooks/useAnimations";
 import { alunoStyles as s } from "../../styles/aluno";
 import { authStyles as styles } from "../../styles/pages/auth";
-import type { EquippedBySlot, ShopItem } from "../../types/aluno";
+import type { EquippedBySlot } from "../../types/aluno";
 
 export function ExplorerAvatar({
   equippedItemId,

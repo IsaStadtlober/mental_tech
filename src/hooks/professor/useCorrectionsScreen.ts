@@ -3,20 +3,22 @@ import { useMemo, useState } from "react";
 import { CORRECTION_MESSAGES } from "@/constants/professor/corrections";
 import type { Submission } from "@/types/professor";
 import type {
-    CorrectionFilter,
-    StatusFilter,
+  CorrectionFilter,
+  StatusFilter,
 } from "@/types/professor/corrections";
 import {
-    getFilteredSubmissions,
-    getPendingSubmissionsLabel,
+  getFilteredSubmissions,
+  getPendingSubmissionsLabel,
 } from "@/utils/professor/corrections";
 
 export function useCorrectionsScreen(submissions: Submission[] = []) {
   const [query, setQuery] = useState("");
   const [classFilter, setClassFilter] = useState<CorrectionFilter>("all");
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+  
+  // 💡 Por padrão, inicia mostrando as submissões 'pending' na fila de correção
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("pending");
 
-  // Monta a lista de filtros dinamicamente com base nas turmas das submissões
+  // Lista de filtros de turma
   const classFilters = useMemo(() => {
     const uniqueClasses = Array.from(
       new Set(submissions.map((s) => s.className).filter(Boolean)),
@@ -31,7 +33,7 @@ export function useCorrectionsScreen(submissions: Submission[] = []) {
     ];
   }, [submissions]);
 
-  // Filtra as submissões com base em busca, turma selecionada e status.
+  // Lista filtrada em tempo real
   const filteredSubmissions = useMemo(() => {
     return getFilteredSubmissions({
       submissions,
@@ -48,7 +50,7 @@ export function useCorrectionsScreen(submissions: Submission[] = []) {
     setClassFilter,
     statusFilter,
     setStatusFilter,
-    classFilters, // Retorna os filtros gerados
+    classFilters,
     filteredSubmissions,
     resultsLabel: getPendingSubmissionsLabel(
       filteredSubmissions.length,

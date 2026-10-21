@@ -440,7 +440,7 @@ export default function ActivityFormScreen({
                     style={{
                       fontWeight: "600",
                       fontSize: 14,
-                      color: theme.text,
+                      color: theme.primary,
                     }}
                   >
                     Recompensa por Desempenho
@@ -455,11 +455,11 @@ export default function ActivityFormScreen({
                   }}
                 >
                   O aluno receberá{" "}
-                  <Text style={{ fontWeight: "700", color: theme.text }}>
+                  <Text style={{ fontWeight: "700", color: theme.primary }}>
                     10 moedas base
                   </Text>{" "}
                   pela entrega + até{" "}
-                  <Text style={{ fontWeight: "700", color: theme.text }}>
+                  <Text style={{ fontWeight: "700", color: theme.primary }}>
                     40 moedas bônus
                   </Text>{" "}
                   de acordo com a nota (0 a 10) atribuída na correção.

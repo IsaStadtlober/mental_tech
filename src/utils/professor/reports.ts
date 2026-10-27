@@ -1,22 +1,20 @@
 import { theme } from "@/constants/theme";
 import type {
-    Activity,
-    Class,
-    EducatorStudentOption,
-    ReportAttentionStudent,
-    ReportClassItem,
-    ReportPeriod,
-    ReportStudentSummary,
-    ReportSummary,
-    Submission,
+  Activity,
+  Class,
+  EducatorStudentOption,
+  ReportAttentionStudent,
+  ReportClassItem,
+  ReportPeriod,
+  ReportStudentSummary,
+  ReportSummary,
+  Submission,
 } from "@/types/professor";
 
-// Função auxiliar (mantida)
 export function getReportPeriodLabel(period: ReportPeriod) {
   return `${period} dias`;
 }
 
-// Atualizamos a função para receber os arrays reais do banco
 export function getReportSummary(
   activities: Activity[] = [],
   submissions: Submission[] = [],
@@ -24,81 +22,126 @@ export function getReportSummary(
   classes: Class[] = [],
   period: ReportPeriod = "30",
 ): ReportSummary {
-  // 1. Contagens reais (sem os falsos "+ 1" e "+ 2")
-  const publishedActivitiesCount = activities.filter(
-    (activity) => activity.status === "published",
-  ).length;
-  const completedActivitiesCount = activities.reduce(
-    (total, activity) => total + (activity.correctedCount || 0),
-    0,
-  );
-  const revisionCount = submissions.filter(
-    (submission) => submission.status === "revision",
-  ).length;
-  const pendingCount = submissions.filter(
-    (submission) => submission.status === "pending",
-  ).length;
+  // 1. Filtro de Data por período
+  const cutoffDate = new Date();
+  cutoffDate.setDate(cutoffDate.getDate() - parseInt(period, 10));
 
-  // 2. Participação das Turmas Real
-  const classParticipation: ReportClassItem[] = classes.map((cls) => {
-    const participationValue = cls.participation_rate ?? 0;
+  const recentSubmissions = submissions.filter((sub) => {
+    const rawDate = sub.submittedAt || (sub as any).createdAt;
+    if (!rawDate) return true;
+    const date = new Date(rawDate);
+    return isNaN(date.getTime()) ? true : date >= cutoffDate;
+  });
+
+  // 2. Contagens Gerais
+  const publishedActivitiesCount = activities.filter((a) => a.status === "published").length || 1;
+  
+  const completedCount = recentSubmissions.filter(
+    (s) => (s.status as string) === "corrected" || (s.status as string) === "approved"
+  ).length;
+  const revisionCount = recentSubmissions.filter((s) => s.status === "revision").length;
+  const pendingCount = recentSubmissions.filter((s) => s.status === "pending").length;
+
+  // 3. Helper para Média de Notas
+  const calculateAverage = (subs: Submission[]) => {
+    const graded = subs.filter(
+      (s) => ((s.status as string) === "corrected" || (s.status as string) === "approved") && s.grade !== undefined && s.grade !== null
+    );
+    if (graded.length === 0) return "0,0";
+    const sum = graded.reduce((acc, s) => {
+      const numericGrade = typeof s.grade === "number" ? s.grade : parseFloat(String(s.grade).replace(",", "."));
+      return acc + (isNaN(numericGrade) ? 0 : numericGrade);
+    }, 0);
+    return (sum / graded.length).toFixed(1).replace(".", ",");
+  };
+
+  const overallAverage = calculateAverage(recentSubmissions);
+
+  // 4. Mapeamento Real de Alunos (Métricas Individuais)
+  const realStudents: ReportStudentSummary[] = students.map((student) => {
+    const studentSubs = recentSubmissions.filter((s) => s.studentId === student.id);
+    const completed = studentSubs.filter(
+      (s) => (s.status as string) === "corrected" || (s.status as string) === "approved"
+    ).length;
+    const pending = studentSubs.filter((s) => s.status === "pending" || s.status === "not_submitted").length;
+    
+    // Taxa de participação
+    const totalDelivered = studentSubs.filter((s) => s.status !== "not_submitted").length;
+    const participationRate = Math.min(
+      Math.round((totalDelivered / publishedActivitiesCount) * 100),
+      100
+    );
+
+    // Gráfico de evolução: últimas 6 notas normalizadas em % (ex: nota 8,5 = 85%)
+    const recentGrades = studentSubs
+      .filter(
+        (s) => ((s.status as string) === "corrected" || (s.status as string) === "approved") && s.grade !== undefined && s.grade !== null
+      )
+      .sort((a, b) => {
+        const timeA = new Date(a.submittedAt || (a as any).createdAt || 0).getTime();
+        const timeB = new Date(b.submittedAt || (b as any).createdAt || 0).getTime();
+        return timeA - timeB;
+      })
+      .slice(-6)
+      .map((s) => {
+        const val = typeof s.grade === "number" ? s.grade : parseFloat(String(s.grade).replace(",", "."));
+        return Math.round((isNaN(val) ? 0 : val) * 10);
+      });
+
+    const evolution = [...Array(Math.max(0, 6 - recentGrades.length)).fill(0), ...recentGrades];
+
     return {
-      label: cls.name,
-      value: participationValue,
-      color: participationValue >= 80 ? theme.primary : theme.warning, // Muda a cor se a taxa for baixa
+      id: student.id,
+      name: student.name,
+      participation: participationRate,
+      completed,
+      pending,
+      average: calculateAverage(studentSubs),
+      evolution,
+      classId: (student as any).classId || (student as any).class_id,
     };
   });
 
-  // 3. Média geral de participação real
+  // 5. Participação Real das Turmas
+  const classParticipation: ReportClassItem[] = classes.map((cls) => {
+    const classStudents = realStudents.filter(
+      (s) => s.classId === cls.id || (s as any).className === cls.name
+    );
+    const avgParticipation = classStudents.length
+      ? Math.round(classStudents.reduce((acc, s) => acc + s.participation, 0) / classStudents.length)
+      : 0;
+
+    return {
+      label: cls.name,
+      value: avgParticipation,
+      color: avgParticipation >= 70 ? theme.primary : theme.warning,
+    };
+  });
+
   const overallParticipationValue = classParticipation.length
-    ? Math.round(
-        classParticipation.reduce((acc, c) => acc + c.value, 0) /
-          classParticipation.length,
-      )
+    ? Math.round(classParticipation.reduce((acc, c) => acc + c.value, 0) / classParticipation.length)
     : 0;
-  const participation = `${overallParticipationValue}%`;
 
-  // 4. Média de notas reais (Mockado para 0,0 até ter o cálculo real de notas no BD)
-  const average = "0,0";
-
-  // 5. Alunos que precisam de atenção (Filtramos alunos com participação menor que 75%, por exemplo)
-  // *Nota: Assumindo que o estudante tenha uma prop "participation_rate" no futuro,
-  // ou você pode mudar a lógica para checar inatividade.
-  const attentionStudents: ReportAttentionStudent[] = students
-    .map((student) => {
-      // Simulando uma taxa caso não tenha no banco ainda, troque por `student.participation_rate ?? 0` se tiver.
-      const studentParticipation = 0;
-      return {
-        name: student.name,
-        participation: studentParticipation,
-        tone:
-          studentParticipation < 50
-            ? "danger"
-            : ("warning" as "danger" | "warning"),
-      };
-    })
-    .filter((student) => student.participation < 75)
-    .slice(0, 5); // Pega os 5 piores
-
-  // 6. Lista Real de Estudantes
-  const realStudents: ReportStudentSummary[] = students.map(
-    (student) =>
-      ({
-        ...student,
-        participation: 0, // Substitua pela propriedade real do banco futuramente
-        average: "0,0",
-      }) as unknown as ReportStudentSummary,
-  );
+  // 6. Alunos em Atenção (Participação < 60% ou Média < 6,0)
+  const attentionStudents: ReportAttentionStudent[] = realStudents
+    .filter((student) => student.participation < 60 || parseFloat(student.average.replace(",", ".")) < 6.0)
+    .sort((a, b) => a.participation - b.participation)
+    .slice(0, 5)
+    .map((student) => ({
+      name: student.name,
+      participation: student.participation,
+      tone: student.participation < 40 ? "danger" : "warning",
+    }));
 
   return {
-    participation,
-    completedActivities: completedActivitiesCount,
+    participation: `${overallParticipationValue}%`,
+    completedActivities: completedCount,
     revisionCount,
     publishedActivities: publishedActivitiesCount,
     pendingActivities: pendingCount,
-    average,
+    average: overallAverage,
     classParticipation,
     attentionStudents,
     students: realStudents,
   };
-}
+} 
